@@ -73,14 +73,62 @@ namespace shandakemon.core
                 card selected = p1.hand[digit];
                 if (selected.getSuperType() == 0)
                 {
-                    if (p1.benched.Count < 5)
+                    battler newBattler = (battler)selected;
+                    switch (newBattler.type)
                     {
-                        p1.hand.Remove(selected);
-                        p1.benched.Add((battler)selected);
-                        Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                        case 0: // Basic pokemon
+                            if (p1.benched.Count < 5)
+                            {
+                                p1.hand.Remove(selected);
+                                p1.benched.Add(newBattler);
+                                Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                            }
+                            else
+                                Console.WriteLine("You cannot bench more pokemon");
+                            break;
+                        case 1: // Evolution pokemon
+                            bool done = false;
+                            while (!done)
+                            {
+                                Console.WriteLine("Select the pokemon to evolve: ");
+                                Console.WriteLine(p1.writeBattlers());
+                                digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+                                if (digit == -2)
+                                {
+                                    done = true;
+                                    break;
+                                }
+
+                                battler target;
+
+                                if ( digit == -1 )
+                                    target = p1.front;
+                                else
+                                    target = p1.benched[digit];
+
+                                if (target.id != newBattler.evolvesFrom)
+                                    Console.WriteLine("That pokemon cannot evolve in the selected one");
+                                else if (target.sumSick)
+                                    Console.WriteLine("You cannot evolve a pokemon that was benched this turn");
+                                else
+                                {
+                                    newBattler.evolve(target);
+                                    if (digit == -1)
+                                        p1.front = newBattler;
+                                    else
+                                        p1.benched[digit] = newBattler;
+                                    p1.hand.Remove(selected);
+                                    done = true;
+                                    Console.WriteLine(target.ToString() + " evolved into " + newBattler.ToString());
+                                }
+
+                            }
+                            break;
+
+
+
                     }
-                    else
-                        Console.WriteLine("You cannot bench more pokemon");
+                        
                 }
                 else if (selected.getSuperType() == 1)
                 {
@@ -195,7 +243,11 @@ namespace shandakemon.core
             {
                 selected = p1.hand[Convert.ToInt16(Console.ReadKey().KeyChar) - 49];
                 if (selected.getSuperType() == 0)
+                {
+                    battler temp = (battler)selected;
+
                     correct = true;
+                }
                 else
                 {
                     Console.WriteLine("The selected card is not a pokemon card, please select a pokemon card");

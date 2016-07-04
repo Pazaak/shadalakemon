@@ -7,17 +7,18 @@ namespace shandakemon.core
 {
     public class battler : card
     {
-        public int type, element, HP, weak_elem, weak_mod, res_elem, res_mod, retreat, damage, status;
+        public int type, element, HP, weak_elem, weak_mod, res_elem, res_mod, retreat, damage, status, id, evolvesFrom;
         public string name;
         public movement[] movements;
         public List<energy> energies;
         private int[] energyTotal;
         public bool sumSick;
+        public LinkedList<battler> prevolutions;
 
         // types
         // 0: Basic
         // 1: Evolution
-        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, movement[] movements)
+        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements)
         {
             this.type = type;
             this.element = element;
@@ -28,12 +29,15 @@ namespace shandakemon.core
             this.res_mod = res_mod;
             this.retreat = retreat;
             this.name = name;
+            this.id = id;
+            this.evolvesFrom = evolvesFrom;
             this.damage = 0;
             this.status = 0;
             this.movements = movements;
             this.sumSick = true;
             energies = new List<energy>();
             energyTotal = new int[7];
+            this.prevolutions = new LinkedList<battler>();
         }
 
         public void execute(int index, battler target)
@@ -113,6 +117,16 @@ namespace shandakemon.core
             this.status = 0;
             energies = new List<energy>();
             energyTotal = new int[7];
+        }
+
+        public void evolve(battler pre)
+        {
+            this.damage = pre.damage;
+            this.energies = pre.energies;
+            this.energyTotal = pre.energyTotal;
+
+            pre.clear();
+            this.prevolutions.AddFirst(pre);
         }
 
     }
