@@ -20,8 +20,9 @@ namespace shandakemon.core
 
         public static int damage(int type, int quantity, battler target)
         {
-            // TODO: Elemental weakness and resistance
             int output = quantity;
+            if (type == target.weak_elem) output *= target.weak_mod;
+            else if (type == target.res_elem) output -= target.res_mod;
 
             target.damage += output;
 
