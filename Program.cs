@@ -31,10 +31,6 @@ namespace shandakemon
             movement[] moveset1 = new movement[1];
             moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 0, 40, 0, "Big Slap");
 
-            // TODO: DELETE
-            deck1.AddFirst(new battler(0, 0, 40, 0, 0, 0, 0, 0, "Starbad", 999, 0, moveset));
-            deck2.AddFirst(new battler(0, 0, 40, 0, 0, 0, 0, 0, "Starbad", 999, 0, moveset));
-
             deck1.AddFirst(new battler(1, 0, 60, 0, 0, 0, 0, 1, "Starmie", 121, 120, moveset1));
             deck2.AddFirst(new battler(1, 0, 60, 0, 0, 0, 0, 1, "Starmie", 121, 120, moveset1));
 
