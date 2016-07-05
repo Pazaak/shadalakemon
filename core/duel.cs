@@ -48,7 +48,7 @@ namespace shandakemon.core
             Console.WriteLine("Active pokemon: ");
             Console.WriteLine(att.front.BattleDescription());
             Console.WriteLine("Select a movement: ");
-            att.front.execute(Convert.ToInt16(Console.ReadKey().KeyChar)-49, def.front);
+            att.front.execute(Convert.ToInt16(Console.ReadKey().KeyChar)-49, att, def, def.front);
         }
 
         public bool mainPhase(Player p1)

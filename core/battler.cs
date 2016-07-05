@@ -40,13 +40,13 @@ namespace shandakemon.core
             this.prevolutions = new LinkedList<battler>();
         }
 
-        public void execute(int index, battler target)
+        public void execute(int index, Player source_controller, Player target_controller, battler target)
         {
             Console.WriteLine();
             movement selected = movements[index];
 
             if (selected.usable)
-                Console.WriteLine("Did " +selected.execute(target));
+                Console.WriteLine("Did " +selected.execute(source_controller, target_controller, this, target));
             else
                 Console.WriteLine("Not enough energy to use that");
 
@@ -129,5 +129,14 @@ namespace shandakemon.core
             this.prevolutions.AddFirst(pre);
         }
 
+        public string showEnergy()
+        {
+            string output = "";
+
+            for (int i = 0; i < energies.Count; i++)
+                output += (i + 1) + "- " + energies[i].ToString();
+
+            return output;
+        }
     }
 }

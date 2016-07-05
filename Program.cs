@@ -11,7 +11,7 @@ namespace shandakemon
         static void Main(string[] args)
         {
             movement[] moveset = new movement[1];
-            moveset[0] = new movement(new int[7]{0, 1, 0, 0, 0, 0, 0}, 0, 20, 0, "Slap");
+            moveset[0] = new movement(new int[7]{0, 1, 0, 0, 0, 0, 0}, 0, 0, "Slap", 20, 0);
 
             LinkedList<card> deck1 = new LinkedList<card>();
             LinkedList<card> deck2 = new LinkedList<card>();
@@ -29,7 +29,7 @@ namespace shandakemon
             }
 
             movement[] moveset1 = new movement[1];
-            moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 0, 40, 0, "Big Slap");
+            moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 0, 0, "Big Slap", 40, 0);
 
             deck1.AddFirst(new battler(1, 1, 60, 6, 2, 0, 0, 1, "Starmie", 121, 120, moveset1));
             deck2.AddFirst(new battler(1, 1, 60, 6, 2, 0, 0, 1, "Starmie", 121, 120, moveset1));

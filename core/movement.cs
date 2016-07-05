@@ -9,22 +9,23 @@ namespace shandakemon.core
     {
         public int[] cost;
         public bool usable;
-        int type, damage, effect;
+        int type, quantity1, quantity2, effect;
         string name;
 
-        public movement(int[] cost, int type, int damage, int effect, string name)
+        public movement(int[] cost, int type, int effect, string name, int quantity1, int quantity2)
         {
             this.cost = cost;
             this.type = type;
-            this.damage = damage;
+            this.quantity1 = quantity1;
+            this.quantity2 = quantity2;
             this.effect = effect;
             this.name = name;
             this.usable = false;
         }
 
-        public int execute(battler target)
+        public int execute(Player source_controller, Player target_controller, battler source, battler target)
         {
-            return(effects.move_selector(type, damage, target ,effect));
+            return(effects.move_selector(source_controller, target_controller, source, target, type, effect, quantity1, quantity2));
         }
 
         public override string ToString()
@@ -52,7 +53,7 @@ namespace shandakemon.core
             for (int i = 0; i < cost[0]; i++)
                 collector += "{C}";
 
-            return (collector + " " + this.name + " " + this.damage);
+            return (collector + " " + this.name + " " + this.quantity1);
         }
     }
 }

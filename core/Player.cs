@@ -5,7 +5,7 @@ using System.Text;
 
 namespace shandakemon.core
 {
-    class Player
+    public class Player
     {
         public int id;
         public battler front;
@@ -119,6 +119,13 @@ namespace shandakemon.core
             front.sumSick = false;
             foreach (battler bt in benched)
                 bt.sumSick = false;
+        }
+
+        public void discardEnergy(battler source, int energy_index)
+        {
+            card output = source.energies[energy_index];
+            discarded.AddFirst(output);
+            source.energies.RemoveAt(energy_index);
         }
     }
 }
