@@ -39,13 +39,13 @@ namespace shandakemon.core
             int digit;
             for ( int i = 0; i < quantity; i++)
             {
-                Console.WriteLine("Select to discard " + utilities.numToType(type) + " energy card/s. " + (i + 1) + "/" + (quantity + 1));
+                Console.WriteLine("Select to discard " + utilities.numToType(type) + " energy card/s. " + (i + 1) + "/" + quantity);
                 end = false;
                 while (!end)
                 {
                     Console.WriteLine(source.showEnergy());
                     digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                    if (source.energies[digit].type == type)
+                    if (source.energies[digit].elem == type)
                     {
                         source_controller.discardEnergy(source, digit);
                         end = true;

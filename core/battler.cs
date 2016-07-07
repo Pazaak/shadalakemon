@@ -134,7 +134,7 @@ namespace shandakemon.core
             string output = "";
 
             for (int i = 0; i < energies.Count; i++)
-                output += (i + 1) + "- " + energies[i].ToString();
+                output += (i + 1) + "- " + energies[i].ToString() + Environment.NewLine;
 
             return output;
         }

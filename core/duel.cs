@@ -22,8 +22,7 @@ namespace shandakemon.core
 
             while (true)
             {
-                betweenTurns();
-
+                
                 // Player 1
                 if (mainPhase(player1))
                     return false;
@@ -31,7 +30,7 @@ namespace shandakemon.core
                 if (endPhase(player1, player2))
                     return true;
 
-                betweenTurns();
+                betweenTurns(player1); // TODO: Only for player 1
 
                 // Player 2
                 if (mainPhase(player2))
@@ -39,6 +38,8 @@ namespace shandakemon.core
                 attackPhase(player2, player1);
                 if (endPhase(player2, player1))
                     return false;
+
+                betweenTurns(player2);
             }
         }
 
@@ -211,10 +212,9 @@ namespace shandakemon.core
             return (false);
         }
 
-        public void betweenTurns()
+        public void betweenTurns(Player p1)
         {
-            player1.clearSickness();
-            player2.clearSickness();
+            p1.clearSickness();
         }
 
         public void initialPhase()
