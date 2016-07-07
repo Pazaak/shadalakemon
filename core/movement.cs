@@ -23,9 +23,9 @@ namespace shandakemon.core
             this.usable = false;
         }
 
-        public int execute(Player source_controller, Player target_controller, battler source, battler target)
+        public void execute(Player source_controller, Player target_controller, battler source, battler target)
         {
-            return(effects.move_selector(source_controller, target_controller, source, target, type, effect, quantity1, quantity2));
+            effects.move_selector(source_controller, target_controller, source, target, type, effect, quantity1, quantity2);
         }
 
         public override string ToString()

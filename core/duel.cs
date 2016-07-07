@@ -24,18 +24,26 @@ namespace shandakemon.core
             {
                 
                 // Player 1
-                if (mainPhase(player1))
-                    return false;
-                attackPhase(player1, player2);
+                switch (mainPhase(player1))
+                {
+                    case -1: return false;
+                    case 0: attackPhase(player1, player2); break;
+                    case 1: break;
+                }
+                    
                 if (endPhase(player1, player2))
                     return true;
 
-                betweenTurns(player1); // TODO: Only for player 1
+                betweenTurns(player1);
 
                 // Player 2
-                if (mainPhase(player2))
-                    return true;
-                attackPhase(player2, player1);
+                switch (mainPhase(player2))
+                {
+                    case -1: return false;
+                    case 0: attackPhase(player2, player1); break;
+                    case 1: break;
+                }
+
                 if (endPhase(player2, player1))
                     return false;
 
@@ -52,13 +60,17 @@ namespace shandakemon.core
             att.front.execute(Convert.ToInt16(Console.ReadKey().KeyChar)-49, att, def, def.front);
         }
 
-        public bool mainPhase(Player p1)
+        // Return codes:
+        // -1: p1 lost
+        // 0: Normal exit
+        // 1: No attack exit
+        public int mainPhase(Player p1)
         {
             bool energyLimit = false;
             if (!p1.draw(1))
             {
                 Console.WriteLine("Player "+p1.id+" cannot draw any more cards. Player "+p1.id+" losses.");
-                return (true);
+                return -1;
             }
             Console.WriteLine("Player " + p1.id + " play cards. 0 to advance to attack phase");
 
@@ -68,7 +80,10 @@ namespace shandakemon.core
                 int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
                 if (digit == -1)
                 {
-                    return (false);
+                    if (p1.front.status == 1) // Paralyzed
+                        return 1;
+                    else
+                        return 0;
                 }
 
                 card selected = p1.hand[digit];
@@ -215,6 +230,11 @@ namespace shandakemon.core
         public void betweenTurns(Player p1)
         {
             p1.clearSickness();
+            if (p1.front.status == 1) // Heal if paralyzed
+            {
+                p1.front.status = 0;
+                Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
+            }
         }
 
         public void initialPhase()
@@ -246,7 +266,10 @@ namespace shandakemon.core
                 {
                     battler temp = (battler)selected;
 
-                    correct = true;
+                    if ( temp.type == 0 )
+                        correct = true;
+                    else
+                        Console.WriteLine("The selected card is an evolution card, please select a basic pokemon card");
                 }
                 else
                 {
@@ -278,10 +301,17 @@ namespace shandakemon.core
                 {
                     if (p1.benched.Count < 5)
                     {
-                        p1.hand.Remove(selected);
-                        p1.benched.Add((battler)selected);
-                        Console.WriteLine(selected.ToString() + " selected as benched pokemon");
-                        Console.WriteLine(p1.writeHand());
+                        battler temp = (battler)selected;
+
+                        if (temp.type == 0)
+                        {
+                            p1.hand.Remove(selected);
+                            p1.benched.Add((battler)selected);
+                            Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                            Console.WriteLine(p1.writeHand());
+                        }
+                        else
+                            Console.WriteLine("The selected card is an evolution card, please select a basic pokemon card");
                     }
                     else
                         Console.WriteLine("You cannot bench more pokemon. Press 0 to end");

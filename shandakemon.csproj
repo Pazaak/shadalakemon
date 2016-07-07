@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="core\battler.cs" />
     <Compile Include="core\card.cs" />
+    <Compile Include="core\CRandom.cs" />
     <Compile Include="core\duel.cs" />
     <Compile Include="core\effects.cs" />
     <Compile Include="core\energy.cs" />

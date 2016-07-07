@@ -7,22 +7,26 @@ namespace shandakemon.core
 {
     class effects
     {
-        public static int move_selector(Player source_controller, Player target_controller, battler source, battler target, int type, int selector, int quantity1, int quantity2)
+        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, int type, int selector, int quantity1, int quantity2)
         {
             switch (selector)
             {
                 case 0: // Simple damage
-                    return(damage(type, quantity1, target));
+                    damage(type, quantity1, target); 
+                    break;
                 case 1: // Discard and heal
                     discardEnergy(source_controller, source, type, quantity1);
                     heal(source, quantity2);
-                    return (0);
-                default:
-                    return (-1);
+                    break;
+                case 2: // Damage and coin for status
+                    if (CRandom.RandomInt() < 0)
+                        inflictStatus(target, quantity2);
+                    damage(type, quantity1, target);
+                    break;
             }
         }
 
-        public static int damage(int type, int quantity, battler target)
+        public static void damage(int type, int quantity, battler target)
         {
             int output = quantity;
             if (type == target.weak_elem) output *= target.weak_mod;
@@ -30,7 +34,7 @@ namespace shandakemon.core
 
             target.damage += output;
 
-            return output;
+            Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
         }
 
         public static void discardEnergy(Player source_controller, battler source, int type, int quantity)
@@ -68,6 +72,12 @@ namespace shandakemon.core
                 source.damage -= quantity;
                 Console.WriteLine("Removed "+quantity+" damage");
             }
+        }
+
+        public static void inflictStatus(battler target, int type)
+        {
+            target.status = type;
+            Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
         }
     }
 }

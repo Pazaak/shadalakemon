@@ -28,8 +28,7 @@ namespace shandakemon.core
 
         public void shuffle()
         {
-            var r = new Random(id*1024);
-            this.deck = new LinkedList<card>(this.deck.OrderBy(x => r.Next()));
+            this.deck = new LinkedList<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
         }
 
         public bool draw(int times)

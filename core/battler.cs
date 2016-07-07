@@ -18,6 +18,10 @@ namespace shandakemon.core
         // types
         // 0: Basic
         // 1: Evolution
+
+        // status
+        // 0: Normal
+        // 1: Paralyzed
         public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements)
         {
             this.type = type;
@@ -46,7 +50,7 @@ namespace shandakemon.core
             movement selected = movements[index];
 
             if (selected.usable)
-                Console.WriteLine("Did " +selected.execute(source_controller, target_controller, this, target));
+                selected.execute(source_controller, target_controller, this, target);
             else
                 Console.WriteLine("Not enough energy to use that");
 
@@ -96,8 +100,8 @@ namespace shandakemon.core
                 if (mov.cost[i] > energyTotal[i])
                     return (false);
 
-                if (mov.cost[i] == 0)
-                    colorless += energyTotal[i];
+                if (mov.cost[i] <= energyTotal[i])
+                    colorless += energyTotal[i] - mov.cost[i];
             }
 
             if (mov.cost[0] > colorless + energyTotal[0])

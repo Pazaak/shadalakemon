@@ -23,5 +23,16 @@ namespace shandakemon.core
 
             }
         }
+
+        public static string numToStatus(int type)
+        {
+            switch (type)
+            {
+                case 0: return "normal";
+                case 1: return "paralyzed";
+                default: return "Doge";
+
+            }
+        }
     }
 }
