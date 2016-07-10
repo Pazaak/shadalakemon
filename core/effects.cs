@@ -26,8 +26,26 @@ namespace shandakemon.core
             }
         }
 
+        public static void legacy_selector(int effect, battler source, int quantity1, int quantity2)
+        {
+            switch (effect)
+            {
+                case 0: // Coin fog
+                    if (CRandom.RandomInt() < 0)
+                        fog(source);
+                    break;
+
+
+            }
+        }
+
         public static void damage(int type, int quantity, battler target)
         {
+            if (target.fogging)
+            {
+                target.fogging = false;
+                return;
+            }
             int output = quantity;
             if (type == target.weak_elem) output *= target.weak_mod;
             else if (type == target.res_elem) output -= target.res_mod;
@@ -78,6 +96,12 @@ namespace shandakemon.core
         {
             target.status = type;
             Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
+        }
+
+        public static void fog(battler source)
+        {
+            source.fogging = true;
+            Console.WriteLine(source.ToString() + " is protected from damage.");
         }
     }
 }
