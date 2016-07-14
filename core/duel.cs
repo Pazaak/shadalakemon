@@ -9,6 +9,7 @@ namespace shandakemon.core
     {
         Player player1;
         Player player2;
+        bool energyLimit;
 
         public duel(Player p1, Player p2)
         {
@@ -24,6 +25,7 @@ namespace shandakemon.core
             {
                 
                 // Player 1
+                energyLimit = false;
                 switch (mainPhase(player1))
                 {
                     case -1: return false;
@@ -37,6 +39,7 @@ namespace shandakemon.core
                 betweenTurns(player1, player2);
 
                 // Player 2
+                energyLimit = false;
                 switch (mainPhase(player2))
                 {
                     case -1: return false;
@@ -66,116 +69,45 @@ namespace shandakemon.core
         // 1: No attack exit
         public int mainPhase(Player p1)
         {
-            bool energyLimit = false;
             if (!p1.draw(1))
             {
                 Console.WriteLine("Player "+p1.id+" cannot draw any more cards. Player "+p1.id+" losses.");
                 return -1;
             }
-            Console.WriteLine("Player " + p1.id + " play cards. 0 to advance to attack phase");
 
             while (true)
             {
+                Console.WriteLine("Player " + p1.id + " main phase.");
+                Console.WriteLine("- 'a' to advance to attack phase");
+                Console.WriteLine("- 'e' end the turn");
+                Console.WriteLine("- 'r' retreat a pokemon");
+                Console.WriteLine("- 'p' use pokemon power");
                 Console.WriteLine(p1.writeHand());
-                int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                if (digit == -1)
+                int digit = Convert.ToInt16(Console.ReadKey().KeyChar);
+
+                switch (digit)
                 {
-                    if (p1.front.status == 1) // Paralyzed
+                    case 97:
+                        if (p1.front.status == 1) // Paralyzed
+                            Console.WriteLine("Front pokemon is paralyzed and can't attack");
+                        else
+                            return 0;
+                        break;
+                    case 101:
                         return 1;
-                    else
-                        return 0;
-                }
-
-                card selected = p1.hand[digit];
-                if (selected.getSuperType() == 0)
-                {
-                    battler newBattler = (battler)selected;
-                    switch (newBattler.type)
-                    {
-                        case 0: // Basic pokemon
-                            if (p1.benched.Count < 5)
-                            {
-                                p1.hand.Remove(selected);
-                                p1.benched.Add(newBattler);
-                                Console.WriteLine(selected.ToString() + " selected as benched pokemon");
-                            }
-                            else
-                                Console.WriteLine("You cannot bench more pokemon");
-                            break;
-                        case 1: // Evolution pokemon
-                            bool done = false;
-                            while (!done)
-                            {
-                                Console.WriteLine("Select the pokemon to evolve: ");
-                                Console.WriteLine(p1.writeBattlers());
-                                digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-                                if (digit == -2)
-                                {
-                                    done = true;
-                                    break;
-                                }
-
-                                battler target;
-
-                                if ( digit == -1 )
-                                    target = p1.front;
-                                else
-                                    target = p1.benched[digit];
-
-                                if (target.id != newBattler.evolvesFrom)
-                                    Console.WriteLine("That pokemon cannot evolve in the selected one");
-                                else if (target.sumSick)
-                                    Console.WriteLine("You cannot evolve a pokemon that was benched this turn");
-                                else
-                                {
-                                    newBattler.evolve(target);
-                                    if (digit == -1)
-                                        p1.front = newBattler;
-                                    else
-                                        p1.benched[digit] = newBattler;
-                                    p1.hand.Remove(selected);
-                                    done = true;
-                                    Console.WriteLine(target.ToString() + " evolved into " + newBattler.ToString());
-                                }
-
-                            }
-                            break;
+                    case 114:
+                        retreat(p1);
+                        break;
+                    case 112:
+                        // TODO: Pokemon Power menu
+                        break;
+                    default:
+                        playCard(p1.hand[digit - 49], p1);
+                        break;
 
 
 
-                    }
-                        
-                }
-                else if (selected.getSuperType() == 1)
-                {
-                    // TODO: Execute trainers
-                }
-                else // Energy
-                {
-                    if (energyLimit)
-                        Console.WriteLine("You can only attach one energy per turn.");
-                    else
-                    {
-                        energy attEnergy = (energy) selected;
-                        Console.WriteLine("Please select the pokemon or press 0 to exit:");
-                        Console.WriteLine(p1.writeBattlers());
 
-                        digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                        if (digit == 0)
-                        {
-                            p1.front.attachEnergy(attEnergy);
-                            p1.hand.Remove(selected);
-                            energyLimit = true;
-                            Console.WriteLine("Energy attached to " + p1.front.ToString());
-                        }
-                        else if (digit > 0)
-                        {
-                            p1.benched[digit - 1].attachEnergy(attEnergy);
-                            p1.hand.Remove(selected);
-                            energyLimit = true;
-                            Console.WriteLine("Energy attached to " + p1.benched[digit - 1].ToString());
-                        }
-                    }
                 }
             }
         }
@@ -325,5 +257,140 @@ namespace shandakemon.core
                 }
             }
         }
+
+        public void playCard(card selected, Player p1)
+        {
+            if (selected.getSuperType() == 0)
+            {
+                battler newBattler = (battler)selected;
+                switch (newBattler.type)
+                {
+                    case 0: // Basic pokemon
+                        if (p1.benched.Count < 5)
+                        {
+                            p1.hand.Remove(selected);
+                            p1.benched.Add(newBattler);
+                            Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                        }
+                        else
+                            Console.WriteLine("You cannot bench more pokemon");
+                        break;
+                    case 1: // Evolution pokemon
+                        bool done = false;
+                        while (!done)
+                        {
+                            Console.WriteLine("Select the pokemon to evolve: ");
+                            Console.WriteLine(p1.writeBattlers());
+                            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+                            if (digit == -2)
+                            {
+                                done = true;
+                                break;
+                            }
+
+                            battler target;
+
+                            if (digit == -1)
+                                target = p1.front;
+                            else
+                                target = p1.benched[digit];
+
+                            if (target.id != newBattler.evolvesFrom)
+                                Console.WriteLine("That pokemon cannot evolve in the selected one");
+                            else if (target.sumSick)
+                                Console.WriteLine("You cannot evolve a pokemon that was benched this turn");
+                            else
+                            {
+                                newBattler.evolve(target);
+                                if (digit == -1)
+                                    p1.front = newBattler;
+                                else
+                                    p1.benched[digit] = newBattler;
+                                p1.hand.Remove(selected);
+                                done = true;
+                                Console.WriteLine(target.ToString() + " evolved into " + newBattler.ToString());
+                            }
+
+                        }
+                        break;
+
+
+
+                }
+
+            }
+            else if (selected.getSuperType() == 1)
+            {
+                // TODO: Execute trainers
+            }
+            else // Energy
+            {
+                if (energyLimit)
+                    Console.WriteLine("You can only attach one energy per turn.");
+                else
+                {
+                    energy attEnergy = (energy)selected;
+                    Console.WriteLine("Please select the pokemon or press 0 to exit:");
+                    Console.WriteLine(p1.writeBattlers());
+
+                    int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+                    if (digit == 0)
+                    {
+                        p1.front.attachEnergy(attEnergy);
+                        p1.hand.Remove(selected);
+                        energyLimit = true;
+                        Console.WriteLine("Energy attached to " + p1.front.ToString());
+                    }
+                    else if (digit > 0)
+                    {
+                        p1.benched[digit - 1].attachEnergy(attEnergy);
+                        p1.hand.Remove(selected);
+                        energyLimit = true;
+                        Console.WriteLine("Energy attached to " + p1.benched[digit - 1].ToString());
+                    }
+                }
+            }
+        }
+
+        public void retreat(Player p1)
+        {
+            if (!p1.front.canRetreat())
+            {
+                Console.WriteLine("Active pokemon has not enough energy to retreat");
+                return;
+            }
+
+            if (p1.benched.Count == 0)
+            {
+                Console.WriteLine("There are not any pokemon in the bench");
+                return;
+            }
+
+            int counter = p1.front.retreat;
+            int digit;
+            Console.WriteLine("Discard energy until you pay the cost");
+            while (counter > 0)
+            {
+                Console.WriteLine(counter + " energy to go.");
+
+                Console.WriteLine(p1.front.showEnergy());
+
+                digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+
+                counter -= p1.front.energies[digit].quan;
+            }
+
+            Console.WriteLine("Choose the benched pokemon to put in front.");
+            
+            Console.WriteLine(p1.writeBenched());
+            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+
+            battler temp = p1.benched[digit];
+            p1.benched[digit] = p1.front;
+            p1.front = temp;
+
+            Console.WriteLine(temp.ToString() + " placed in front.");
+        }
+
     }
 }

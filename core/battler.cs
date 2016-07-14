@@ -144,5 +144,11 @@ namespace shandakemon.core
 
             return output;
         }
+
+        public bool canRetreat()
+        {
+            movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, 0, "", 0, 0);
+            return isUsable(retreatProxy);
+        }
     }
 }
