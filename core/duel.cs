@@ -34,7 +34,7 @@ namespace shandakemon.core
                 if (endPhase(player1, player2))
                     return true;
 
-                betweenTurns(player1);
+                betweenTurns(player1, player2);
 
                 // Player 2
                 switch (mainPhase(player2))
@@ -47,7 +47,7 @@ namespace shandakemon.core
                 if (endPhase(player2, player1))
                     return false;
 
-                betweenTurns(player2);
+                betweenTurns(player2, player1);
             }
         }
 
@@ -227,14 +227,17 @@ namespace shandakemon.core
             return (false);
         }
 
-        public void betweenTurns(Player p1)
+        public void betweenTurns(Player p1, Player p2)
         {
             p1.clearSickness();
+
             if (p1.front.status == 1) // Heal if paralyzed
             {
                 p1.front.status = 0;
                 Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
             }
+
+            p2.checkConditions();
         }
 
         public void initialPhase()

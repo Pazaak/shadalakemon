@@ -126,5 +126,16 @@ namespace shandakemon.core
             discarded.AddFirst(output);
             source.energies.RemoveAt(energy_index);
         }
+
+        public void checkConditions()
+        {
+            foreach (var key in front.conditions.Keys.ToList())
+            {
+                if (front.conditions[key] == 1)
+                    front.conditions.Remove(key);
+                else
+                    front.conditions[key]--;
+            }
+        }
     }
 }

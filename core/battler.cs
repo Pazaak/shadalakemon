@@ -13,8 +13,8 @@ namespace shandakemon.core
         public List<energy> energies;
         private int[] energyTotal;
         public bool sumSick;
-        public bool fogging;
         public LinkedList<battler> prevolutions;
+        public Dictionary<int, int> conditions;
 
         // types
         // 0: Basic
@@ -43,7 +43,7 @@ namespace shandakemon.core
             energies = new List<energy>();
             energyTotal = new int[7];
             this.prevolutions = new LinkedList<battler>();
-            this.fogging = false;
+            this.conditions = new Dictionary<int, int>();
         }
 
         public void execute(int index, Player source_controller, Player target_controller, battler target)

@@ -13,13 +13,17 @@ namespace shandakemon
             movement[] moveset = new movement[1];
             moveset[0] = new movement(new int[7]{0, 1, 0, 0, 0, 0, 0}, 1, 0, "Slap", 20, 0);
 
+            movement[] moveset2 = new movement[2];
+            moveset2[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 2, "Bubble", 10, 1);
+            moveset2[1] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 1);
+
             LinkedList<card> deck1 = new LinkedList<card>();
             LinkedList<card> deck2 = new LinkedList<card>();
 
             for (int i = 0; i < 7; i++)
             {
                 deck1.AddFirst(new battler(0, 1, 40, 6, 2, 0, 0, 1, "Staryu", 120, 0, moveset));
-                deck2.AddFirst(new battler(0, 1, 40, 6, 2, 0, 0, 1, "Staryu", 120, 0, moveset));
+                deck2.AddFirst(new battler(0, 1, 40, 6, 2, 0, 0, 1, "Squirtle", 7, 0, moveset2));
             }
 
             for (int i = 0; i < 7; i++)

@@ -23,27 +23,18 @@ namespace shandakemon.core
                         inflictStatus(target, quantity2);
                     damage(type, quantity1, target);
                     break;
-            }
-        }
-
-        public static void legacy_selector(int effect, battler source, int quantity1, int quantity2)
-        {
-            switch (effect)
-            {
-                case 0: // Coin fog
+                case 3: // Add condition by coin
                     if (CRandom.RandomInt() < 0)
-                        fog(source);
+                        addCondition(source, quantity1, quantity2);
                     break;
-
-
             }
         }
 
         public static void damage(int type, int quantity, battler target)
         {
-            if (target.fogging)
+            if (target.conditions.ContainsKey(Legacies.fog))
             {
-                target.fogging = false;
+                Console.WriteLine(target.ToString() + " is protected from damage.");
                 return;
             }
             int output = quantity;
@@ -98,10 +89,10 @@ namespace shandakemon.core
             Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
         }
 
-        public static void fog(battler source)
+        public static void addCondition(battler source, int condition, int duration)
         {
-            source.fogging = true;
-            Console.WriteLine(source.ToString() + " is protected from damage.");
+            source.conditions.Add(condition, duration);
+            Console.WriteLine("Condition activated");
         }
     }
 }
