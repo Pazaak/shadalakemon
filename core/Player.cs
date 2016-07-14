@@ -137,5 +137,31 @@ namespace shandakemon.core
                     front.conditions[key]--;
             }
         }
+
+        public void initialHand()
+        {
+            while (!checkInitialHand())
+            {
+                hand.Clear();
+                this.draw(7);
+                foreach (card c1 in hand)
+                    this.deck.AddFirst(c1);
+                this.shuffle();
+            }
+        }
+
+        public bool checkInitialHand()
+        {
+            foreach (card inst in hand)
+            {
+                if (inst.getSuperType() == 0)
+                {
+                    battler temp = (battler)inst;
+                    if (temp.type == 0) return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

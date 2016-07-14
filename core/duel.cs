@@ -104,10 +104,6 @@ namespace shandakemon.core
                     default:
                         playCard(p1.hand[digit - 49], p1);
                         break;
-
-
-
-
                 }
             }
         }
@@ -174,8 +170,8 @@ namespace shandakemon.core
 
         public void initialPhase()
         {
-            player1.draw(7);
-            player2.draw(7);
+            player1.initialHand();
+            player2.initialHand();
 
             selectActive(player1);
             selectBenched(player1);
