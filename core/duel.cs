@@ -170,17 +170,78 @@ namespace shandakemon.core
 
         public void initialPhase()
         {
-            player1.initialHand();
-            player2.initialHand();
+            // Both players have invalid hands
+            while (!player1.checkInitialHand() && !player2.checkInitialHand())
+            {
+                player1.hand.Clear();
+                player2.hand.Clear();
+                player1.draw(7);
+                player2.draw(7);
+                foreach (card c1 in player1.hand)
+                    player1.deck.AddFirst(c1);
+                foreach (card c1 in player2.hand)
+                    player2.deck.AddFirst(c1);
+                player1.shuffle();
+                player2.shuffle();
+            }
 
-            selectActive(player1);
-            selectBenched(player1);
+            // Both players have valid hands
+            if (player1.checkInitialHand() && player2.checkInitialHand()) return;
 
-            selectActive(player2);
-            selectBenched(player2);
+            // Player 1 has an invalid hand, player2 plays
+            if (!player1.checkInitialHand())
+            {
+                selectActive(player2);
+                selectBenched(player2);
+                player2.putPrices();
 
-            player1.putPrices();
-            player2.putPrices();
+                int mulligans = 0;
+                while (!player1.checkInitialHand())
+                {
+                    mulligans += 1;
+                    player1.hand.Clear();
+                    player1.draw(7);
+                    foreach (card c1 in player1.hand)
+                        player1.deck.AddFirst(c1);
+                    player1.shuffle();
+                }
+
+                // TODO: This must be optional
+                Console.WriteLine("Player 2 draws " + mulligans + " additional card/s.");
+
+                player2.draw(mulligans);
+
+                selectActive(player1);
+                selectBenched(player1);
+                player1.putPrices();
+            }
+            // Player 2 has an invalid hand, player1 plays
+            else
+            {
+                selectActive(player1);
+                selectBenched(player1);
+                player1.putPrices();
+
+                int mulligans = 0;
+                while (!player2.checkInitialHand())
+                {
+                    mulligans += 1;
+                    player2.hand.Clear();
+                    player2.draw(7);
+                    foreach (card c1 in player2.hand)
+                        player2.deck.AddFirst(c1);
+                    player2.shuffle();
+                }
+
+                // TODO: This must be optional
+                Console.WriteLine("Player 1 draws " + mulligans + " additional card/s.");
+
+                player1.draw(mulligans);
+
+                selectActive(player2);
+                selectBenched(player2);
+                player2.putPrices();
+            }
 
         }
 

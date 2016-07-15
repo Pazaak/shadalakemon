@@ -138,18 +138,6 @@ namespace shandakemon.core
             }
         }
 
-        public void initialHand()
-        {
-            while (!checkInitialHand())
-            {
-                hand.Clear();
-                this.draw(7);
-                foreach (card c1 in hand)
-                    this.deck.AddFirst(c1);
-                this.shuffle();
-            }
-        }
-
         public bool checkInitialHand()
         {
             foreach (card inst in hand)

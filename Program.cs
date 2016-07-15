@@ -36,6 +36,9 @@ namespace shandakemon
             moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 1, 1, "Recover", 1, 0);
             moveset1[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 1, 2, "Star Freeze", 20, 1);
 
+            movement[] moveset3 = new movement[2];
+
+
             for (int i = 0; i < 10; i++)
             {
                 deck1.AddFirst(new battler(1, 1, 60, 6, 2, 0, 0, 1, "Starmie", 121, 120, moveset1));
