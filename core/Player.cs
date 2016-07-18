@@ -151,5 +151,43 @@ namespace shandakemon.core
 
             return false;
         }
+
+        public void DisplayTypedEnergies(int elem)
+        {
+            Console.WriteLine("1- "+front.ShowEnergyByType(elem));
+            for (int i = 0; i < benched.Count; i++)
+                Console.WriteLine((i + 2) + benched[i].ShowEnergyByType(elem));
+        }
+
+        public void ResetPowers()
+        {
+            if (front.power != null) front.power.active = true;
+            foreach (battler bt in benched)
+                if (bt.power != null) bt.power.active = true;
+        }
+
+        public void ListPowers()
+        {
+            bool somethingToShow = false;
+            if (front.power != null && front.power.active) 
+            {
+                Console.WriteLine("1- " + front.ToString() + ": " + front.power.name);
+                somethingToShow = true;
+            }
+
+            for (int i = 0; i < benched.Count; i++)
+            {
+                if (benched[i].power != null && benched[i].power.active)
+                {
+                    Console.WriteLine((i + 2) +"- "+ benched[i].ToString() + ": " + benched[i].power.name);
+                    somethingToShow = true;
+                }
+                
+            }
+
+            if (!somethingToShow)
+                Console.WriteLine("There are no pokemon with powers in play");
+
+        }
     }
 }

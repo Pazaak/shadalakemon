@@ -99,7 +99,7 @@ namespace shandakemon.core
                         retreat(p1);
                         break;
                     case 112:
-                        // TODO: Pokemon Power menu
+                        PokemonPowerMenu(p1);
                         break;
                     default:
                         playCard(p1.hand[digit - 49], p1);
@@ -166,6 +166,8 @@ namespace shandakemon.core
             }
 
             p2.checkConditions();
+
+            p1.ResetPowers();
         }
 
         public void initialPhase()
@@ -458,6 +460,18 @@ namespace shandakemon.core
             p1.front = temp;
 
             Console.WriteLine(temp.ToString() + " placed in front.");
+        }
+
+        public void PokemonPowerMenu(Player p1)
+        {
+            p1.ListPowers();
+
+            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+
+            if (digit == -1)
+                p1.front.ExecutePower(p1);
+            else
+                p1.benched[digit].ExecutePower(p1);
         }
 
     }

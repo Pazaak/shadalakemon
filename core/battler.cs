@@ -15,6 +15,7 @@ namespace shandakemon.core
         public bool sumSick;
         public LinkedList<battler> prevolutions;
         public Dictionary<int, int> conditions;
+        public Power power;
 
         // types
         // 0: Basic
@@ -23,7 +24,7 @@ namespace shandakemon.core
         // status
         // 0: Normal
         // 1: Paralyzed
-        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements)
+        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power)
         {
             this.type = type;
             this.element = element;
@@ -44,6 +45,7 @@ namespace shandakemon.core
             energyTotal = new int[7];
             this.prevolutions = new LinkedList<battler>();
             this.conditions = new Dictionary<int, int>();
+            this.power = power;
         }
 
         public void execute(int index, Player source_controller, Player target_controller, battler target)
@@ -57,6 +59,11 @@ namespace shandakemon.core
                 Console.WriteLine("Not enough energy to use that");
 
             Console.WriteLine();
+        }
+
+        public void ExecutePower(Player source_controller)
+        {
+            this.power.Execute(source_controller, this);
         }
 
         public void attachEnergy(energy input)
@@ -149,6 +156,17 @@ namespace shandakemon.core
         {
             movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, 0, "", 0, 0);
             return isUsable(retreatProxy);
+        }
+
+        public string ShowEnergyByType(int elem)
+        {
+            string buffer = this.name;
+
+            foreach (energy en in energies)
+                if (en.elem == elem)
+                    buffer += " " + utilities.numToType(elem);
+
+            return buffer;
         }
     }
 }

@@ -30,6 +30,17 @@ namespace shandakemon.core
             }
         }
 
+        public static void power_selector(Player source_controller, battler source, int selector, int quantity1, int quantity2)
+        {
+            switch (selector)
+            {
+                case 0: // Rain dance
+                    SwitchEnergySameType(source_controller, quantity1);
+                    // Can be executed any number of times
+                    break;
+            }
+        }
+
         public static void damage(int type, int quantity, battler target)
         {
             if (target.conditions.ContainsKey(Legacies.fog))
@@ -93,6 +104,53 @@ namespace shandakemon.core
         {
             source.conditions.Add(condition, duration);
             Console.WriteLine("Condition activated");
+        }
+
+        public static void SwitchEnergySameType(Player source, int elem)
+        {
+            Console.WriteLine("Select a Pokemon with an energy card of the selected type");
+            source.DisplayTypedEnergies(elem);
+
+            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+            battler target = null;
+
+            if (digit == -1)
+                target = source.front;
+            else
+                target = source.benched[digit];
+
+            if (target.energies.Count == 0)
+            {
+                Console.WriteLine("That pokemon has not enough energy cards");
+                return;
+            }
+
+            int counter = 0;
+            while (!target.energies[counter].name.Equals("Water Energy"))
+                counter++;
+
+            energy selected = target.energies[counter];
+            target.energies.RemoveAt(counter);
+
+            Console.WriteLine("Select a Pokemon to attach the energy");
+            source.DisplayTypedEnergies(elem);
+
+            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+
+            if (digit == -1 && source.front.element == elem)
+                target = source.front;
+            else if (source.benched[digit].element == elem)
+                target = source.benched[digit];
+            else
+            {
+                Console.WriteLine("This pokemon is not " + utilities.numToType(elem) + " type.");
+                return;
+            }
+
+            target.attachEnergy(selected);
+
+            Console.WriteLine("Energy attached to " + selected.ToString());
+
         }
     }
 }
