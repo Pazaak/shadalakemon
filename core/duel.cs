@@ -186,8 +186,19 @@ namespace shandakemon.core
             }
 
             // Both players have valid hands
-            if (player1.checkInitialHand() && player2.checkInitialHand()) return;
+            if (player1.checkInitialHand() && player2.checkInitialHand())
+            {
+                selectActive(player1);
+                selectBenched(player1);
+                player1.putPrices();
 
+
+                selectActive(player2);
+                selectBenched(player2);
+                player2.putPrices();
+
+                return;
+            }
             // Player 1 has an invalid hand, player2 plays
             if (!player1.checkInitialHand())
             {
