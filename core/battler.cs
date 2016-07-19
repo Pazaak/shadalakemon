@@ -95,7 +95,6 @@ namespace shandakemon.core
             return (output);
         }
 
-
         public override string ToString()
         {
             return (name);
@@ -167,6 +166,12 @@ namespace shandakemon.core
                     buffer += " " + utilities.numToType(elem);
 
             return buffer;
+        }
+
+        public bool CanUsePowers()
+        {
+            // TODO: Add asleep and confused
+            return status != 1;
         }
     }
 }
