@@ -169,7 +169,7 @@ namespace shandakemon.core
         public void ListPowers()
         {
             bool somethingToShow = false;
-            if (front.power != null && front.power.active) 
+            if (front.power != null && front.power.active && front.CanUsePowers()) 
             {
                 Console.WriteLine("1- " + front.ToString() + ": " + front.power.name);
                 somethingToShow = true;
@@ -177,7 +177,7 @@ namespace shandakemon.core
 
             for (int i = 0; i < benched.Count; i++)
             {
-                if (benched[i].power != null && benched[i].power.active)
+                if (benched[i].power != null && benched[i].power.active && front.CanUsePowers())
                 {
                     Console.WriteLine((i + 2) +"- "+ benched[i].ToString() + ": " + benched[i].power.name);
                     somethingToShow = true;
