@@ -7,7 +7,7 @@ namespace shandakemon.core
 {
     class effects
     {
-        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, int type, int selector, int quantity1, int quantity2)
+        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int type, int selector, int quantity1, int quantity2)
         {
             switch (selector)
             {
@@ -26,6 +26,10 @@ namespace shandakemon.core
                 case 3: // Add condition by coin
                     if (CRandom.RandomInt() < 0)
                         addCondition(source, quantity1, quantity2);
+                    break;
+                case 4: // Damage empowered by excess of energy
+                    quantity1 += ExcessEnergy(mov, source) > quantity2? quantity2 : ExcessEnergy(mov, source);
+                    damage(type, quantity1, target);
                     break;
             }
         }
@@ -151,6 +155,23 @@ namespace shandakemon.core
 
             Console.WriteLine("Energy attached to " + selected.ToString());
 
+        }
+
+        public static int ExcessEnergy(movement mov, battler source)
+        {
+            int excess = source.energyTotal[mov.type] - mov.cost[mov.type];
+
+            if (excess <= 0) return 0;
+
+            int colorless = 0;
+
+            for (int i = 0; i < mov.cost.Length; i++)
+                if (i != mov.type)
+                    colorless += source.energyTotal[i];
+
+            if (colorless >= mov.cost[0]) return excess * 10;
+
+            return (excess + colorless - mov.cost[0])*10;
         }
     }
 }

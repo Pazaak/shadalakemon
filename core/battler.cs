@@ -11,7 +11,7 @@ namespace shandakemon.core
         public string name;
         public movement[] movements;
         public List<energy> energies;
-        private int[] energyTotal;
+        public int[] energyTotal;
         public bool sumSick;
         public LinkedList<battler> prevolutions;
         public Dictionary<int, int> conditions;

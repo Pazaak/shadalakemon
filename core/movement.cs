@@ -9,8 +9,8 @@ namespace shandakemon.core
     {
         public int[] cost;
         public bool usable;
-        int type, quantity1, quantity2, effect;
-        string name;
+        public int type, quantity1, quantity2, effect;
+        public string name;
 
         public movement(int[] cost, int type, int effect, string name, int quantity1, int quantity2)
         {
@@ -25,7 +25,7 @@ namespace shandakemon.core
 
         public void execute(Player source_controller, Player target_controller, battler source, battler target)
         {
-            effects.move_selector(source_controller, target_controller, source, target, type, effect, quantity1, quantity2);
+            effects.move_selector(source_controller, target_controller, source, target, this, type, effect, quantity1, quantity2);
         }
 
         public override string ToString()
