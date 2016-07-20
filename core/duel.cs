@@ -5,6 +5,10 @@ using System.Text;
 
 namespace shandakemon.core
 {
+    /* Holds information about the duel and implements the methods that control the battle
+     * player1, player2- Holds the instance of the first and second player
+     * energyLimit- States if an energy was played this turn or not
+     */
     class duel
     {
         Player player1;
@@ -17,26 +21,26 @@ namespace shandakemon.core
             player2 = p2;
         }
 
+        // Controls the bucle of the duel
         public bool battleFlow()
         {
-            this.initialPhase();
+            this.initialPhase(); // Initial hands, placement of battlers and prices
 
             while (true)
             {
-                
                 // Player 1
                 energyLimit = false;
-                switch (mainPhase(player1))
+                switch (mainPhase(player1)) // Main phase of the duel
                 {
                     case -1: return false;
-                    case 0: attackPhase(player1, player2); break;
+                    case 0: attackPhase(player1, player2); break; // Attack phase of the duel
                     case 1: break;
                 }
                     
-                if (endPhase(player1, player2))
+                if (endPhase(player1, player2)) // Check for letal damage
                     return true;
 
-                betweenTurns(player1, player2);
+                betweenTurns(player1, player2); // Between turns phase
 
                 // Player 2
                 energyLimit = false;
@@ -54,15 +58,17 @@ namespace shandakemon.core
             }
         }
 
+        // Enters the attack phase
         public void attackPhase(Player att, Player def)
         {
             Console.WriteLine("Player " + att.id);
             Console.WriteLine("Active pokemon: ");
             Console.WriteLine(att.front.BattleDescription());
             Console.WriteLine("Select a movement: ");
-            att.front.execute(Convert.ToInt16(Console.ReadKey().KeyChar)-49, att, def, def.front);
+            att.front.execute(Convert.ToInt16(Console.ReadKey().KeyChar)-49, att, def, def.front); // Reads the movement selected by the user and executes it
         }
 
+        // Controls the main phase of the selected player
         // Return codes:
         // -1: p1 lost
         // 0: Normal exit
@@ -91,63 +97,64 @@ namespace shandakemon.core
                         if (p1.front.status == 1) // Paralyzed
                             Console.WriteLine("Front pokemon is paralyzed and can't attack");
                         else
-                            return 0;
+                            return 0; // Advance to attack phase
                         break;
                     case 101:
-                        return 1;
+                        return 1; // No attacks
                     case 114:
-                        retreat(p1);
+                        retreat(p1); // Retreat menu
                         break;
                     case 112:
-                        PokemonPowerMenu(p1);
+                        PokemonPowerMenu(p1); //Power menu
                         break;
                     default:
-                        playCard(p1.hand[digit - 49], p1);
+                        playCard(p1.hand[digit - 49], p1); // Play selected card
                         break;
                 }
             }
         }
 
+        // Controls the cases in which a battler has to be discarded by damage
         public bool endPhase(Player p1, Player p2)
         {
             if (p2.front.damage < p2.front.HP) return (false);
 
             p2.frontToDiscard();
 
-            bool[] prices = p1.listPrices();
+            bool[] prices = p1.listPrices(); // Checks available prices
             string numPrices = "";
             for (int i = 0; i < prices.Length; i++)
                 numPrices += prices[i] ? (i+1) + " " : "";
 
             Console.WriteLine("Select a price card to draw: " + numPrices);
 
-            int index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+            int index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Asks for the price
             while (!prices[index])
             {
                 Console.WriteLine("Invalid selection. Select a price card to draw: " + numPrices);
                 index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
             }
 
-            p1.drawPrice(index);
+            p1.drawPrice(index);  // Draws the price
 
-            prices = p1.listPrices();
+            prices = p1.listPrices(); // Checks if the are not more prices to draw
             bool accu = false;
             for (int i = 0; i < prices.Length; i++)
                 accu = accu || prices[i];
 
             if (!accu)
             {
-                Console.WriteLine("No more price cards. Player " + p1.id + " wins.");
+                Console.WriteLine("No more price cards. Player " + p1.id + " wins."); // Makes the player win
                 return (true);
             }
 
-            if (p2.benched.Count == 0)
+            if (p2.benched.Count == 0) // Check if there is no other battler in play
             {
-                Console.WriteLine("Player "+p2.id+" has no benched pokemon. Player " + p1.id + " wins.");
+                Console.WriteLine("Player "+p2.id+" has no benched pokemon. Player " + p1.id + " wins."); // The player losses
                 return (true);
             }
 
-            Console.WriteLine("Player " + p2.id + ": Select a benched pokemon");
+            Console.WriteLine("Player " + p2.id + ": Select a benched pokemon"); // Ask for a battler to put in front
             Console.WriteLine(p2.writeBenched());
 
             p2.toFront(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
@@ -155,9 +162,10 @@ namespace shandakemon.core
             return (false);
         }
 
+        // Status check phase
         public void betweenTurns(Player p1, Player p2)
         {
-            p1.clearSickness();
+            p1.clearSickness(); // Removes the summoning sicknes
 
             if (p1.front.status == 1) // Heal if paralyzed
             {
@@ -165,11 +173,12 @@ namespace shandakemon.core
                 Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
             }
 
-            p2.checkConditions();
+            p2.checkConditions(); // Decrease the counters of the conditions
 
-            p1.ResetPowers();
+            p1.ResetPowers(); // Resets the powers
         }
 
+        // Initial phase of mulligans and initial hands
         public void initialPhase()
         {
             // Both players have invalid hands
@@ -201,6 +210,7 @@ namespace shandakemon.core
 
                 return;
             }
+
             // Player 1 has an invalid hand, player2 plays
             if (!player1.checkInitialHand())
             {
@@ -258,13 +268,14 @@ namespace shandakemon.core
 
         }
 
+        // Selects the active battler
         public void selectActive(Player p1)
         {
             Console.WriteLine("Player " + p1.id + " select your active pokemon.");
             Console.WriteLine(p1.writeHand());
             bool correct = false;
             card selected = null;
-            while (!correct)
+            while (!correct) // If the selection is not correct, repeat the question
             {
                 selected = p1.hand[Convert.ToInt16(Console.ReadKey().KeyChar) - 49];
                 if (selected.getSuperType() == 0)
@@ -283,10 +294,11 @@ namespace shandakemon.core
             }
 
             p1.hand.Remove(selected);
-            p1.front = (battler)selected;
+            p1.front = (battler)selected; // Play the card
             Console.WriteLine(selected.ToString() + " selected as active pokemon");
         }
 
+        // Selects benched battlers
         public void selectBenched(Player p1)
         {
             Console.WriteLine("Player " + p1.id + " select any number of benched pokemon, press 0 to exit.");
@@ -304,7 +316,7 @@ namespace shandakemon.core
                 selected = p1.hand[digit];
                 if (selected.getSuperType() == 0)
                 {
-                    if (p1.benched.Count < 5)
+                    if (p1.benched.Count < 5) // Checks if the bench is not full yet
                     {
                         battler temp = (battler)selected;
 
@@ -328,9 +340,10 @@ namespace shandakemon.core
             }
         }
 
+        // Play cards front the hand
         public void playCard(card selected, Player p1)
         {
-            if (selected.getSuperType() == 0)
+            if (selected.getSuperType() == 0) // Pokemon card
             {
                 battler newBattler = (battler)selected;
                 switch (newBattler.type)
@@ -351,7 +364,7 @@ namespace shandakemon.core
                         {
                             Console.WriteLine("Select the pokemon to evolve: ");
                             Console.WriteLine(p1.writeBattlers());
-                            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+                            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50; // Select the battler to evolve
                             if (digit == -2)
                             {
                                 done = true;
@@ -360,18 +373,18 @@ namespace shandakemon.core
 
                             battler target;
 
-                            if (digit == -1)
+                            if (digit == -1) // Select the receiver
                                 target = p1.front;
                             else
                                 target = p1.benched[digit];
 
-                            if (target.id != newBattler.evolvesFrom)
+                            if (target.id != newBattler.evolvesFrom) // Checks if the pokemon can evolve
                                 Console.WriteLine("That pokemon cannot evolve in the selected one");
                             else if (target.sumSick)
                                 Console.WriteLine("You cannot evolve a pokemon that was benched this turn");
                             else
                             {
-                                newBattler.evolve(target);
+                                newBattler.evolve(target); // Apply the evolution procedures
                                 if (digit == -1)
                                     p1.front = newBattler;
                                 else
@@ -395,7 +408,7 @@ namespace shandakemon.core
             }
             else // Energy
             {
-                if (energyLimit)
+                if (energyLimit) // Check for energy limit
                     Console.WriteLine("You can only attach one energy per turn.");
                 else
                 {
@@ -403,8 +416,8 @@ namespace shandakemon.core
                     Console.WriteLine("Please select the pokemon or press 0 to exit:");
                     Console.WriteLine(p1.writeBattlers());
 
-                    int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                    if (digit == 0)
+                    int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Select the receiver
+                    if (digit == 0) // Attach the energy to the selected battler
                     {
                         p1.front.attachEnergy(attEnergy);
                         p1.hand.Remove(selected);
@@ -422,15 +435,16 @@ namespace shandakemon.core
             }
         }
 
+        // Retreat menu
         public void retreat(Player p1)
         {
-            if (!p1.front.canRetreat())
+            if (!p1.front.canRetreat()) // Check if it can retreat
             {
                 Console.WriteLine("Active pokemon has not enough energy to retreat");
                 return;
             }
 
-            if (p1.benched.Count == 0)
+            if (p1.benched.Count == 0) // Check for bench limit
             {
                 Console.WriteLine("There are not any pokemon in the bench");
                 return;
@@ -439,7 +453,7 @@ namespace shandakemon.core
             int counter = p1.front.retreat;
             int digit;
             Console.WriteLine("Discard energy until you pay the cost");
-            while (counter > 0)
+            while (counter > 0) // Discard cards until the cost
             {
                 Console.WriteLine(counter + " energy to go.");
 
@@ -453,7 +467,7 @@ namespace shandakemon.core
             Console.WriteLine("Choose the benched pokemon to put in front.");
             
             Console.WriteLine(p1.writeBenched());
-            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Choose the battler to put in front
 
             battler temp = p1.benched[digit];
             p1.benched[digit] = p1.front;
@@ -462,16 +476,18 @@ namespace shandakemon.core
             Console.WriteLine(temp.ToString() + " placed in front.");
         }
 
+        // Power menu to select power
         public void PokemonPowerMenu(Player p1)
         {
-            p1.ListPowers();
+            if (p1.ListPowers()) // Exit if there are no powers
+            {
+                int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
 
-            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-
-            if (digit == -1)
-                p1.front.ExecutePower(p1);
-            else
-                p1.benched[digit].ExecutePower(p1);
+                if (digit == -1)
+                    p1.front.ExecutePower(p1);
+                else
+                    p1.benched[digit].ExecutePower(p1);
+            }
         }
 
     }

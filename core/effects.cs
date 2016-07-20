@@ -7,6 +7,7 @@ namespace shandakemon.core
 {
     class effects
     {
+        // A big-old switch which contains the necessary calls to execute movements 
         public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int type, int selector, int quantity1, int quantity2)
         {
             switch (selector)
@@ -34,6 +35,7 @@ namespace shandakemon.core
             }
         }
 
+        // A big-old which that indicates the effects of the powers
         public static void power_selector(Player source_controller, battler source, int selector, int quantity1, int quantity2)
         {
             switch (selector)
@@ -45,22 +47,24 @@ namespace shandakemon.core
             }
         }
 
+        // Does plain damage taking into account conditions and type effectiveness
         public static void damage(int type, int quantity, battler target)
         {
-            if (target.conditions.ContainsKey(Legacies.fog))
+            if (target.conditions.ContainsKey(Legacies.fog)) // Prevent damage condition
             {
                 Console.WriteLine(target.ToString() + " is protected from damage.");
                 return;
             }
             int output = quantity;
-            if (type == target.weak_elem) output *= target.weak_mod;
-            else if (type == target.res_elem) output -= target.res_mod;
+            if (type == target.weak_elem) output *= target.weak_mod; // Apply weaknesses
+            else if (type == target.res_elem) output -= target.res_mod; // Apply resistances
 
             target.damage += output;
 
             Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
         }
 
+        // Effect to discard a card, as a cost or as an effect
         public static void discardEnergy(Player source_controller, battler source, int type, int quantity)
         {
             bool end;
@@ -84,6 +88,7 @@ namespace shandakemon.core
             Console.WriteLine("Energy succcessfully discarded");
         }
 
+        // Effect to heal the source battler, 0 for full heal
         public static void heal(battler source, int quantity)
         {
             if (quantity == 0)
@@ -98,18 +103,21 @@ namespace shandakemon.core
             }
         }
 
+        // Assign an status alignment
         public static void inflictStatus(battler target, int type)
         {
             target.status = type;
             Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
         }
 
+        // Adds a condition
         public static void addCondition(battler source, int condition, int duration)
         {
             source.conditions.Add(condition, duration);
             Console.WriteLine("Condition activated");
         }
 
+        // Permits to exchange energy attached to one battler to other
         public static void SwitchEnergySameType(Player source, int elem)
         {
             Console.WriteLine("Select a Pokemon with an energy card of the selected type");
@@ -130,7 +138,7 @@ namespace shandakemon.core
             }
 
             int counter = 0;
-            while (!target.energies[counter].name.Equals("Water Energy"))
+            while (!target.energies[counter].name.Equals("Water Energy")) // TODO: Only can take Water Energy
                 counter++;
 
             energy selected = target.energies[counter];
@@ -157,6 +165,7 @@ namespace shandakemon.core
 
         }
 
+        // Checks for excesses of energy for a determined movement and adds it to the power
         public static int ExcessEnergy(movement mov, battler source)
         {
             int excess = source.energyTotal[mov.type] - mov.cost[mov.type];

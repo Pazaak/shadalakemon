@@ -5,6 +5,14 @@ using System.Text;
 
 namespace shandakemon.core
 {
+    /* This class holds information about the movements and effects
+     *  cost- An array that contains the number of energies of each type needed to execute it
+     *  usable- Indicates if the movement is usable
+     *  type- Indicates of which type the movement is
+     *  quantity1, quantity2- Parameters of the effect
+     *  effect- Index of the effect
+     *  name- Name of the movement
+     */
     public class movement
     {
         public int[] cost;
@@ -23,11 +31,13 @@ namespace shandakemon.core
             this.usable = false;
         }
 
+        // Call of execution
         public void execute(Player source_controller, Player target_controller, battler source, battler target)
         {
             effects.move_selector(source_controller, target_controller, source, target, this, type, effect, quantity1, quantity2);
         }
 
+        // Outputs an string with the information of the movement
         public override string ToString()
         {
             string collector = "";

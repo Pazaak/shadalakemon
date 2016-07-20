@@ -5,13 +5,19 @@ using System.Text;
 
 namespace shandakemon.core
 {
-    // 0: Colorless
-    // 1: Water
-    // 2: Fire
-    // 3: Grass
-    // 4: Psychic
-    // 5: Fighting
-    // 6: Lightning
+    /* This class holds information about the type of the energy
+     *  type- Indicates of which type the energy card is
+     *  elem- Indicates which type of energy the card gives
+     *      0- Colorless
+     *      1- Water
+     *      2- Fire
+     *      3- Grass
+     *      4- Psychic
+     *      5- Fighting
+     *      6- Lightning
+     *  quan- Indicates how many energies of the selected type it provides
+     *  name- Name of the energy card
+     */
     public class energy : card
     {
         public int type, elem, quan;
@@ -35,6 +41,7 @@ namespace shandakemon.core
             return name;
         }
 
+        // Indicates in a string which is the production of the energy object
         public string ToProduction()
         {
             string output = "";

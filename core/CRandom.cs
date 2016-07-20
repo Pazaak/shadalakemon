@@ -6,8 +6,10 @@ using System.Security.Cryptography;
 
 namespace shandakemon.core
 {
+    // An object that controls the crypto-number generator
     public class CRandom
     {
+        // Returns a random integer
         public static int RandomInt()
         {
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())

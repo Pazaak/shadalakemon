@@ -5,6 +5,13 @@ using System.Text;
 
 namespace shandakemon.core
 {
+    /*
+     * Class that holds the data relative to trainer cards
+     *  type- The type of trainer card it is
+     *  effect- The index of the effect it triggers
+     *  quantity- Parameter for the effect
+     *  name- Name of the card
+     */
     class trainer : card
     {
         public int type, effect, quantity;

@@ -5,6 +5,15 @@ using System.Text;
 
 namespace shandakemon.core
 {
+    /* Holds information about the player
+     *  id- Identifier of the player
+     *  front- The battler positioned in front
+     *  benched- List of backup battlers
+     *  hand- List of cards in hand
+     *  discarded- List of cards in the discard pile
+     *  deck- List of cards in the deck
+     *  prices- Array of price cards
+     */
     public class Player
     {
         public int id;
@@ -19,21 +28,23 @@ namespace shandakemon.core
             this.id = id;
             this.deck = deck;
             this.shuffle();
-
+            // Initilization of the lists
             this.discarded = new LinkedList<card>();
             this.hand = new List<card>();
             this.prices = new card[nPrices];
             this.benched = new List<battler>();
         }
 
+        // Method that suffles the deck
         public void shuffle()
         {
             this.deck = new LinkedList<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
         }
 
+        // Method to draw 'times' number of cards
         public bool draw(int times)
         {
-            if (deck.Count < times)
+            if (deck.Count < times) // Check if there are enough cards in the deck to draw
                 return false;
             for (int i = 0; i < times; i++)
             {
@@ -44,12 +55,14 @@ namespace shandakemon.core
             return true;
         }
 
+        // Method to draw the selected price
         public void drawPrice(int index)
         {
             hand.Add(prices[index]);
             prices[index] = null;
         }
 
+        // Method that puts the selected number of cards in the price area
         public void putPrices()
         {
             for (int i = 0; i < prices.Length; i++)
@@ -59,6 +72,7 @@ namespace shandakemon.core
             }
         }
 
+        // Utility method to represent the hand of the player
         public string writeHand()
         {
             string output = "";
@@ -67,6 +81,7 @@ namespace shandakemon.core
             return (output);
         }
 
+        // Utility method to represent all the battlers
         public string writeBattlers()
         {
             string output = "1- " + front.ToString() + Environment.NewLine;
@@ -75,6 +90,7 @@ namespace shandakemon.core
             return (output);
         }
 
+        // Utility method to represent only the benched battlers
         public string writeBenched()
         {
             string output = "";
@@ -83,6 +99,7 @@ namespace shandakemon.core
             return (output);
         }
 
+        // Check which prices are already taken
         public bool[] listPrices()
         {
             bool[] output = new bool[prices.Length];
@@ -92,9 +109,10 @@ namespace shandakemon.core
             return output;
         }
 
+        // Sends the front battler to the discard pile
         public void frontToDiscard()
         {
-            while (front.energies.Count != 0)
+            while (front.energies.Count != 0) // First discard all the energy cards
             {
                 energy en = front.energies[0];
                 discarded.AddFirst(en);
@@ -107,12 +125,14 @@ namespace shandakemon.core
 
         }
 
+        // Takes a battler on the bench an place it on the front
         public void toFront(int index)
         {
             front = benched[index];
             benched.RemoveAt(index);
         }
 
+        // Eliminates the condition that determines if the battler was placed or evolved in this turn
         public void clearSickness()
         {
             front.sumSick = false;
@@ -120,6 +140,7 @@ namespace shandakemon.core
                 bt.sumSick = false;
         }
 
+        // Discard the selected energy card from the selected battler (must be done at the player side to use the discard pile)
         public void discardEnergy(battler source, int energy_index)
         {
             card output = source.energies[energy_index];
@@ -127,17 +148,19 @@ namespace shandakemon.core
             source.energies.RemoveAt(energy_index);
         }
 
+        // Eliminates one turn counter of all the conditions
         public void checkConditions()
         {
             foreach (var key in front.conditions.Keys.ToList())
             {
-                if (front.conditions[key] == 1)
+                if (front.conditions[key] == 1) // Only front can have conditions (?)
                     front.conditions.Remove(key);
                 else
                     front.conditions[key]--;
             }
         }
 
+        // Indicates if the initial hand is valid (has basic pokemon)
         public bool checkInitialHand()
         {
             foreach (card inst in hand)
@@ -152,6 +175,7 @@ namespace shandakemon.core
             return false;
         }
 
+        // Shows the attached energies of the selected type
         public void DisplayTypedEnergies(int elem)
         {
             Console.WriteLine("1- "+front.ShowEnergyByType(elem));
@@ -159,6 +183,7 @@ namespace shandakemon.core
                 Console.WriteLine((i + 2) + benched[i].ShowEnergyByType(elem));
         }
 
+        // Makes the power active again
         public void ResetPowers()
         {
             if (front.power != null) front.power.active = true;
@@ -166,7 +191,8 @@ namespace shandakemon.core
                 if (bt.power != null) bt.power.active = true;
         }
 
-        public void ListPowers()
+        // Creates a list of the powers of all the battlers in play and indicates if any
+        public bool ListPowers()
         {
             bool somethingToShow = false;
             if (front.power != null && front.power.active && front.CanUsePowers()) 
@@ -186,8 +212,12 @@ namespace shandakemon.core
             }
 
             if (!somethingToShow)
+            {
                 Console.WriteLine("There are no pokemon with powers in play");
+                return false;
+            }
 
+            return true;
         }
     }
 }

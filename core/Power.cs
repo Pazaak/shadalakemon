@@ -5,6 +5,13 @@ using System.Text;
 
 namespace shandakemon.core
 {
+    /*
+     * Holds the information regarding a power
+     *  effect- Index of the effect
+     *  parameter1, parameter2- Parameters of the effect
+     *  name- Name of the power
+     *  active- States if the power can be used or not
+     */
     public class Power
     {
         public int parameter1, parameter2, effect;
@@ -20,6 +27,7 @@ namespace shandakemon.core
             this.active = true;
         }
 
+        // Executes the effect
         public void Execute(Player source_controller, battler source)
         {
             effects.power_selector(source_controller, source, effect, parameter1, parameter2);
