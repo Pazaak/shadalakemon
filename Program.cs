@@ -10,6 +10,8 @@ namespace shandakemon
     {
         static void Main(string[] args)
         {
+            DBBuilder.energies();
+
             // DEBUG CODE
             // Creates several Squirtle and Staryu family instances
             movement[] moveset = new movement[1]; // Movement list
