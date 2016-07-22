@@ -65,5 +65,15 @@ namespace shandakemon.core
 
             return (collector + " " + this.name + " " + this.quantity1);
         }
+
+        public movement DeepCopy()
+        {
+            int[] neoCost = new int[cost.Length];
+
+            for (int i = 0; i < neoCost.Length; i++)
+                neoCost[i] = cost[i];
+
+            return new movement(neoCost, this.type, this.effect, this.name, this.quantity1, this.quantity2);
+        }
     }
 }

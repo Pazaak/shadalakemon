@@ -32,5 +32,10 @@ namespace shandakemon.core
         {
             effects.power_selector(source_controller, source, effect, parameter1, parameter2);
         }
+
+        public Power DeepCopy()
+        {
+            return new Power(this.name, this.effect, this.parameter1, this.parameter2);
+        }
     }
 }

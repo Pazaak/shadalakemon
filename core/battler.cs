@@ -225,5 +225,19 @@ namespace shandakemon.core
             // TODO: Add asleep and confused
             return status != 1;
         }
+
+        public battler DeepCopy()
+        {
+            movement[] neoMovements = new movement[movements.Length];
+
+            for (int i = 0; i < movements.Length; i++)
+                neoMovements[i] = movements[i].DeepCopy();
+
+            Power neoPower = null;
+            if (power != null)
+                neoPower = power.DeepCopy();
+
+            return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower);
+        }
     }
 }

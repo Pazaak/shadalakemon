@@ -59,5 +59,10 @@ namespace shandakemon.core
                 }
             return output;
         }
+
+        public energy DeepCopy()
+        {
+            return new energy(this.type, this.elem, this.quan, this.name);
+        }
     }
 }
