@@ -32,23 +32,29 @@ namespace shandakemon
                 if ( i < 6 ) // Staryu
                 {
                     deck1.AddFirst(battlers[64].DeepCopy());
-                    deck2.AddFirst(battlers[64].DeepCopy());
                 }
 
                 if ( i < 4) // Squirtle and Starmie
                 {
                     deck1.AddFirst(battlers[62].DeepCopy());
-                    deck2.AddFirst(battlers[62].DeepCopy());
                     deck1.AddFirst(battlers[63].DeepCopy());
-                    deck2.AddFirst(battlers[63].DeepCopy());
                 }
 
                 if ( i < 3 ) // Wartortle and Blastoise
                 {
                     deck1.AddFirst(battlers[1].DeepCopy());
-                    deck2.AddFirst(battlers[1].DeepCopy());
                     deck1.AddFirst(battlers[41].DeepCopy());
-                    deck2.AddFirst(battlers[41].DeepCopy());
+                }
+
+                if ( i < 10 ) // Poliwag
+                {
+                    deck2.AddFirst(battlers[58].DeepCopy());
+                }
+
+                if (i < 5) // Poliwhirl and Poliwrath
+                {
+                    deck2.AddFirst(battlers[37].DeepCopy());
+                    deck2.AddFirst(battlers[12].DeepCopy());
                 }
             }
 

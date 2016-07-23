@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\Constants.cs" />
     <Compile Include="DBBuilder.cs" />
     <Compile Include="core\battler.cs" />
     <Compile Include="core\card.cs" />

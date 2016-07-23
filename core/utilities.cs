@@ -22,7 +22,7 @@ namespace shandakemon.core
                 case 4: return "Psychic";
                 case 5: return "Fightning";
                 case 6: return "Lightning";
-                default: return "Doge";
+                default: return "Any";
 
             }
         }

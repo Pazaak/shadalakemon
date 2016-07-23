@@ -91,7 +91,7 @@ namespace shandakemon.core
 
             if (index == 0 && conditions.ContainsKey(Legacies.deacMov1))
                 Console.WriteLine("Movement 1 is deactivated!");
-            else
+            else if (index == 1 && conditions.ContainsKey(Legacies.deacMov2))
                 Console.WriteLine("Movement 2 is deactivated!");
 
             if (selected.usable) // Checks if it's usable
@@ -136,6 +136,8 @@ namespace shandakemon.core
             }
             else
                 mov.usable = false;
+
+            if (movements.Length == 1) return (output);
 
             mov = movements[1];
 

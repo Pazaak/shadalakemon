@@ -198,7 +198,7 @@ namespace shandakemon.core
         {
             if (target.movements.Length == 1)
             {
-                target.conditions.Add(Legacies.deacMov1, 1);
+                target.conditions.Add(Legacies.deacMov1, 2);
                 Console.WriteLine(target.ToString() + " has its movement deactivated now.");
                 return;
             }
@@ -214,11 +214,12 @@ namespace shandakemon.core
                 return;
             }
 
-            target.conditions.Add(Legacies.deacMov2, 1);
+            target.conditions.Add(Legacies.deacMov2, 2);
             Console.WriteLine(target.ToString() + " has its second movement deactivated now.");
 
         }
 
+        // Deals damage equals to the number of flips winned
         public static void FlipDamage(battler target, int type, int quantity, int flips)
         {
             int multiplier = 0;
