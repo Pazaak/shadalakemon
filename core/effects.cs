@@ -38,6 +38,10 @@ namespace shandakemon.core
                 case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
                     FlipDamage(target, type, quantity1, quantity2);
                     break;
+                case 7: // Damage and discard
+                    damage(type, quantity1, target);
+                    discardEnergy(target_controller, target, -1, 1);
+                    break;
             }
         }
 
@@ -83,7 +87,7 @@ namespace shandakemon.core
                 {
                     Console.WriteLine(source.showEnergy());
                     digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                    if (source.energies[digit].elem == type)
+                    if (source.energies[digit].elem == type || type == -1)
                     {
                         source_controller.discardEnergy(source, digit);
                         end = true;
