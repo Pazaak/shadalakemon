@@ -89,6 +89,11 @@ namespace shandakemon.core
             Console.WriteLine();
             movement selected = movements[index]; // Finds the movement
 
+            if (index == 0 && conditions.ContainsKey(Legacies.deacMov1))
+                Console.WriteLine("Movement 1 is deactivated!");
+            else
+                Console.WriteLine("Movement 2 is deactivated!");
+
             if (selected.usable) // Checks if it's usable
                 selected.execute(source_controller, target_controller, this, target); // Execute the selected movement
             else
@@ -121,18 +126,27 @@ namespace shandakemon.core
             foreach (energy en in energies)
                 output += en.ToProduction();
             output += Environment.NewLine;
-            for (int i = 0; i < movements.Length; i++)
-            {
-                movement mov = movements[i];
 
-                if (isUsable(mov))
-                {
-                    mov.usable = true;
-                    output += (i + 1) + "- " + mov.ToString() + Environment.NewLine;
-                }
-                else
-                    mov.usable = false;
+            movement mov = movements[0];
+
+            if (isUsable(mov) && !conditions.ContainsKey(Legacies.deacMov1))
+            {
+                mov.usable = true;
+                output += "1- " + mov.ToString() + Environment.NewLine;
             }
+            else
+                mov.usable = false;
+
+            mov = movements[1];
+
+            if (isUsable(mov) && !conditions.ContainsKey(Legacies.deacMov2))
+            {
+                mov.usable = true;
+                output += "2- " + mov.ToString() + Environment.NewLine;
+            }
+            else
+                mov.usable = false;
+
             return (output);
         }
 

@@ -9,5 +9,7 @@ namespace shandakemon.core
     public static class Legacies
     {
         public static int fog = 0; // fog effects
+        public static int deacMov1 = 1; // Movement 1 deactivated
+        public static int deacMov2 = 2; // Movement 2 deactivated
     }
 }

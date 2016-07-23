@@ -32,6 +32,12 @@ namespace shandakemon.core
                     quantity1 += ExcessEnergy(mov, source) > quantity2? quantity2 : ExcessEnergy(mov, source);
                     damage(type, quantity1, target);
                     break;
+                case 5: // Deactivate a movement
+                    MoveDeactivator(target);
+                    break;
+                case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
+                    FlipDamage(target, type, quantity1, quantity2);
+                    break;
             }
         }
 
@@ -181,6 +187,44 @@ namespace shandakemon.core
             if (colorless >= mov.cost[0]) return excess * 10;
 
             return (excess + colorless - mov.cost[0])*10;
+        }
+
+        // Deactivates a movement
+        public static void MoveDeactivator(battler target)
+        {
+            if (target.movements.Length == 1)
+            {
+                target.conditions.Add(Legacies.deacMov1, 1);
+                Console.WriteLine(target.ToString() + " has its movement deactivated now.");
+                return;
+            }
+
+            Console.WriteLine("Select the movement to deactivate:");
+            for (int i = 0; i < 2; i++)
+                Console.WriteLine((i + 1) + target.movements[i].ToString());
+
+            if ((Convert.ToInt16(Console.ReadKey().KeyChar) - 49) == 1)
+            {
+                target.conditions.Add(Legacies.deacMov1, 1);
+                Console.WriteLine(target.ToString() + " has its first movement deactivated now.");
+                return;
+            }
+
+            target.conditions.Add(Legacies.deacMov2, 1);
+            Console.WriteLine(target.ToString() + " has its second movement deactivated now.");
+
+        }
+
+        public static void FlipDamage(battler target, int type, int quantity, int flips)
+        {
+            int multiplier = 0;
+
+            for (int i = 0; i < flips; i++)
+                if (CRandom.RandomInt() < 0)
+                    multiplier++;
+
+            Console.WriteLine(multiplier + " successful flips.");
+            damage(type, quantity * multiplier, target);
         }
     }
 }
