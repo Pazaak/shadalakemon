@@ -48,14 +48,19 @@ namespace shandakemon
             movement[] moveset4 = new movement[1];
             moveset4[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 1, 4, "Hydro Pump", 40, 20);
 
+            movement[] poliwag = new movement[1];
+            poliwag[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 4, "Water Gun", 10, 20);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
-            listBattlers[1] = new battler(1, 1, 100, 6, 2, 0, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
-            listBattlers[41] = new battler(1, 1, 70, 6, 2, 0, 0, 1, "Wartortle", 8, 7, moveset3, null);
-            listBattlers[62] = new battler(0, 1, 40, 6, 2, 0, 0, 1, "Squirtle", 7, 0, moveset2, null);
-            listBattlers[63] = new battler(1, 1, 60, 6, 2, 0, 0, 1, "Starmie", 121, 120, moveset1, null);
-            listBattlers[64] = new battler(0, 1, 40, 6, 2, 0, 0, 1, "Staryu", 120, 0, moveset, null);
+            listBattlers[1] = new battler(1, 1, 100, Constants.TElectric, 2, 0, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
+            listBattlers[41] = new battler(1, 1, 70, Constants.TElectric, 2, 0, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[58] = new battler(0, 1, 40, Constants.TGrass, 2, 0, 0, 1, "Poliwag", 60, 0, poliwag, null);
+            listBattlers[62] = new battler(0, 1, 40, Constants.TElectric, 2, 0, 0, 1, "Squirtle", 7, 0, moveset2, null);
+            listBattlers[63] = new battler(1, 1, 60, Constants.TElectric, 2, 0, 0, 1, "Starmie", 121, 120, moveset1, null);
+            listBattlers[64] = new battler(0, 1, 40, Constants.TElectric, 2, 0, 0, 1, "Staryu", 120, 0, moveset, null);
+            
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(listBattlers, Formatting.Indented);
