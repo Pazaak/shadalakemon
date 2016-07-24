@@ -54,6 +54,12 @@ namespace shandakemon.core
                     result += result % 10 == 5 ? 5 : 0;
                     damage(type, result, target);
                     break;
+                case 11: // Change target weakness
+                    ChangeWeakness(target);
+                    break;
+                case 12: // Change own resistance
+                    ChangeResistance(source);
+                    break;
             }
         }
 
@@ -81,7 +87,10 @@ namespace shandakemon.core
             if (type == target.weak_elem) output *= target.weak_mod; // Apply weaknesses
             else if (type == target.res_elem) output -= target.res_mod; // Apply resistances
 
-            target.damage += output;
+            if (output > 0)
+                target.damage += output;
+            else
+                output = 0;
 
             Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
         }
@@ -255,6 +264,33 @@ namespace shandakemon.core
             Console.WriteLine(target.writeBenched());
             target.ExchangePosition(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
             Console.WriteLine("Pokemon exchanged.");
+        }
+
+        // Change weakness of target battler
+        public static void ChangeWeakness(battler target)
+        {
+            if ( target.weak_mod == 0 )
+            {
+                Console.WriteLine("Defending Pokemon has no weakness");
+                return;
+            }
+            Console.WriteLine("Select the new type for the defending weakness: ");
+            Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
+                + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
+            target.weak_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+
+            Console.WriteLine("Weakness changed");
+        }
+
+        // Change resistance of target battler
+        public static void ChangeResistance(battler target)
+        {
+            Console.WriteLine("Select the new type for the defending weakness: ");
+            Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
+                + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
+            target.res_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+
+            Console.WriteLine("Resistance changed");
         }
     }
 }

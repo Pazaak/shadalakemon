@@ -40,10 +40,12 @@ namespace shandakemon.core
      *  prevolutions- A list that hold all the pokemon cards previous to the current one
      *  conditions- Holds a list of the conditions that the pokemon has
      *  power- Holds an object which contains the pokemon power if any
+     *  originalWeakElem, originalResElem- Holds the original elements printed on the card (the other variables are subject to changes)
      */
     public class battler : card
     {
         public int type, element, HP, weak_elem, weak_mod, res_elem, res_mod, retreat, damage, status, id, evolvesFrom;
+        public int originalWeakElem, originalResElem;
         public string name;
         public movement[] movements;
         public List<energy> energies;
@@ -59,8 +61,10 @@ namespace shandakemon.core
             this.element = element;
             this.HP = HP;
             this.weak_elem = weak_elem;
+            this.originalWeakElem = weak_elem;
             this.weak_mod = weak_mod;
             this.res_elem = res_elem;
+            this.originalResElem = res_elem;
             this.res_mod = res_mod;
             this.retreat = retreat;
             this.name = name;
@@ -180,11 +184,15 @@ namespace shandakemon.core
             energies = new List<energy>();
             energyTotal = new int[7];
             conditions.Clear();
+            this.res_elem = originalResElem;
+            this.weak_elem = originalWeakElem;
         }
 
         // Prepares a battler to return to bench
         public void ToBench()
         {
+            this.res_elem = originalResElem;
+            this.weak_elem = originalWeakElem;
             this.status = 0;
             conditions.Clear();
         }
