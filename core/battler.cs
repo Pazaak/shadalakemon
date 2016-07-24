@@ -179,6 +179,14 @@ namespace shandakemon.core
             this.status = 0;
             energies = new List<energy>();
             energyTotal = new int[7];
+            conditions.Clear();
+        }
+
+        // Prepares a battler to return to bench
+        public void ToBench()
+        {
+            this.status = 0;
+            conditions.Clear();
         }
 
         // Creates a new instance of battler inheriting all the necessary data of the evolved battler

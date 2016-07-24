@@ -45,6 +45,10 @@ namespace shandakemon.core
                 case 8: // Damage equal the number of damage counters
                     damage(type, source.damage, target);
                     break;
+                case 9: // Damage and wheel
+                    damage(type, quantity1, target);
+                    Wheel(target_controller);
+                    break;
             }
         }
 
@@ -231,6 +235,21 @@ namespace shandakemon.core
 
             Console.WriteLine(multiplier + " successful flips.");
             damage(type, quantity * multiplier, target);
+        }
+
+        // Wheels the front pokemon
+        public static void Wheel(Player target)
+        {
+            if ( target.benched.Count == 0)
+            {
+                Console.WriteLine("There are no pokemon in the bench.");
+                return;
+            }
+
+            Console.WriteLine(target.ToString() + "- Select the pokemon to exchange:");
+            Console.WriteLine(target.writeBenched());
+            target.ExchangePosition(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
+            Console.WriteLine("Pokemon exchanged.");
         }
     }
 }

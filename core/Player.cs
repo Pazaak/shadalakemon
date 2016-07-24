@@ -35,6 +35,11 @@ namespace shandakemon.core
             this.benched = new List<battler>();
         }
 
+        public override string ToString()
+        {
+            return "Player " + id;
+        }
+
         // Method that suffles the deck
         public void shuffle()
         {
@@ -218,6 +223,16 @@ namespace shandakemon.core
             }
 
             return true;
+        }
+
+        // Exchanges the position of the front battler with a benched battler
+        public void ExchangePosition(int index)
+        {
+            battler temp = front;
+            temp.ToBench();
+            front = benched[index];
+            benched.RemoveAt(index);
+            benched.Add(temp);
         }
     }
 }

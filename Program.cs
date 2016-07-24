@@ -46,16 +46,9 @@ namespace shandakemon
                     deck1.AddFirst(battlers[41].DeepCopy());
                 }
 
-                if ( i < 6 ) // Seel and Magikarp
+                if ( i < 20 )
                 {
-                    deck2.AddFirst(battlers[40].DeepCopy());
-                    deck2.AddFirst(battlers[34].DeepCopy());
-                }
-
-                if (i < 4) // Dewgong and Gyarados
-                {
-                    deck2.AddFirst(battlers[5].DeepCopy());
-                    deck2.AddFirst(battlers[24].DeepCopy());
+                    deck2.AddFirst(battlers[56].DeepCopy());
                 }
             }
 

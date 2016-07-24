@@ -77,6 +77,9 @@ namespace shandakemon
             movement[] rattata = new movement[1];
             rattata[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 0, "Bite", 20, 0);
 
+            movement[] pidgey = new movement[1];
+            pidgey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 10, 0);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
@@ -88,6 +91,7 @@ namespace shandakemon
             listBattlers[37] = new battler(1, Constants.TWater, 60, Constants.TGrass, 2, 0, 0, 1, "Poliwhirl", 61, 60, poliwhirl, null);
             listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, 0, 0, 1, "Seel", 86, -1, seel, null);
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, 0, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[56] = new battler(0, Constants.TNormal, 40, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgey", 16, -1, pidgey, null);
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, 0, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[60] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 0, "Rattata", 19, -1, rattata, null);
             listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, 0, 0, 1, "Squirtle", 7, -1, moveset2, null);
