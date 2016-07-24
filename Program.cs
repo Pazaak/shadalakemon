@@ -46,9 +46,14 @@ namespace shandakemon
                     deck1.AddFirst(battlers[41].DeepCopy());
                 }
 
-                if ( i < 20 )
+                if ( i < 12 )
                 {
-                    deck2.AddFirst(battlers[56].DeepCopy());
+                    deck2.AddFirst(battlers[60].DeepCopy());
+                }
+
+                if ( i < 8 )
+                {
+                    deck2.AddFirst(battlers[39].DeepCopy());
                 }
             }
 

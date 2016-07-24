@@ -49,6 +49,11 @@ namespace shandakemon.core
                     damage(type, quantity1, target);
                     Wheel(target_controller);
                     break;
+                case 10: // Damage = Half of the remaining HP
+                    int result = (target.HP - target.damage) / 2;
+                    result += result % 10 == 5 ? 5 : 0;
+                    damage(type, result, target);
+                    break;
             }
         }
 
