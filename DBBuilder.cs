@@ -35,14 +35,14 @@ namespace shandakemon
 
             movement[] moveset2 = new movement[2];
             moveset2[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 2, "Bubble", 10, 1);
-            moveset2[1] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 1);
+            moveset2[1] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 2);
 
             movement[] moveset1 = new movement[2];
             moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 1, 1, "Recover", 1, 0);
             moveset1[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 1, 2, "Star Freeze", 20, 1);
 
             movement[] moveset3 = new movement[2];
-            moveset3[0] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 1);
+            moveset3[0] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 2);
             moveset3[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 1, 0, "Bite", 40, 0);
 
             movement[] moveset4 = new movement[1];

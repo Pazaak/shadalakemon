@@ -89,10 +89,11 @@ namespace shandakemon.core
             Console.WriteLine();
             movement selected = movements[index]; // Finds the movement
 
-            if (index == 0 && conditions.ContainsKey(Legacies.deacMov1))
-                Console.WriteLine("Movement 1 is deactivated!");
-            else if (index == 1 && conditions.ContainsKey(Legacies.deacMov2))
-                Console.WriteLine("Movement 2 is deactivated!");
+            if (conditions.ContainsKey(index+1))
+            {
+                Console.WriteLine("Movement "+(index+1)+" is deactivated!");
+                return;
+            }
 
             if (selected.usable) // Checks if it's usable
                 selected.execute(source_controller, target_controller, this, target); // Execute the selected movement
@@ -127,27 +128,14 @@ namespace shandakemon.core
                 output += en.ToProduction();
             output += Environment.NewLine;
 
-            movement mov = movements[0];
-
-            if (isUsable(mov) && !conditions.ContainsKey(Legacies.deacMov1))
-            {
-                mov.usable = true;
-                output += "1- " + mov.ToString() + Environment.NewLine;
-            }
-            else
-                mov.usable = false;
-
-            if (movements.Length == 1) return (output);
-
-            mov = movements[1];
-
-            if (isUsable(mov) && !conditions.ContainsKey(Legacies.deacMov2))
-            {
-                mov.usable = true;
-                output += "2- " + mov.ToString() + Environment.NewLine;
-            }
-            else
-                mov.usable = false;
+            for (int i = 0; i < movements.Length; i++)
+                if (isUsable(movements[i]) && !conditions.ContainsKey(i+1))
+                {
+                    movements[i].usable = true;
+                    output += (i+1)+"- " + movements[i].ToString() + Environment.NewLine;
+                }
+                else
+                    movements[i].usable = false;
 
             return (output);
         }

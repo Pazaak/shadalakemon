@@ -196,27 +196,25 @@ namespace shandakemon.core
         // Deactivates a movement
         public static void MoveDeactivator(battler target)
         {
-            if (target.movements.Length == 1)
-            {
-                target.conditions.Add(Legacies.deacMov1, 2);
-                Console.WriteLine(target.ToString() + " has its movement deactivated now.");
-                return;
-            }
-
             Console.WriteLine("Select the movement to deactivate:");
-            for (int i = 0; i < 2; i++)
-                Console.WriteLine((i + 1) + target.movements[i].ToString());
+            for (int i = 0; i < target.movements.Length; i++)
+                Console.WriteLine((i + 1) +"- "+ target.movements[i].ToString());
 
-            if ((Convert.ToInt16(Console.ReadKey().KeyChar) - 49) == 1)
+            switch(Convert.ToInt16(Console.ReadKey().KeyChar) - 49)
             {
-                target.conditions.Add(Legacies.deacMov1, 1);
-                Console.WriteLine(target.ToString() + " has its first movement deactivated now.");
-                return;
+                case 0:
+                    target.conditions.Add(Legacies.deacMov1, 2);
+                    Console.WriteLine(target.ToString() + " has its first movement deactivated now.");
+                    break;
+                case 1:
+                    target.conditions.Add(Legacies.deacMov2, 2);
+                    Console.WriteLine(target.ToString() + " has its second movement deactivated now.");
+                    break;
+                case 2:
+                    target.conditions.Add(Legacies.deacMov3, 2);
+                    Console.WriteLine(target.ToString() + " has its third movement deactivated now.");
+                    break;
             }
-
-            target.conditions.Add(Legacies.deacMov2, 2);
-            Console.WriteLine(target.ToString() + " has its second movement deactivated now.");
-
         }
 
         // Deals damage equals to the number of flips winned

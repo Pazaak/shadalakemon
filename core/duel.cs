@@ -173,6 +173,7 @@ namespace shandakemon.core
                 Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
             }
 
+            p1.checkConditions();
             p2.checkConditions(); // Decrease the counters of the conditions
 
             p1.ResetPowers(); // Resets the powers
