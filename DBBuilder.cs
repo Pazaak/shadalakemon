@@ -59,12 +59,31 @@ namespace shandakemon
             poliwrath[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 1, 4, "Water Gun", 30, 20);
             poliwrath[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 1, 7, "Whirlpool", 40, 1);
 
+            movement[] magikarp = new movement[2];
+            magikarp[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 1, 0, "Tackle", 10, 0);
+            magikarp[1] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 8, "Flail", 0, 0);
+
+            movement[] gyarados = new movement[2];
+            gyarados[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 1, 0, "Dragon Rage", 50, 0);
+            gyarados[1] = new movement(new int[7] { 0, 4, 0, 0, 0, 0, 0 }, 1, 2, "Bubble Beam", 40, 1);
+
+            movement[] seel = new movement[1];
+            seel[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 0, "Headbutt", 10, 0);
+
+            movement[] dewgong = new movement[2];
+            dewgong[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 1, 0, "Aurora Beam", 50, 0);
+            dewgong[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 1, 2, "Ice Beam", 30, 1);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, 0, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
+            listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, 0, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
+            listBattlers[24] = new battler(1, Constants.TWater, 80, Constants.TElectric, 2, 0, 0, 3, "Dewgong", 87, 86, dewgong, null);
+            listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, 0, 0, 1, "Magikarp", 129, -1, magikarp, null);
             listBattlers[37] = new battler(1, Constants.TWater, 60, Constants.TGrass, 2, 0, 0, 1, "Poliwhirl", 61, 60, poliwhirl, null);
+            listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, 0, 0, 1, "Seel", 86, -1, seel, null);
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, 0, 0, 1, "Wartortle", 8, 7, moveset3, null);
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, 0, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, 0, 0, 1, "Squirtle", 7, -1, moveset2, null);

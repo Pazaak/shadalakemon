@@ -46,15 +46,16 @@ namespace shandakemon
                     deck1.AddFirst(battlers[41].DeepCopy());
                 }
 
-                if ( i < 10 ) // Poliwag
+                if ( i < 6 ) // Seel and Magikarp
                 {
-                    deck2.AddFirst(battlers[58].DeepCopy());
+                    deck2.AddFirst(battlers[40].DeepCopy());
+                    deck2.AddFirst(battlers[34].DeepCopy());
                 }
 
-                if (i < 5) // Poliwhirl and Poliwrath
+                if (i < 4) // Dewgong and Gyarados
                 {
-                    deck2.AddFirst(battlers[37].DeepCopy());
-                    deck2.AddFirst(battlers[12].DeepCopy());
+                    deck2.AddFirst(battlers[5].DeepCopy());
+                    deck2.AddFirst(battlers[24].DeepCopy());
                 }
             }
 

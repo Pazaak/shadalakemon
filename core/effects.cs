@@ -42,6 +42,9 @@ namespace shandakemon.core
                     damage(type, quantity1, target);
                     discardEnergy(target_controller, target, -1, 1);
                     break;
+                case 8: // Damage equal the number of damage counters
+                    damage(type, source.damage, target);
+                    break;
             }
         }
 
