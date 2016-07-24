@@ -41,6 +41,7 @@ namespace shandakemon.core
      *  conditions- Holds a list of the conditions that the pokemon has
      *  power- Holds an object which contains the pokemon power if any
      *  originalWeakElem, originalResElem- Holds the original elements printed on the card (the other variables are subject to changes)
+     *  leekSlap- The VERY odd attack of farfetch'd has a boolean on each battler to control it
      */
     public class battler : card
     {
@@ -50,7 +51,7 @@ namespace shandakemon.core
         public movement[] movements;
         public List<energy> energies;
         public int[] energyTotal;
-        public bool sumSick;
+        public bool sumSick, leekSlap;
         public LinkedList<battler> prevolutions;
         public Dictionary<int, int> conditions;
         public Power power;
@@ -96,6 +97,12 @@ namespace shandakemon.core
             if (conditions.ContainsKey(index+1))
             {
                 Console.WriteLine("Movement "+(index+1)+" is deactivated!");
+                return;
+            }
+
+            if (leekSlap && index == 0)
+            {
+                Console.WriteLine("YOU WILL NOT USE LEEK SLAP TWICE BY THE GRACE OF LORD FARFETCH'D");
                 return;
             }
 
@@ -186,6 +193,7 @@ namespace shandakemon.core
             conditions.Clear();
             this.res_elem = originalResElem;
             this.weak_elem = originalWeakElem;
+            this.leekSlap = false;
         }
 
         // Prepares a battler to return to bench

@@ -60,6 +60,10 @@ namespace shandakemon.core
                 case 12: // Change own resistance
                     ChangeResistance(source);
                     break;
+                case 13: // Leek Slap!
+                    FlipDamage(target, type, quantity1, quantity2);
+                    source.leekSlap = true;
+                    break;
             }
         }
 
