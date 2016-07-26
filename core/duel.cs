@@ -19,6 +19,7 @@ namespace shandakemon.core
         {
             player1 = p1;
             player2 = p2;
+            utils.Logger.Clear();
         }
 
         // Controls the bucle of the duel
@@ -61,6 +62,7 @@ namespace shandakemon.core
         // Enters the attack phase
         public void attackPhase(Player att, Player def)
         {
+            utils.Logger.Report("-> " + att.ToString() + "'s attack phase");
             Console.WriteLine("Player " + att.id);
             Console.WriteLine("Active pokemon: ");
             Console.WriteLine(att.front.BattleDescription());
@@ -75,9 +77,12 @@ namespace shandakemon.core
         // 1: No attack exit
         public int mainPhase(Player p1)
         {
+            utils.Logger.Report("-> " + p1.ToString() + "'s main phase");
+
             if (!p1.draw(1))
             {
-                Console.WriteLine("Player "+p1.id+" cannot draw any more cards. Player "+p1.id+" losses.");
+                Console.WriteLine(p1.ToString()+" cannot draw any more cards. "+ p1.ToString()+" losses.");
+                utils.Logger.Report(p1.ToString() + " cannot draw any more cards. " + p1.ToString() + " losses.");
                 return -1;
             }
 
@@ -97,9 +102,13 @@ namespace shandakemon.core
                         if (p1.front.status == 1) // Paralyzed
                             Console.WriteLine("Front pokemon is paralyzed and can't attack");
                         else
+                        {
+                            utils.Logger.Report(p1.ToString() + " advances to attack phase.");
                             return 0; // Advance to attack phase
+                        }
                         break;
                     case 101:
+                        utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
                         return 1; // No attacks
                     case 114:
                         retreat(p1); // Retreat menu
@@ -145,16 +154,18 @@ namespace shandakemon.core
             if (!accu)
             {
                 Console.WriteLine("No more price cards. Player " + p1.id + " wins."); // Makes the player win
+                utils.Logger.Report(p1.ToString() + " has no more price cards. " + p1.ToString() + " wins.");
                 return (true);
             }
 
             if (p2.benched.Count == 0) // Check if there is no other battler in play
             {
-                Console.WriteLine("Player "+p2.id+" has no benched pokemon. Player " + p1.id + " wins."); // The player losses
+                Console.WriteLine(p2.ToString()+" has no benched pokemon. " + p1.ToString() + " wins."); // The player losses
+                utils.Logger.Report(p2.ToString() + " has no benched pokemon. " + p1.ToString() + " wins.");
                 return (true);
             }
 
-            Console.WriteLine("Player " + p2.id + ": Select a benched pokemon"); // Ask for a battler to put in front
+            Console.WriteLine(p1.ToString() + ": Select a benched pokemon"); // Ask for a battler to put in front
             Console.WriteLine(p2.writeBenched());
 
             p2.toFront(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
@@ -171,6 +182,7 @@ namespace shandakemon.core
             {
                 p1.front.status = 0;
                 Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
+                utils.Logger.Report(p1.front.ToString() + " is not longer paralyzed.");
             }
 
             p1.checkConditions();
@@ -182,19 +194,19 @@ namespace shandakemon.core
         // Initial phase of mulligans and initial hands
         public void initialPhase()
         {
+            utils.Logger.Report("-> Initial Phase");
+
             // Both players have invalid hands
             while (!player1.checkInitialHand() && !player2.checkInitialHand())
             {
-                player1.hand.Clear();
-                player2.hand.Clear();
+                if (player1.hand.Count > 0)
+                    utils.Logger.Report("Both players have invalid hands");
+
+                player1.ShuffleHand();
+                player2.ShuffleHand();
                 player1.draw(7);
                 player2.draw(7);
-                foreach (card c1 in player1.hand)
-                    player1.deck.AddFirst(c1);
-                foreach (card c1 in player2.hand)
-                    player2.deck.AddFirst(c1);
-                player1.shuffle();
-                player2.shuffle();
+                
             }
 
             // Both players have valid hands
@@ -215,6 +227,7 @@ namespace shandakemon.core
             // Player 1 has an invalid hand, player2 plays
             if (!player1.checkInitialHand())
             {
+                utils.Logger.Report("Player 1 has an invalid hand.");
                 selectActive(player2);
                 selectBenched(player2);
                 player2.putPrices();
@@ -223,15 +236,15 @@ namespace shandakemon.core
                 while (!player1.checkInitialHand())
                 {
                     mulligans += 1;
-                    player1.hand.Clear();
+                    player1.ShuffleHand();
                     player1.draw(7);
-                    foreach (card c1 in player1.hand)
-                        player1.deck.AddFirst(c1);
-                    player1.shuffle();
+                    if (!player1.checkInitialHand())
+                        utils.Logger.Report("Player 1 has an invalid hand.");
                 }
 
                 // TODO: This must be optional
                 Console.WriteLine("Player 2 draws " + mulligans + " additional card/s.");
+                utils.Logger.Report("Player 1 took " + mulligans + (mulligans == 1? " mulligan." : " mulligans."));
 
                 player2.draw(mulligans);
 
@@ -242,6 +255,7 @@ namespace shandakemon.core
             // Player 2 has an invalid hand, player1 plays
             else
             {
+                utils.Logger.Report("Player 2 has an invalid hand.");
                 selectActive(player1);
                 selectBenched(player1);
                 player1.putPrices();
@@ -250,15 +264,16 @@ namespace shandakemon.core
                 while (!player2.checkInitialHand())
                 {
                     mulligans += 1;
-                    player2.hand.Clear();
+                    player2.ShuffleHand();
                     player2.draw(7);
-                    foreach (card c1 in player2.hand)
-                        player2.deck.AddFirst(c1);
-                    player2.shuffle();
+                    if (!player2.checkInitialHand())
+                        utils.Logger.Report("Player 2 has an invalid hand.");
                 }
 
                 // TODO: This must be optional
                 Console.WriteLine("Player 1 draws " + mulligans + " additional card/s.");
+                utils.Logger.Report("Player 2 took " + mulligans + (mulligans == 1 ? " mulligan." : " mulligans."));
+
 
                 player1.draw(mulligans);
 
@@ -297,6 +312,7 @@ namespace shandakemon.core
             p1.hand.Remove(selected);
             p1.front = (battler)selected; // Play the card
             Console.WriteLine(selected.ToString() + " selected as active pokemon");
+            utils.Logger.Report(p1.ToString() + " selects " +selected.ToString() + " as active pokemon");
         }
 
         // Selects benched battlers
@@ -326,6 +342,7 @@ namespace shandakemon.core
                             p1.hand.Remove(selected);
                             p1.benched.Add((battler)selected);
                             Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                            utils.Logger.Report(p1.ToString() + " selects " + selected.ToString() + " as benched pokemon");
                             Console.WriteLine(p1.writeHand());
                         }
                         else
@@ -355,6 +372,7 @@ namespace shandakemon.core
                             p1.hand.Remove(selected);
                             p1.benched.Add(newBattler);
                             Console.WriteLine(selected.ToString() + " selected as benched pokemon");
+                            utils.Logger.Report(selected.ToString() + " selected as benched pokemon");
                         }
                         else
                             Console.WriteLine("You cannot bench more pokemon");
@@ -393,6 +411,7 @@ namespace shandakemon.core
                                 p1.hand.Remove(selected);
                                 done = true;
                                 Console.WriteLine(target.ToString() + " evolved into " + newBattler.ToString());
+                                utils.Logger.Report(target.ToString() + " evolved into " + newBattler.ToString());
                             }
 
                         }
@@ -423,14 +442,16 @@ namespace shandakemon.core
                         p1.front.attachEnergy(attEnergy);
                         p1.hand.Remove(selected);
                         energyLimit = true;
-                        Console.WriteLine("Energy attached to " + p1.front.ToString());
+                        Console.WriteLine(attEnergy.name+" attached to " + p1.front.ToString());
+                        utils.Logger.Report(attEnergy.name + " attached to " + p1.front.ToString());
                     }
                     else if (digit > 0)
                     {
                         p1.benched[digit - 1].attachEnergy(attEnergy);
                         p1.hand.Remove(selected);
                         energyLimit = true;
-                        Console.WriteLine("Energy attached to " + p1.benched[digit - 1].ToString());
+                        Console.WriteLine(attEnergy.name + " attached to " + p1.benched[digit - 1].ToString());
+                        utils.Logger.Report(attEnergy.name + " attached to " + p1.benched[digit - 1].ToString());
                     }
                 }
             }
@@ -451,6 +472,12 @@ namespace shandakemon.core
                 return;
             }
 
+            if (p1.front.status == 1) // Battler is paralyzed
+            {
+                Console.WriteLine("The pokemon cannot retreat due paralysis.");
+                return;
+            }
+
             int counter = p1.front.retreat;
             int digit;
             Console.WriteLine("Discard energy until you pay the cost");
@@ -463,6 +490,8 @@ namespace shandakemon.core
                 digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
 
                 counter -= p1.front.energies[digit].quan;
+
+                p1.discardEnergy(p1.front, digit);
             }
 
             Console.WriteLine("Choose the benched pokemon to put in front.");
@@ -470,11 +499,7 @@ namespace shandakemon.core
             Console.WriteLine(p1.writeBenched());
             digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Choose the battler to put in front
 
-            battler temp = p1.benched[digit];
-            p1.benched[digit] = p1.front;
-            p1.front = temp;
-
-            Console.WriteLine(temp.ToString() + " placed in front.");
+            p1.ExchangePosition(digit);
         }
 
         // Power menu to select power

@@ -20,13 +20,23 @@ namespace shandakemon.core
                     heal(source, quantity2);
                     break;
                 case 2: // Damage and coin for status
-                    if (CRandom.RandomInt() < 0)
-                        inflictStatus(target, quantity2);
                     damage(type, quantity1, target);
+                    if (CRandom.RandomInt() < 0)
+                    {
+                        utils.Logger.Report("You win the coin flip.");
+                        inflictStatus(target, quantity2);
+                    }
+                    else
+                        utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 3: // Add condition by coin
                     if (CRandom.RandomInt() < 0)
-                        addCondition(source, quantity1, quantity2);
+                    {
+                        utils.Logger.Report("You win the coin flip.");
+                        addCondition(source, quantity1, quantity2); 
+                    }
+                    else
+                        utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 4: // Damage empowered by excess of energy
                     quantity1 += ExcessEnergy(mov, source) > quantity2? quantity2 : ExcessEnergy(mov, source);
@@ -85,6 +95,7 @@ namespace shandakemon.core
             if (target.conditions.ContainsKey(Legacies.fog)) // Prevent damage condition
             {
                 Console.WriteLine(target.ToString() + " is protected from damage.");
+                utils.Logger.Report(target.ToString() + " is protected from damage.");
                 return;
             }
             int output = quantity;
@@ -97,6 +108,7 @@ namespace shandakemon.core
                 output = 0;
 
             Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
+            utils.Logger.Report(target.ToString() + " received " + output + " points of damage.");
         }
 
         // Effect to discard a card, as a cost or as an effect
@@ -130,11 +142,13 @@ namespace shandakemon.core
             {
                 source.damage = 0;
                 Console.WriteLine("Damage eliminated");
+                utils.Logger.Report(source.ToString() + " has its damage removed.");
             }
             else
             {
                 source.damage -= quantity;
-                Console.WriteLine("Removed "+quantity+" damage");
+                Console.WriteLine(source.ToString()+" has "+quantity+" damage removed.");
+                utils.Logger.Report(source.ToString() + " has " + quantity + " damage removed.");
             }
         }
 
@@ -143,51 +157,56 @@ namespace shandakemon.core
         {
             target.status = type;
             Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
+            utils.Logger.Report(target.ToString() + " is now " + utilities.numToStatus(type));
+
         }
 
         // Adds a condition
         public static void addCondition(battler source, int condition, int duration)
         {
             source.conditions.Add(condition, duration);
-            Console.WriteLine("Condition activated");
+            Console.WriteLine(source.ToString()+Legacies.IndexToLegacy(condition));
+            utils.Logger.Report(source.ToString() + Legacies.IndexToLegacy(condition));
         }
 
         // Permits to exchange energy attached to one battler to other
-        public static void SwitchEnergySameType(Player source, int elem)
+        public static void SwitchEnergySameType(Player source_controller, int elem)
         {
             Console.WriteLine("Select a Pokemon with an energy card of the selected type");
-            source.DisplayTypedEnergies(elem);
+            source_controller.DisplayTypedEnergies(elem);
 
             int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-            battler target = null;
+            battler source = null;
 
             if (digit == -1)
-                target = source.front;
+                source = source_controller.front;
             else
-                target = source.benched[digit];
+                source = source_controller.benched[digit];
 
-            if (target.energies.Count == 0)
+            if (source.energies.Count == 0)
             {
                 Console.WriteLine("That pokemon has not enough energy cards");
                 return;
             }
 
             int counter = 0;
-            while (!target.energies[counter].name.Equals("Water Energy")) // TODO: Only can take Water Energy
+            while (!source.energies[counter].name.Equals("Water Energy")) // TODO: Only can take Water Energy
                 counter++;
 
-            energy selected = target.energies[counter];
-            target.energies.RemoveAt(counter);
+            energy selected = source.energies[counter];
+            source.energies.RemoveAt(counter);
 
             Console.WriteLine("Select a Pokemon to attach the energy");
-            source.DisplayTypedEnergies(elem);
+            source_controller.DisplayTypedEnergies(elem);
 
             digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
 
-            if (digit == -1 && source.front.element == elem)
-                target = source.front;
-            else if (source.benched[digit].element == elem)
-                target = source.benched[digit];
+            battler target = null;
+
+            if (digit == -1 && source_controller.front.element == elem)
+                target = source_controller.front;
+            else if (source_controller.benched[digit].element == elem)
+                target = source_controller.benched[digit];
             else
             {
                 Console.WriteLine("This pokemon is not " + utilities.numToType(elem) + " type.");
@@ -196,7 +215,8 @@ namespace shandakemon.core
 
             target.attachEnergy(selected);
 
-            Console.WriteLine("Energy attached to " + selected.ToString());
+            Console.WriteLine(selected.name + " attached from " + source.ToString() + " to " + target.ToString());
+            utils.Logger.Report(selected.name + " attached from " + source.ToString() + " to " + target.ToString());
 
         }
 
@@ -225,21 +245,7 @@ namespace shandakemon.core
             for (int i = 0; i < target.movements.Length; i++)
                 Console.WriteLine((i + 1) +"- "+ target.movements[i].ToString());
 
-            switch(Convert.ToInt16(Console.ReadKey().KeyChar) - 49)
-            {
-                case 0:
-                    target.conditions.Add(Legacies.deacMov1, 2);
-                    Console.WriteLine(target.ToString() + " has its first movement deactivated now.");
-                    break;
-                case 1:
-                    target.conditions.Add(Legacies.deacMov2, 2);
-                    Console.WriteLine(target.ToString() + " has its second movement deactivated now.");
-                    break;
-                case 2:
-                    target.conditions.Add(Legacies.deacMov3, 2);
-                    Console.WriteLine(target.ToString() + " has its third movement deactivated now.");
-                    break;
-            }
+            addCondition(target, Convert.ToInt16(Console.ReadKey().KeyChar) - 48, 2);
         }
 
         // Deals damage equals to the number of flips winned
@@ -252,6 +258,7 @@ namespace shandakemon.core
                     multiplier++;
 
             Console.WriteLine(multiplier + " successful flips.");
+            utils.Logger.Report(multiplier + " successful flips.");
             damage(type, quantity * multiplier, target);
         }
 
@@ -276,6 +283,7 @@ namespace shandakemon.core
             if ( target.weak_mod == 0 )
             {
                 Console.WriteLine("Defending Pokemon has no weakness");
+                utils.Logger.Report("Defending Pokemon has no weakness");
                 return;
             }
             Console.WriteLine("Select the new type for the defending weakness: ");
@@ -283,7 +291,8 @@ namespace shandakemon.core
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
             target.weak_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
 
-            Console.WriteLine("Weakness changed");
+            Console.WriteLine(target.ToString() + " is now weak to " + utilities.numToType(target.weak_elem) + ".");
+            utils.Logger.Report(target.ToString() + " is now weak to " + utilities.numToType(target.weak_elem) + ".");
         }
 
         // Change resistance of target battler
@@ -294,7 +303,8 @@ namespace shandakemon.core
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
             target.res_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
 
-            Console.WriteLine("Resistance changed");
+            Console.WriteLine(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
+            utils.Logger.Report(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
         }
     }
 }

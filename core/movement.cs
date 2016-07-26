@@ -34,6 +34,7 @@ namespace shandakemon.core
         // Call of execution
         public void execute(Player source_controller, Player target_controller, battler source, battler target)
         {
+            utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
             effects.move_selector(source_controller, target_controller, source, target, this, type, effect, quantity1, quantity2);
         }
 

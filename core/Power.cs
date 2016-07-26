@@ -30,6 +30,7 @@ namespace shandakemon.core
         // Executes the effect
         public void Execute(Player source_controller, battler source)
         {
+            utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
             effects.power_selector(source_controller, source, effect, parameter1, parameter2);
         }
 

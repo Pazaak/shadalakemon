@@ -27,7 +27,6 @@ namespace shandakemon.core
         {
             this.id = id;
             this.deck = deck;
-            this.shuffle();
             // Initilization of the lists
             this.discarded = new LinkedList<card>();
             this.hand = new List<card>();
@@ -43,6 +42,7 @@ namespace shandakemon.core
         // Method that suffles the deck
         public void shuffle()
         {
+            utils.Logger.Report(ToString() + " shuffles its deck.");
             this.deck = new LinkedList<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
         }
 
@@ -57,6 +57,7 @@ namespace shandakemon.core
                 deck.RemoveFirst();
             }
 
+            utils.Logger.Report(ToString() + " draws " + times + (times == 1 ? " card." : " cards."));
             return true;
         }
 
@@ -65,6 +66,7 @@ namespace shandakemon.core
         {
             hand.Add(prices[index]);
             prices[index] = null;
+            utils.Logger.Report(ToString() + " draws price number " + index + ".");
         }
 
         // Method that puts the selected number of cards in the price area
@@ -75,6 +77,25 @@ namespace shandakemon.core
                 this.prices[i] = deck.First();
                 deck.RemoveFirst();
             }
+
+            utils.Logger.Report(ToString() + " puts " + prices.Length + " price cards.");
+        }
+
+        // Method that shuffles the hand in the library
+        public void ShuffleHand()
+        {
+            if (hand.Count == 0)
+            {
+                shuffle();
+                return; // No cards in hand
+            }
+
+            foreach (card c1 in hand)
+                deck.AddFirst(c1);
+            hand.Clear();
+            utils.Logger.Report(ToString() + " puts its hand on the deck.");
+            shuffle();
+            
         }
 
         // Utility method to represent the hand of the player
@@ -126,8 +147,9 @@ namespace shandakemon.core
 
             front.clear();
             discarded.AddFirst(front);
+            utils.Logger.Report(front.ToString() + " is discarded.");
             front = null;
-
+            
         }
 
         // Takes a battler on the bench an place it on the front
@@ -135,6 +157,7 @@ namespace shandakemon.core
         {
             front = benched[index];
             benched.RemoveAt(index);
+            utils.Logger.Report(front.ToString() + " is put in the active position.");
         }
 
         // Eliminates the condition that determines if the battler was placed or evolved in this turn
@@ -151,6 +174,7 @@ namespace shandakemon.core
             card output = source.energies[energy_index];
             discarded.AddFirst(output);
             source.energies.RemoveAt(energy_index);
+            utils.Logger.Report(source.ToString() + " had its energy " + output.ToString() + " discarded.");
         }
 
         // Eliminates one turn counter of all the conditions
@@ -176,7 +200,6 @@ namespace shandakemon.core
                     if (temp.type == 0) return true;
                 }
             }
-
             return false;
         }
 
@@ -233,6 +256,8 @@ namespace shandakemon.core
             front = benched[index];
             benched.RemoveAt(index);
             benched.Add(temp);
+
+            utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + front.ToString() + " placed in the active area.");
         }
     }
 }
