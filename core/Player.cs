@@ -17,7 +17,7 @@ namespace shandakemon.core
     public class Player
     {
         public int id;
-        public battler front;
+        public battler front, lastFront;
         public List<battler> benched;
         public List<card> hand;
         public LinkedList<card> discarded, deck;

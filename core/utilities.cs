@@ -27,7 +27,7 @@ namespace shandakemon.core
             }
         }
 
-        // Given an status alignment, return the name of that status
+        // Given a status alignment, return the name of that status
         public static string numToStatus(int type)
         {
             switch (type)
@@ -37,6 +37,13 @@ namespace shandakemon.core
                 default: return "Doge";
 
             }
+        }
+
+        // Given a status alignment on a string, return the corresponding index
+        public static int nameToStatus(string name)
+        {
+            if (string.Compare(name, "paralyzed") == 0) return 1;
+            return -1;
         }
     }
 }

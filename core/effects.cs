@@ -74,6 +74,9 @@ namespace shandakemon.core
                     FlipDamage(target, type, quantity1, quantity2);
                     source.leekSlap = true;
                     break;
+                case 14: // Base set mirror movement
+                    MirrorMove(source_controller, source, target_controller, target, quantity1);
+                    break;
             }
         }
 
@@ -305,6 +308,47 @@ namespace shandakemon.core
 
             Console.WriteLine(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
             utils.Logger.Report(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
+        }
+
+        // Mirror move
+        public static void MirrorMove(Player source_controller, battler source, Player target_controller, battler target, int parameter)
+        {
+            if ( source_controller.lastFront != source_controller.front )
+            {
+                Console.WriteLine(source_controller.front.ToString() + " wasn't attacked last turn.");
+                utils.Logger.Report(source_controller.front.ToString() + " wasn't attacked last turn.");
+                return;
+            }
+
+            // Damage phase
+            string[] log = utils.Logger.FindCombatString(target_controller.ToString(), source_controller.ToString());
+
+            foreach (string s in log)
+            {
+                if ( s.Contains(source.ToString() + " received ") )
+                {
+                    string[] temp = s.Split(' ');
+                    damage(Constants.TNone, Int32.Parse(temp[2]), target);
+                }
+            }
+
+            if ( parameter == 1 ) // All the other effects (base set mirror move)
+            {
+                foreach (string s in log)
+                {
+                    if (s.Contains(source.ToString() + " had its energy "))
+                        discardEnergy(target_controller, target, -1, 1);
+                    if (s.Contains(source.ToString() + " is now "))
+                    {
+                        string[] temp = s.Split(' ');
+                        inflictStatus(target, utilities.nameToStatus(temp[3]));
+                    }
+                    if (s.Contains(" attack deactivated.") && s.Contains(source.ToString()))
+                        MoveDeactivator(target);
+                    if (s.Contains(source.ToString()+" is now weak to "))
+                        ChangeWeakness(target);
+                }
+            }
         }
     }
 }

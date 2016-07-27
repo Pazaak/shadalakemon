@@ -7,6 +7,7 @@ namespace shandakemon.core
 {
     class Constants
     {
+        public static int TNone = -1;
         public static int TNormal = 0;
         public static int TWater = 1;
         public static int TFire = 2;

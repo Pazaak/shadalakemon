@@ -62,6 +62,7 @@ namespace shandakemon.core
         // Enters the attack phase
         public void attackPhase(Player att, Player def)
         {
+            def.lastFront = def.front;
             utils.Logger.Report("-> " + att.ToString() + "'s attack phase");
             Console.WriteLine("Player " + att.id);
             Console.WriteLine("Active pokemon: ");

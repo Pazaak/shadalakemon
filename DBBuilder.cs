@@ -95,27 +95,32 @@ namespace shandakemon
             farfetchd[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 13, "Leek Slap", 30, 1);
             farfetchd[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 0, "Pot Smash", 30, 0);
 
+            movement[] pidgeotto = new movement[2];
+            pidgeotto[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 20, 0);
+            pidgeotto[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 14, "Mirror Move", 1, 0);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
-            listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, 0, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
+            listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
-            listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, 0, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
-            listBattlers[24] = new battler(1, Constants.TWater, 80, Constants.TElectric, 2, 0, 0, 3, "Dewgong", 87, 86, dewgong, null);
+            listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
+            listBattlers[22] = new battler(1, Constants.TNormal, 60, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgeotto", 17, 16, pidgeotto, null);
+            listBattlers[24] = new battler(1, Constants.TWater, 80, Constants.TElectric, 2, -1, 0, 3, "Dewgong", 87, 86, dewgong, null);
             listBattlers[27] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Farfetch'd", 83, -1, farfetchd, null);
-            listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, 0, 0, 1, "Magikarp", 129, -1, magikarp, null);
-            listBattlers[37] = new battler(1, Constants.TWater, 60, Constants.TGrass, 2, 0, 0, 1, "Poliwhirl", 61, 60, poliwhirl, null);
+            listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, -1, 0, 1, "Magikarp", 129, -1, magikarp, null);
+            listBattlers[37] = new battler(1, Constants.TWater, 60, Constants.TGrass, 2, -1, 0, 1, "Poliwhirl", 61, 60, poliwhirl, null);
             listBattlers[38] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Porygon", 137, -1, porygon, null);
             listBattlers[39] = new battler(1, Constants.TNormal, 60, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Raticate", 20, 19, raticate, null);
-            listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, 0, 0, 1, "Seel", 86, -1, seel, null);
-            listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, 0, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Seel", 86, -1, seel, null);
+            listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, -1, 0, 1, "Wartortle", 8, 7, moveset3, null);
             listBattlers[47] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 0, "Dodou", 84, -1, dodou, null);
             listBattlers[56] = new battler(0, Constants.TNormal, 40, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgey", 16, -1, pidgey, null);
-            listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, 0, 0, 1, "Poliwag", 60, -1, poliwag, null);
+            listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, -1, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[60] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 0, "Rattata", 19, -1, rattata, null);
-            listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, 0, 0, 1, "Squirtle", 7, -1, moveset2, null);
-            listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, 0, 0, 1, "Starmie", 121, 120, moveset1, null);
-            listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, 0, 0, 1, "Staryu", 120, -1, moveset, null);
+            listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Squirtle", 7, -1, moveset2, null);
+            listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Starmie", 121, 120, moveset1, null);
+            listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Staryu", 120, -1, moveset, null);
             
 
             MemoryStream stream1 = new MemoryStream();
