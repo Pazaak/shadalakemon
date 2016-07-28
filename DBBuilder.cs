@@ -95,6 +95,9 @@ namespace shandakemon
             farfetchd[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 13, "Leek Slap", 30, 1);
             farfetchd[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 0, "Pot Smash", 30, 0);
 
+            movement[] dratini = new movement[1];
+            dratini[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 0, "Pound", 10, 0);
+
             movement[] pidgeotto = new movement[2];
             pidgeotto[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 20, 0);
             pidgeotto[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 14, "Mirror Move", 1, 0);
@@ -107,7 +110,8 @@ namespace shandakemon
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
             listBattlers[22] = new battler(1, Constants.TNormal, 60, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgeotto", 17, 16, pidgeotto, null);
             listBattlers[24] = new battler(1, Constants.TWater, 80, Constants.TElectric, 2, -1, 0, 3, "Dewgong", 87, 86, dewgong, null);
-            listBattlers[27] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Farfetch'd", 83, -1, farfetchd, null);
+            listBattlers[25] = new battler(0, Constants.TNormal, 40, Constants.TNone, 1, Constants.TPsychic, 30, 1, "Dratini", 147, -1, dratini, null);
+            listBattlers[26] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Farfetch'd", 83, -1, farfetchd, null);
             listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, -1, 0, 1, "Magikarp", 129, -1, magikarp, null);
             listBattlers[37] = new battler(1, Constants.TWater, 60, Constants.TGrass, 2, -1, 0, 1, "Poliwhirl", 61, 60, poliwhirl, null);
             listBattlers[38] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Porygon", 137, -1, porygon, null);
