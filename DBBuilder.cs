@@ -102,12 +102,17 @@ namespace shandakemon
             pidgeotto[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 20, 0);
             pidgeotto[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 14, "Mirror Move", 1, 0);
 
+            movement[] dragonair = new movement[2];
+            dragonair[0] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 6, "Slam", 30, 2);
+            dragonair[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 0, 7, "Hyper Beam", 20, 1);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
+            listBattlers[17] = new battler(1, Constants.TNormal, 80, Constants.TNone, 1, Constants.TPsychic, 30, 2, "Dragonair", 148, 147, dragonair, null);
             listBattlers[22] = new battler(1, Constants.TNormal, 60, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgeotto", 17, 16, pidgeotto, null);
             listBattlers[24] = new battler(1, Constants.TWater, 80, Constants.TElectric, 2, -1, 0, 3, "Dewgong", 87, 86, dewgong, null);
             listBattlers[25] = new battler(0, Constants.TNormal, 40, Constants.TNone, 1, Constants.TPsychic, 30, 1, "Dratini", 147, -1, dratini, null);

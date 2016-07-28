@@ -119,8 +119,18 @@ namespace shandakemon.core
         {
             bool end;
             int digit;
+            if (source.energies.Count == 0)
+                Console.WriteLine(source.ToString() + " has no energy to discard.");
+
             for ( int i = 0; i < quantity; i++)
             {
+                if (source.energies.Count == 0)
+                {
+                    Console.WriteLine(source.ToString() + " has no more energy to discard.");
+                    Console.WriteLine("Energy succcessfully discarded");
+                    return;
+                }
+                
                 Console.WriteLine("Select to discard " + utilities.numToType(type) + " energy card/s. " + (i + 1) + "/" + quantity);
                 end = false;
                 while (!end)
@@ -283,7 +293,7 @@ namespace shandakemon.core
         // Change weakness of target battler
         public static void ChangeWeakness(battler target)
         {
-            if ( target.weak_mod == 0 )
+            if ( target.weak_elem == Constants.TNone )
             {
                 Console.WriteLine("Defending Pokemon has no weakness");
                 utils.Logger.Report("Defending Pokemon has no weakness");

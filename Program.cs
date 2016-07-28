@@ -48,12 +48,12 @@ namespace shandakemon
 
                 if ( i < 12 )
                 {
-                    deck2.AddFirst(battlers[56].DeepCopy());
+                    deck2.AddFirst(battlers[25].DeepCopy());
                 }
 
                 if ( i < 8 )
                 {
-                    deck2.AddFirst(battlers[22].DeepCopy());
+                    deck2.AddFirst(battlers[17].DeepCopy());
                 }
             }
 

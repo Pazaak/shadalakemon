@@ -171,9 +171,10 @@ namespace shandakemon.core
         // Discard the selected energy card from the selected battler (must be done at the player side to use the discard pile)
         public void discardEnergy(battler source, int energy_index)
         {
-            card output = source.energies[energy_index];
+            energy output = source.energies[energy_index];
             discarded.AddFirst(output);
             source.energies.RemoveAt(energy_index);
+            source.energyTotal[output.elem] -= output.quan;
             utils.Logger.Report(source.ToString() + " had its energy " + output.ToString() + " discarded.");
         }
 
