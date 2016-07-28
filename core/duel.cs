@@ -40,6 +40,8 @@ namespace shandakemon.core
                     
                 if (endPhase(player1, player2)) // Check for letal damage
                     return true;
+                if (endPhase(player2, player1))
+                    return false;
 
                 betweenTurns(player1, player2); // Between turns phase
 
@@ -54,6 +56,8 @@ namespace shandakemon.core
 
                 if (endPhase(player2, player1))
                     return false;
+                if (endPhase(player1, player2)) // Check for letal damage
+                    return true;
 
                 betweenTurns(player2, player1);
             }
@@ -100,8 +104,8 @@ namespace shandakemon.core
                 switch (digit)
                 {
                     case 97:
-                        if (p1.front.status == 1) // Paralyzed
-                            Console.WriteLine("Front pokemon is paralyzed and can't attack");
+                        if (p1.front.status == 1 || p1.front.status == 2) // Statused
+                            Console.WriteLine("Front pokemon is "+utilities.numToStatus(p1.front.status)+" and can't attack");
                         else
                         {
                             utils.Logger.Report(p1.ToString() + " advances to attack phase.");
@@ -184,6 +188,32 @@ namespace shandakemon.core
                 p1.front.status = 0;
                 Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
                 utils.Logger.Report(p1.front.ToString() + " is not longer paralyzed.");
+            }
+
+            if (p1.front.status == 2) // Try to heal if asleep
+            {
+                if (CRandom.RandomInt() < 0)
+                {
+                    p1.front.status = 0;
+                    utils.Logger.Report(p1.ToString() + " wins the coin flip.");
+                    Console.WriteLine(p1.front.ToString() + " awakes.");
+                    utils.Logger.Report(p1.front.ToString() + " awakes.");
+                }
+                else
+                    Console.WriteLine(p1.front.ToString() + " still sleeping.");
+            }
+
+            if (p2.front.status == 2) // Try to heal if asleep
+            {
+                if (CRandom.RandomInt() < 0)
+                {
+                    p2.front.status = 0;
+                    utils.Logger.Report(p2.ToString() + " wins the coin flip.");
+                    Console.WriteLine(p2.front.ToString() + " awakes.");
+                    utils.Logger.Report(p2.front.ToString() + " awakes.");
+                }
+                else
+                    Console.WriteLine(p2.front.ToString() + " still sleeping.");
             }
 
             p1.checkConditions();
@@ -473,9 +503,9 @@ namespace shandakemon.core
                 return;
             }
 
-            if (p1.front.status == 1) // Battler is paralyzed
+            if (p1.front.status == 1 || p1.front.status == 2) // Battler is paralyzed
             {
-                Console.WriteLine("The pokemon cannot retreat due paralysis.");
+                Console.WriteLine("The pokemon cannot retreat due "+utilities.numToStatus(p1.front.status));
                 return;
             }
 

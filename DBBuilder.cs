@@ -31,85 +31,95 @@ namespace shandakemon
         public static void pokemon()
         {
             movement[] moveset = new movement[1]; // Movement list
-            moveset[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 0, "Slap", 20, 0); // Creates a movement
+            moveset[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 0, "Slap", 20, 0); // Creates a movement
 
             movement[] moveset2 = new movement[2];
-            moveset2[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 2, "Bubble", 10, 1);
-            moveset2[1] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 2);
+            moveset2[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 2, "Bubble", 10, 1);
+            moveset2[1] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 3, "Withdraw", Legacies.fog, 2);
 
             movement[] moveset1 = new movement[2];
-            moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 1, 1, "Recover", 1, 0);
-            moveset1[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 1, 2, "Star Freeze", 20, 1);
+            moveset1[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 1, "Recover", 1, 0);
+            moveset1[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 2, "Star Freeze", 20, 1);
 
             movement[] moveset3 = new movement[2];
-            moveset3[0] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 1, 3, "Withdraw", Legacies.fog, 2);
-            moveset3[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 1, 0, "Bite", 40, 0);
+            moveset3[0] = new movement(new int[7] { 1, 1, 0, 0, 0, 0, 0 }, 3, "Withdraw", Legacies.fog, 2);
+            moveset3[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 0, "Bite", 40, 0);
 
             movement[] moveset4 = new movement[1];
-            moveset4[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 1, 4, "Hydro Pump", 40, 20);
+            moveset4[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 4, "Hydro Pump", 40, 20);
 
             movement[] poliwag = new movement[1];
-            poliwag[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 4, "Water Gun", 10, 20);
+            poliwag[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 4, "Water Gun", 10, 20);
 
             movement[] poliwhirl = new movement[2];
-            poliwhirl[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 1, 5, "Amnesia", 0, 0);
-            poliwhirl[1] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 1, 6, "Double Slap", 30, 2);
+            poliwhirl[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 5, "Amnesia", 0, 0);
+            poliwhirl[1] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 6, "Double Slap", 30, 2);
 
             movement[] poliwrath = new movement[2];
-            poliwrath[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 1, 4, "Water Gun", 30, 20);
-            poliwrath[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 1, 7, "Whirlpool", 40, 1);
+            poliwrath[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 4, "Water Gun", 30, 20);
+            poliwrath[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 7, "Whirlpool", 40, 1);
 
             movement[] magikarp = new movement[2];
-            magikarp[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 1, 0, "Tackle", 10, 0);
-            magikarp[1] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 8, "Flail", 0, 0);
+            magikarp[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Tackle", 10, 0);
+            magikarp[1] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 8, "Flail", 0, 0);
 
             movement[] gyarados = new movement[2];
-            gyarados[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 1, 0, "Dragon Rage", 50, 0);
-            gyarados[1] = new movement(new int[7] { 0, 4, 0, 0, 0, 0, 0 }, 1, 2, "Bubble Beam", 40, 1);
+            gyarados[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 0, "Dragon Rage", 50, 0);
+            gyarados[1] = new movement(new int[7] { 0, 4, 0, 0, 0, 0, 0 }, 2, "Bubble Beam", 40, 1);
 
             movement[] seel = new movement[1];
-            seel[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 1, 0, "Headbutt", 10, 0);
+            seel[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 0, "Headbutt", 10, 0);
 
             movement[] dewgong = new movement[2];
-            dewgong[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 1, 0, "Aurora Beam", 50, 0);
-            dewgong[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 1, 2, "Ice Beam", 30, 1);
+            dewgong[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 0, "Aurora Beam", 50, 0);
+            dewgong[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 2, "Ice Beam", 30, 1);
 
             movement[] rattata = new movement[1];
-            rattata[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 0, "Bite", 20, 0);
+            rattata[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Bite", 20, 0);
 
             movement[] pidgey = new movement[1];
-            pidgey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 10, 0);
+            pidgey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 9, "Whirlwind", 10, 0);
 
             movement[] dodou = new movement[1];
-            dodou[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 6, "Fury Attack", 10, 2);
+            dodou[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 6, "Fury Attack", 10, 2);
 
             movement[] raticate = new movement[2];
-            raticate[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 0, "Bite", 20, 0);
-            raticate[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 10, "Super Fang", 0, 0);
+            raticate[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Bite", 20, 0);
+            raticate[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 10, "Super Fang", 0, 0);
 
             movement[] porygon = new movement[2];
-            porygon[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 11, "Conversion 1", 0, 0);
-            porygon[1] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 12, "Conversion 2", 0, 0);
+            porygon[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 11, "Conversion 1", 0, 0);
+            porygon[1] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 12, "Conversion 2", 0, 0);
 
             movement[] farfetchd = new movement[2];
-            farfetchd[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 13, "Leek Slap", 30, 1);
-            farfetchd[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 0, "Pot Smash", 30, 0);
+            farfetchd[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 13, "Leek Slap", 30, 1);
+            farfetchd[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, "Pot Smash", 30, 0);
 
             movement[] dratini = new movement[1];
-            dratini[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, 0, "Pound", 10, 0);
+            dratini[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Pound", 10, 0);
 
             movement[] pidgeotto = new movement[2];
-            pidgeotto[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, 9, "Whirlwind", 20, 0);
-            pidgeotto[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 14, "Mirror Move", 1, 0);
+            pidgeotto[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 9, "Whirlwind", 20, 0);
+            pidgeotto[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 14, "Mirror Move", 1, 0);
 
             movement[] dragonair = new movement[2];
-            dragonair[0] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 0, 6, "Slam", 30, 2);
-            dragonair[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 0, 7, "Hyper Beam", 20, 1);
+            dragonair[0] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 6, "Slam", 30, 2);
+            dragonair[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 7, "Hyper Beam", 20, 1);
+
+            movement[] clefairy = new movement[2];
+            clefairy[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 16, "Sing", 2, 0);
+            clefairy[1] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 15, "Metronome", 0, 0);
+
+            movement[] chansey = new movement[2];
+            chansey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Scrunch", Legacies.fog, 2);
+            chansey[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 17, "Double-Edge", 80, 80);
 
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
+            listBattlers[2] = new battler(0, Constants.TNormal, 120, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Chansey", 113, -1, chansey, null);
+            listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
             listBattlers[17] = new battler(1, Constants.TNormal, 80, Constants.TNone, 1, Constants.TPsychic, 30, 2, "Dragonair", 148, 147, dragonair, null);

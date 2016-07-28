@@ -34,6 +34,7 @@ namespace shandakemon.core
             {
                 case 0: return "normal";
                 case 1: return "paralyzed";
+                case 2: return "asleep";
                 default: return "Doge";
 
             }
@@ -43,6 +44,7 @@ namespace shandakemon.core
         public static int nameToStatus(string name)
         {
             if (string.Compare(name, "paralyzed") == 0) return 1;
+            if (string.Compare(name, "asleep") == 0) return 2;
             return -1;
         }
     }

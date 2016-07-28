@@ -30,6 +30,7 @@ namespace shandakemon.core
      *  status- Indicates which status the battler is suffering
      *      0- No status
      *      1- Paralyzed
+     *      2- Asleep
      *  id- Indicates the number of the pokemon in the national dex (for evolutive purposes)
      *  evolvesFrom- Indicates the number of the previous pokemon of the evolutive chain in the national dex
      *  name- Name of the pokemon
@@ -230,7 +231,7 @@ namespace shandakemon.core
         // Checks if the battler meets the conditions to retreat
         public bool canRetreat()
         {
-            movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, 0, "", 0, 0); // Create a proxy movement with the cost of retreating
+            movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, "", 0, 0); // Create a proxy movement with the cost of retreating
             return isUsable(retreatProxy); // Return its usability
         }
 
@@ -250,8 +251,8 @@ namespace shandakemon.core
         // Indicates if the battler can execute a power
         public bool CanUsePowers()
         {
-            // TODO: Add asleep and confused
-            return status != 1;
+            // TODO: Add confused
+            return status != 1 && status != 2;
         }
 
         public battler DeepCopy()

@@ -8,19 +8,20 @@ namespace shandakemon.core
     class effects
     {
         // A big-old switch which contains the necessary calls to execute movements 
-        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int type, int selector, int quantity1, int quantity2)
+        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int selector, int quantity1, int quantity2, bool costless)
         {
             switch (selector)
             {
                 case 0: // Simple damage
-                    damage(type, quantity1, target); 
+                    damage(source.element, quantity1, target); 
                     break;
                 case 1: // Discard and heal
-                    discardEnergy(source_controller, source, type, quantity1);
+                    if ( !costless )
+                        discardEnergy(source_controller, source, source.element, quantity1);
                     heal(source, quantity2);
                     break;
                 case 2: // Damage and coin for status
-                    damage(type, quantity1, target);
+                    damage(source.element, quantity1, target);
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report("You win the coin flip.");
@@ -39,30 +40,31 @@ namespace shandakemon.core
                         utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 4: // Damage empowered by excess of energy
-                    quantity1 += ExcessEnergy(mov, source) > quantity2? quantity2 : ExcessEnergy(mov, source);
-                    damage(type, quantity1, target);
+                    int exEner = ExcessEnergy(mov, source, Constants.TWater, costless);
+                    quantity1 += exEner > quantity2? quantity2 : exEner;
+                    damage(source.element, quantity1, target);
                     break;
                 case 5: // Deactivate a movement
                     MoveDeactivator(target);
                     break;
                 case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
-                    FlipDamage(target, type, quantity1, quantity2);
+                    FlipDamage(target, source.element, quantity1, quantity2);
                     break;
                 case 7: // Damage and discard
-                    damage(type, quantity1, target);
+                    damage(source.element, quantity1, target);
                     discardEnergy(target_controller, target, -1, 1);
                     break;
                 case 8: // Damage equal the number of damage counters
-                    damage(type, source.damage, target);
+                    damage(source.element, source.damage, target);
                     break;
                 case 9: // Damage and wheel
-                    damage(type, quantity1, target);
+                    damage(source.element, quantity1, target);
                     Wheel(target_controller);
                     break;
                 case 10: // Damage = Half of the remaining HP
                     int result = (target.HP - target.damage) / 2;
                     result += result % 10 == 5 ? 5 : 0;
-                    damage(type, result, target);
+                    damage(source.element, result, target);
                     break;
                 case 11: // Change target weakness
                     ChangeWeakness(target);
@@ -71,11 +73,27 @@ namespace shandakemon.core
                     ChangeResistance(source);
                     break;
                 case 13: // Leek Slap!
-                    FlipDamage(target, type, quantity1, quantity2);
+                    FlipDamage(target, source.element, quantity1, quantity2);
                     source.leekSlap = true;
                     break;
                 case 14: // Base set mirror movement
                     MirrorMove(source_controller, source, target_controller, target, quantity1);
+                    break;
+                case 15: // Execute a movement of the defender pokemon without paying costs
+                    ExDefMovement(source_controller, target_controller, source, target);
+                    break;
+                case 16: // Status by coin
+                    if (CRandom.RandomInt() < 0)
+                    {
+                        utils.Logger.Report("You win the coin flip.");
+                        inflictStatus(target, quantity1);
+                    }
+                    else
+                        utils.Logger.Report("You lose the coin flip.");
+                    break;
+                case 17: // Damage at both sides
+                    damage(source.element, quantity1, target);
+                    damage(source.element, quantity2, source);
                     break;
             }
         }
@@ -234,16 +252,18 @@ namespace shandakemon.core
         }
 
         // Checks for excesses of energy for a determined movement and adds it to the power
-        public static int ExcessEnergy(movement mov, battler source)
+        public static int ExcessEnergy(movement mov, battler source, int type, bool costless)
         {
-            int excess = source.energyTotal[mov.type] - mov.cost[mov.type];
+            if (costless) return source.energyTotal[type]*10;
+
+            int excess = source.energyTotal[type] - mov.cost[type];
 
             if (excess <= 0) return 0;
 
             int colorless = 0;
 
             for (int i = 0; i < mov.cost.Length; i++)
-                if (i != mov.type)
+                if (i != type)
                     colorless += source.energyTotal[i];
 
             if (colorless >= mov.cost[0]) return excess * 10;
@@ -311,7 +331,7 @@ namespace shandakemon.core
         // Change resistance of target battler
         public static void ChangeResistance(battler target)
         {
-            Console.WriteLine("Select the new type for the defending weakness: ");
+            Console.WriteLine("Select the new type for the defending resistance: ");
             Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
             target.res_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
@@ -359,6 +379,15 @@ namespace shandakemon.core
                         ChangeWeakness(target);
                 }
             }
+        }
+
+        // Execute a movement of the defending pokemon
+        public static void ExDefMovement(Player source_controller, Player target_controller, battler source, battler target)
+        {
+            Console.WriteLine(target.BattleDescription());
+            Console.WriteLine("Select a movement: ");
+            movement mov = target.movements[Convert.ToInt16(Console.ReadKey().KeyChar) - 49];
+            mov.execute(source_controller, target_controller, source, target, true);
         }
     }
 }

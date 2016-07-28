@@ -17,13 +17,12 @@ namespace shandakemon.core
     {
         public int[] cost;
         public bool usable;
-        public int type, quantity1, quantity2, effect;
+        public int quantity1, quantity2, effect;
         public string name;
 
-        public movement(int[] cost, int type, int effect, string name, int quantity1, int quantity2)
+        public movement(int[] cost,int effect, string name, int quantity1, int quantity2)
         {
             this.cost = cost;
-            this.type = type;
             this.quantity1 = quantity1;
             this.quantity2 = quantity2;
             this.effect = effect;
@@ -32,10 +31,10 @@ namespace shandakemon.core
         }
 
         // Call of execution
-        public void execute(Player source_controller, Player target_controller, battler source, battler target)
+        public void execute(Player source_controller, Player target_controller, battler source, battler target, bool costless = false)
         {
             utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
-            effects.move_selector(source_controller, target_controller, source, target, this, type, effect, quantity1, quantity2);
+            effects.move_selector(source_controller, target_controller, source, target, this, effect, quantity1, quantity2, costless);
         }
 
         // Outputs an string with the information of the movement
@@ -74,7 +73,7 @@ namespace shandakemon.core
             for (int i = 0; i < neoCost.Length; i++)
                 neoCost[i] = cost[i];
 
-            return new movement(neoCost, this.type, this.effect, this.name, this.quantity1, this.quantity2);
+            return new movement(neoCost, this.effect, this.name, this.quantity1, this.quantity2);
         }
     }
 }
