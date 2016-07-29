@@ -40,7 +40,7 @@ namespace shandakemon.core
                         utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 4: // Damage empowered by excess of energy
-                    int exEner = ExcessEnergy(mov, source, Constants.TWater, costless);
+                    int exEner = ExcessEnergy(mov, source, parameters[2], costless);
                     parameters[0] += exEner > parameters[1]? parameters[1] : exEner;
                     damage(source.element, parameters[0], target);
                     break;

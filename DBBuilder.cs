@@ -46,17 +46,17 @@ namespace shandakemon
             moveset3[1] = new movement(new int[7] { 2, 1, 0, 0, 0, 0, 0 }, 0, "Bite", new int[1] { 40 });
 
             movement[] moveset4 = new movement[1];
-            moveset4[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 4, "Hydro Pump", new int[2] { 40, 20 });
+            moveset4[0] = new movement(new int[7] { 0, 3, 0, 0, 0, 0, 0 }, 4, "Hydro Pump", new int[3] { 40, 20, Constants.TWater });
 
             movement[] poliwag = new movement[1];
-            poliwag[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 4, "Water Gun", new int[2] { 10, 20 });
+            poliwag[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 4, "Water Gun", new int[3] { 10, 20, Constants.TWater });
 
             movement[] poliwhirl = new movement[2];
             poliwhirl[0] = new movement(new int[7] { 0, 2, 0, 0, 0, 0, 0 }, 5, "Amnesia", null);
             poliwhirl[1] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 6, "Double Slap", new int[2] { 30, 2 });
 
             movement[] poliwrath = new movement[2];
-            poliwrath[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 4, "Water Gun", new int[2] { 30, 20 });
+            poliwrath[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 4, "Water Gun", new int[3] { 30, 20, Constants.TWater });
             poliwrath[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 7, "Whirlpool", new int[2] { 40, 1 });
 
             movement[] magikarp = new movement[2];
