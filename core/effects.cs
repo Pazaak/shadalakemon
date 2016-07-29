@@ -99,6 +99,9 @@ namespace shandakemon.core
                         discardEnergy(source_controller, source, parameters[1], parameters[2]);
                     damage(source.element, parameters[0], target);
                     break;
+                case 19: // Wheel
+                    Wheel(target_controller);
+                    break;
 
             }
         }
