@@ -114,6 +114,9 @@ namespace shandakemon
             chansey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Scrunch", Legacies.fog, 2);
             chansey[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 17, "Double-Edge", 80, 80);
 
+            movement[] vulpix = new movement[1];
+            vulpix[0] = new movement(new int[7] { 0, 0, 2, 0, 0, 0, 0 }, 2, "Confuse Ray", 10, 3);
+
             Power rainDance = new Power("Rain Dance", 0, 1, 0); // Creates a power
 
             battler[] listBattlers = new battler[69];
@@ -140,6 +143,7 @@ namespace shandakemon
             listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Squirtle", 7, -1, moveset2, null);
             listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Starmie", 121, 120, moveset1, null);
             listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Staryu", 120, -1, moveset, null);
+            listBattlers[67] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Vulpix", 37, -1, vulpix, null);
             
 
             MemoryStream stream1 = new MemoryStream();

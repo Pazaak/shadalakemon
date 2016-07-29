@@ -123,7 +123,7 @@ namespace shandakemon.core
                                 utils.Logger.Report(p1.ToString() + " lost the coin flip.");
                                 effects.damage(Constants.TNone, 30, p1.front);
                                 utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
-                                return 0;
+                                return 1;
                             }
                         }
                         else
