@@ -41,8 +41,7 @@ namespace shandakemon.core
                     break;
                 case 4: // Damage empowered by excess of energy
                     int exEner = ExcessEnergy(mov, source, parameters[2], costless);
-                    parameters[0] += exEner > parameters[1]? parameters[1] : exEner;
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0] + (exEner > parameters[1] ? parameters[1] : exEner), target);
                     break;
                 case 5: // Deactivate a movement
                     MoveDeactivator(target);

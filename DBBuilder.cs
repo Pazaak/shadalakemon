@@ -121,6 +121,10 @@ namespace shandakemon
             ponyta[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 0, "Smash Kick", new int[1] { 20 });
             ponyta[1] = new movement(new int[7] { 0, 0, 2, 0, 0, 0, 0 }, 0, "Flame Tail", new int[1] { 30 });
 
+            movement[] charmander = new movement[2];
+            charmander[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Scratch", new int[1] { 10 });
+            charmander[1] = new movement(new int[7] { 1, 0, 1, 0, 0, 0, 0 }, 18, "Ember", new int[3] { 30, Constants.TFire, 1 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { 0 }); // Creates a power
 
             battler[] listBattlers = new battler[69];
@@ -140,6 +144,7 @@ namespace shandakemon
             listBattlers[39] = new battler(1, Constants.TNormal, 60, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Raticate", 20, 19, raticate, null);
             listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Seel", 86, -1, seel, null);
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, -1, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[45] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Charmander", 4, -1, charmander, null);
             listBattlers[47] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 0, "Dodou", 84, -1, dodou, null);
             listBattlers[56] = new battler(0, Constants.TNormal, 40, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgey", 16, -1, pidgey, null);
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, -1, 0, 1, "Poliwag", 60, -1, poliwag, null);
