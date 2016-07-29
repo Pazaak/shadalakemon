@@ -31,6 +31,7 @@ namespace shandakemon.core
      *      0- No status
      *      1- Paralyzed
      *      2- Asleep
+     *      3- Confused
      *  id- Indicates the number of the pokemon in the national dex (for evolutive purposes)
      *  evolvesFrom- Indicates the number of the previous pokemon of the evolutive chain in the national dex
      *  name- Name of the pokemon
@@ -251,8 +252,7 @@ namespace shandakemon.core
         // Indicates if the battler can execute a power
         public bool CanUsePowers()
         {
-            // TODO: Add confused
-            return status != 1 && status != 2;
+            return status != 1 && status != 2 && status != 3;
         }
 
         public battler DeepCopy()

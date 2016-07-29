@@ -106,6 +106,26 @@ namespace shandakemon.core
                     case 97:
                         if (p1.front.status == 1 || p1.front.status == 2) // Statused
                             Console.WriteLine("Front pokemon is "+utilities.numToStatus(p1.front.status)+" and can't attack");
+                        else if ( p1.front.status == 3 ) // Confusion check
+                        {
+                            Console.WriteLine("Confusion check:");
+                            utils.Logger.Report("Confusion check:");
+                            if (CRandom.RandomInt() < 0)
+                            {
+                                Console.WriteLine(p1.ToString() + " won the coin flip.");
+                                utils.Logger.Report(p1.ToString() + " won the coin flip.");
+                                utils.Logger.Report(p1.ToString() + " advances to attack phase.");
+                                return 0;
+                            }
+                            else
+                            {
+                                Console.WriteLine(p1.ToString() + " lost the coin flip.");
+                                utils.Logger.Report(p1.ToString() + " lost the coin flip.");
+                                effects.damage(Constants.TNone, 30, p1.front);
+                                utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
+                                return 0;
+                            }
+                        }
                         else
                         {
                             utils.Logger.Report(p1.ToString() + " advances to attack phase.");
@@ -503,7 +523,7 @@ namespace shandakemon.core
                 return;
             }
 
-            if (p1.front.status == 1 || p1.front.status == 2) // Battler is paralyzed
+            if (p1.front.status == 1 || p1.front.status == 2) // Battler is statused
             {
                 Console.WriteLine("The pokemon cannot retreat due "+utilities.numToStatus(p1.front.status));
                 return;
