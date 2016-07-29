@@ -58,7 +58,7 @@ namespace shandakemon.core
         public Dictionary<int, int> conditions;
         public Power power;
 
-        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power)
+        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power, int legacy = -1)
         {
             this.type = type;
             this.element = element;
@@ -83,7 +83,10 @@ namespace shandakemon.core
             energyTotal = new int[7];
             this.prevolutions = new LinkedList<battler>();
             this.conditions = new Dictionary<int, int>();
-            
+
+            if (legacy != -1)
+                conditions.Add(legacy, 0);
+
         }
 
         // Sends the execute instruction to the selected movement
@@ -129,7 +132,10 @@ namespace shandakemon.core
         {
             energies.Add(input);
 
-            energyTotal[input.elem] += input.quan;
+            if (conditions.ContainsKey(Legacies.energyBurn))
+                energyTotal[Constants.TFire] += input.quan;
+            else
+                energyTotal[input.elem] += input.quan;
 
         }
 
@@ -138,7 +144,10 @@ namespace shandakemon.core
         {
             string output = name + ": ";
             foreach (energy en in energies)
-                output += en.ToProduction();
+                if (conditions.ContainsKey(Legacies.energyBurn))
+                    output += "F";
+                else
+                    output += en.ToProduction();
             output += Environment.NewLine;
 
             for (int i = 0; i < movements.Length; i++)
@@ -163,6 +172,11 @@ namespace shandakemon.core
         // mov- The movement to check usability
         private bool isUsable(movement mov)
         {
+            if (conditions.ContainsKey(Legacies.energyBurn) && (mov.cost[0] + mov.cost[2] <= energyTotal.Sum()))
+                return true;
+            else if (conditions.ContainsKey(Legacies.energyBurn))
+                return false;
+
             int colorless = 0;
             for (int i = 6; i >= 1; i--)
             {
@@ -192,10 +206,17 @@ namespace shandakemon.core
             this.status = 0;
             energies = new List<energy>();
             energyTotal = new int[7];
-            conditions.Clear();
+            ClearTemCond();
             this.res_elem = originalResElem;
             this.weak_elem = originalWeakElem;
             this.leekSlap = false;
+        }
+
+        // Eliminates temporal conditions
+        public void ClearTemCond()
+        {
+            foreach (int con in conditions.Keys.ToArray())
+                if (con < 100) conditions.Remove(con);
         }
 
         // Prepares a battler to return to bench
@@ -223,8 +244,12 @@ namespace shandakemon.core
         {
             string output = "";
 
-            for (int i = 0; i < energies.Count; i++)
-                output += (i + 1) + "- " + energies[i].ToString() + Environment.NewLine;
+            if (conditions.ContainsKey(Legacies.energyBurn)) // Energy burn is on
+                for (int i = 0; i < energies.Count; i++)
+                    output += (i + 1) + "- " + "Fire Energy" + Environment.NewLine;
+            else
+                for (int i = 0; i < energies.Count; i++)
+                    output += (i + 1) + "- " + energies[i].ToString() + Environment.NewLine;
 
             return output;
         }
@@ -243,7 +268,9 @@ namespace shandakemon.core
             string buffer = this.name;
 
             foreach (energy en in energies)
-                if (en.elem == elem)
+                if (conditions.ContainsKey(Legacies.energyBurn))
+                    buffer += " " + "F";
+                else if (en.elem == elem)
                     buffer += " " + utilities.numToType(elem);
 
             return buffer;
@@ -266,7 +293,13 @@ namespace shandakemon.core
             if (power != null)
                 neoPower = power.DeepCopy();
 
-            return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower);
+            int legacy = -1;
+            if (conditions.Count > 0)
+            {
+                legacy = conditions.Keys.ToArray()[0];
+            }
+
+            return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower, legacy);
         }
     }
 }

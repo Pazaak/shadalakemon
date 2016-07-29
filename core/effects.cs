@@ -163,7 +163,7 @@ namespace shandakemon.core
                 {
                     Console.WriteLine(source.showEnergy());
                     digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-                    if (source.energies[digit].elem == type || type == -1)
+                    if (source.energies[digit].elem == type || type == -1 || (type == Constants.TFire && source.conditions.ContainsKey(Legacies.energyBurn)))
                     {
                         source_controller.discardEnergy(source, digit);
                         end = true;

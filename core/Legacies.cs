@@ -8,10 +8,14 @@ namespace shandakemon.core
     // Specifies the indexes of the effects that the front battle may be suffering
     public static class Legacies
     {
+        // Conditions
         public static int fog = 0; // fog effects
         public static int deacMov1 = 1; // Movement 1 deactivated
         public static int deacMov2 = 2; // Movement 2 deactivated
         public static int deacMov3 = 3; // Movement 2 deactivated
+
+        // Pokebodies
+        public static int energyBurn = 100; // Energy burn
 
         public static string IndexToLegacy(int legacy)
         {

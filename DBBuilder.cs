@@ -144,12 +144,16 @@ namespace shandakemon
             ninetales[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 19, "Lure", null);
             ninetales[1] = new movement(new int[7] { 0, 0, 4, 0, 0, 0, 0 }, 18, "Fire Blast", new int[3] { 80, Constants.TFire, 1 });
 
+            movement[] charizard = new movement[1];
+            charizard[0] = new movement(new int[7] { 0, 0, 4, 0, 0, 0, 0 }, 18, "Fire Spin", new int[3] { 100, Constants.TFire, 2 });
+
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { 0 }); // Creates a power
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
             listBattlers[2] = new battler(0, Constants.TNormal, 120, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Chansey", 113, -1, chansey, null);
+            listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, Legacies.energyBurn);
             listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
             listBattlers[11] = new battler(1, Constants.TFire, 80, Constants.TWater, 2, Constants.TNone, 0, 1, "Ninetales", 38, 37, ninetales, null);
