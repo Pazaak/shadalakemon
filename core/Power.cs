@@ -14,16 +14,16 @@ namespace shandakemon.core
      */
     public class Power
     {
-        public int parameter1, parameter2, effect;
+        public int[] parameters;
+        public int effect;
         public string name;
         public bool active;
 
-        public Power(string name, int effect, int parameter1, int parameter2)
+        public Power(string name, int effect, int[] parameters)
         {
             this.name = name;
             this.effect = effect;
-            this.parameter1 = parameter1;
-            this.parameter2 = parameter2;
+            this.parameters = parameters;
             this.active = true;
         }
 
@@ -31,12 +31,21 @@ namespace shandakemon.core
         public void Execute(Player source_controller, battler source)
         {
             utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
-            effects.power_selector(source_controller, source, effect, parameter1, parameter2);
+            effects.power_selector(source_controller, source, effect, parameters);
         }
 
         public Power DeepCopy()
         {
-            return new Power(this.name, this.effect, this.parameter1, this.parameter2);
+            int[] neoParameters = null;
+
+            if (parameters != null)
+            {
+                neoParameters = new int[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                    neoParameters[i] = parameters[i];
+            }
+
+            return new Power(this.name, this.effect, neoParameters);
         }
     }
 }

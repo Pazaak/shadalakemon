@@ -8,24 +8,24 @@ namespace shandakemon.core
     class effects
     {
         // A big-old switch which contains the necessary calls to execute movements 
-        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int selector, int quantity1, int quantity2, bool costless)
+        public static void move_selector(Player source_controller, Player target_controller, battler source, battler target, movement mov, int selector, int[] parameters, bool costless)
         {
             switch (selector)
             {
                 case 0: // Simple damage
-                    damage(source.element, quantity1, target); 
+                    damage(source.element, parameters[0], target); 
                     break;
                 case 1: // Discard and heal
                     if ( !costless )
-                        discardEnergy(source_controller, source, source.element, quantity1);
-                    heal(source, quantity2);
+                        discardEnergy(source_controller, source, source.element, parameters[0]);
+                    heal(source, parameters[1]);
                     break;
                 case 2: // Damage and coin for status
-                    damage(source.element, quantity1, target);
+                    damage(source.element, parameters[0], target);
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report("You win the coin flip.");
-                        inflictStatus(target, quantity2);
+                        inflictStatus(target, parameters[1]);
                     }
                     else
                         utils.Logger.Report("You lose the coin flip.");
@@ -34,31 +34,31 @@ namespace shandakemon.core
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report("You win the coin flip.");
-                        addCondition(source, quantity1, quantity2); 
+                        addCondition(source, parameters[0], parameters[1]); 
                     }
                     else
                         utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 4: // Damage empowered by excess of energy
                     int exEner = ExcessEnergy(mov, source, Constants.TWater, costless);
-                    quantity1 += exEner > quantity2? quantity2 : exEner;
-                    damage(source.element, quantity1, target);
+                    parameters[0] += exEner > parameters[1]? parameters[1] : exEner;
+                    damage(source.element, parameters[0], target);
                     break;
                 case 5: // Deactivate a movement
                     MoveDeactivator(target);
                     break;
                 case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
-                    FlipDamage(target, source.element, quantity1, quantity2);
+                    FlipDamage(target, source.element, parameters[0], parameters[1]);
                     break;
                 case 7: // Damage and discard
-                    damage(source.element, quantity1, target);
+                    damage(source.element, parameters[0], target);
                     discardEnergy(target_controller, target, -1, 1);
                     break;
                 case 8: // Damage equal the number of damage counters
                     damage(source.element, source.damage, target);
                     break;
                 case 9: // Damage and wheel
-                    damage(source.element, quantity1, target);
+                    damage(source.element, parameters[0], target);
                     Wheel(target_controller);
                     break;
                 case 10: // Damage = Half of the remaining HP
@@ -73,11 +73,11 @@ namespace shandakemon.core
                     ChangeResistance(source);
                     break;
                 case 13: // Leek Slap!
-                    FlipDamage(target, source.element, quantity1, quantity2);
+                    FlipDamage(target, source.element, 30, 1);
                     source.leekSlap = true;
                     break;
                 case 14: // Base set mirror movement
-                    MirrorMove(source_controller, source, target_controller, target, quantity1);
+                    MirrorMove(source_controller, source, target_controller, target, parameters[0]);
                     break;
                 case 15: // Execute a movement of the defender pokemon without paying costs
                     ExDefMovement(source_controller, target_controller, source, target);
@@ -86,25 +86,31 @@ namespace shandakemon.core
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report("You win the coin flip.");
-                        inflictStatus(target, quantity1);
+                        inflictStatus(target, parameters[0]);
                     }
                     else
                         utils.Logger.Report("You lose the coin flip.");
                     break;
                 case 17: // Damage at both sides
-                    damage(source.element, quantity1, target);
-                    damage(source.element, quantity2, source);
+                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[1], source);
                     break;
+                case 18: // Discard to do damage
+                    if (!costless)
+                        discardEnergy(source_controller, source, parameters[1], parameters[2]);
+                    damage(source.element, parameters[0], target);
+                    break;
+
             }
         }
 
         // A big-old which that indicates the effects of the powers
-        public static void power_selector(Player source_controller, battler source, int selector, int quantity1, int quantity2)
+        public static void power_selector(Player source_controller, battler source, int selector, int[] parameters)
         {
             switch (selector)
             {
                 case 0: // Rain dance
-                    SwitchEnergySameType(source_controller, quantity1);
+                    SwitchEnergySameType(source_controller, parameters[0]);
                     // Can be executed any number of times
                     break;
             }

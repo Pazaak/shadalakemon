@@ -232,7 +232,7 @@ namespace shandakemon.core
         // Checks if the battler meets the conditions to retreat
         public bool canRetreat()
         {
-            movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, "", 0, 0); // Create a proxy movement with the cost of retreating
+            movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, "", null); // Create a proxy movement with the cost of retreating
             return isUsable(retreatProxy); // Return its usability
         }
 

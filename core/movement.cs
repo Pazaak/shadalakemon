@@ -17,14 +17,14 @@ namespace shandakemon.core
     {
         public int[] cost;
         public bool usable;
-        public int quantity1, quantity2, effect;
+        public int[] parameters;
+        public int effect;
         public string name;
 
-        public movement(int[] cost,int effect, string name, int quantity1, int quantity2)
+        public movement(int[] cost,int effect, string name, int[] parameters)
         {
             this.cost = cost;
-            this.quantity1 = quantity1;
-            this.quantity2 = quantity2;
+            this.parameters = parameters;
             this.effect = effect;
             this.name = name;
             this.usable = false;
@@ -34,7 +34,7 @@ namespace shandakemon.core
         public void execute(Player source_controller, Player target_controller, battler source, battler target, bool costless = false)
         {
             utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
-            effects.move_selector(source_controller, target_controller, source, target, this, effect, quantity1, quantity2, costless);
+            effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
         }
 
         // Outputs an string with the information of the movement
@@ -63,7 +63,7 @@ namespace shandakemon.core
             for (int i = 0; i < cost[0]; i++)
                 collector += "{C}";
 
-            return (collector + " " + this.name + " " + this.quantity1);
+            return (collector + " " + this.name);
         }
 
         public movement DeepCopy()
@@ -73,7 +73,16 @@ namespace shandakemon.core
             for (int i = 0; i < neoCost.Length; i++)
                 neoCost[i] = cost[i];
 
-            return new movement(neoCost, this.effect, this.name, this.quantity1, this.quantity2);
+            int[] neoParameters = null;
+            if (parameters != null)
+            {
+                neoParameters = new int[parameters.Length];
+
+                for (int i = 0; i < parameters.Length; i++)
+                    neoParameters[i] = parameters[i];
+            }
+
+            return new movement(neoCost, this.effect, this.name, neoParameters);
         }
     }
 }
