@@ -102,6 +102,10 @@ namespace shandakemon.core
                 case 19: // Wheel
                     Wheel(target_controller);
                     break;
+                case 20: // Damage and status
+                    damage(source.element, parameters[0], target);
+                    inflictStatus(target, parameters[1]);
+                    break;
 
             }
         }
