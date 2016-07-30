@@ -162,7 +162,13 @@ namespace shandakemon
             metapod[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 20, "Stun Spore", new int[2] { 20, 1 });
 
             movement[] koffing = new movement[1];
-            koffing[0] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 21, "Foul gas", new int[3] { 10, 10, 3 });
+            koffing[0] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 21, "Foul Gas", new int[3] { 10, 10, 3 });
+
+            movement[] caterpie = new movement[1];
+            caterpie[0] = new movement(new int[7] { 0, 0, 0, 1, 0, 0, 0 }, 2, "String Shot", new int[2] { 10, 1 });
+
+            movement[] bulbasaur = new movement[1];
+            bulbasaur[0] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 22, "Leech Seed", new int[2] { 20, 10 });
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
 
@@ -189,6 +195,8 @@ namespace shandakemon
             listBattlers[39] = new battler(1, Constants.TNormal, 60, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Raticate", 20, 19, raticate, null);
             listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Seel", 86, -1, seel, null);
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, -1, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[43] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Bulbasaur", 1, -1, bulbasaur, null);
+            listBattlers[44] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Caterpie", 10, -1, caterpie, null);
             listBattlers[45] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Charmander", 4, -1, charmander, null);
             listBattlers[47] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 0, "Dodou", 84, -1, dodou, null);
             listBattlers[50] = new battler(0, Constants.TGrass, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Koffing", 109, -1, koffing, null);

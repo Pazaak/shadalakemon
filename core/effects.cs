@@ -119,6 +119,10 @@ namespace shandakemon.core
                         inflictStatus(target, parameters[2]);
                     }
                     break;
+                case 22: // Damage and leech
+                    if (damage(source.element, parameters[0], target) > 0)
+                        heal(source, parameters[1]);
+                    break;
 
             }
         }
@@ -136,13 +140,13 @@ namespace shandakemon.core
         }
 
         // Does plain damage taking into account conditions and type effectiveness
-        public static void damage(int type, int quantity, battler target)
+        public static int damage(int type, int quantity, battler target)
         {
             if (target.conditions.ContainsKey(Legacies.fog)) // Prevent damage condition
             {
                 Console.WriteLine(target.ToString() + " is protected from damage.");
                 utils.Logger.Report(target.ToString() + " is protected from damage.");
-                return;
+                return 0;
             }
             int output = quantity;
             if (type == target.weak_elem) output *= target.weak_mod; // Apply weaknesses
@@ -155,6 +159,8 @@ namespace shandakemon.core
 
             Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
             utils.Logger.Report(target.ToString() + " received " + output + " points of damage.");
+
+            return output;
         }
 
         // Effect to discard a card, as a cost or as an effect
@@ -202,7 +208,7 @@ namespace shandakemon.core
             }
             else
             {
-                source.damage -= quantity;
+                source.damage -= source.damage >= quantity? quantity : 0;
                 Console.WriteLine(source.ToString()+" has "+quantity+" damage removed.");
                 utils.Logger.Report(source.ToString() + " has " + quantity + " damage removed.");
             }
