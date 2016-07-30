@@ -148,7 +148,7 @@ namespace shandakemon
             charizard[0] = new movement(new int[7] { 0, 0, 4, 0, 0, 0, 0 }, 18, "Fire Spin", new int[3] { 100, Constants.TFire, 2 });
 
 
-            Power rainDance = new Power("Rain Dance", 0, new int[1] { 0 }); // Creates a power
+            Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);

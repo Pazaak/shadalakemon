@@ -112,7 +112,7 @@ namespace shandakemon.core
             switch (selector)
             {
                 case 0: // Rain dance
-                    SwitchEnergySameType(source_controller, parameters[0]);
+                    PlayFreeEnergy(source_controller, parameters[0]);
                     // Can be executed any number of times
                     break;
             }
@@ -396,6 +396,53 @@ namespace shandakemon.core
             Console.WriteLine("Select a movement: ");
             movement mov = target.movements[Convert.ToInt16(Console.ReadKey().KeyChar) - 49];
             mov.execute(source_controller, target_controller, source, target, true);
+        }
+
+        public static void PlayFreeEnergy(Player source, int elem)
+        {
+            Console.WriteLine("Attach " + utilities.numToType(elem) + " a energy card from your hand to " + utilities.numToType(elem) + " pokémon. 0 to exit");
+            Console.WriteLine(source.writeHand());
+
+            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+
+            if (digit == -1) // Exit without selecting
+                return;
+
+            if ( source.hand[digit].getSuperType() != 2) // Not an energy card
+            {
+                Console.WriteLine("That isn't a energy card.");
+                return;
+            }
+
+            energy selected = (energy)source.hand[digit];
+
+            if ( selected.elem != elem)
+            {
+                Console.WriteLine("That isn't a "+ utilities.numToType(elem)+" energy card.");
+                return;
+            }
+
+            Console.WriteLine("Select a " + utilities.numToType(elem) + " pokémon. 0 to exit");
+            Console.WriteLine(source.writeBattlers());
+
+            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
+
+            if (digit == -2) // Exit without selecting
+                return;
+
+            battler target = null;
+
+            if (digit == -1) target = source.front;
+            else target = source.benched[digit];
+
+            if (target.element != elem) // Not a pokémon of the selected type
+            {
+                Console.WriteLine("That isn't a "+utilities.numToType(elem)+" pokémon.");
+                return;
+            }
+
+            target.attachEnergy(selected);
+            source.hand.Remove(selected);
         }
     }
 }
