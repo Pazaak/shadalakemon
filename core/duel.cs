@@ -236,14 +236,14 @@ namespace shandakemon.core
                     Console.WriteLine(p2.front.ToString() + " still sleeping.");
             }
 
-            if ( p1.front.status == 3) // Poison check
+            if ( p1.front.status == 10) // Poison check
             {
                 Console.WriteLine(p1.front.ToString() + " takes damage due poisoning.");
                 utils.Logger.Report(p1.front.ToString() + " takes damage due poisoning.");
                 effects.damage(Constants.TNone, 10, p1.front);
             }
 
-            if (p2.front.status == 3) // Poison check
+            if (p2.front.status == 10) // Poison check
             {
                 Console.WriteLine(p2.front.ToString() + " takes damage due poisoning.");
                 utils.Logger.Report(p2.front.ToString() + " takes damage due poisoning.");

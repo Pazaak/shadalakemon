@@ -147,6 +147,9 @@ namespace shandakemon
             movement[] charizard = new movement[1];
             charizard[0] = new movement(new int[7] { 0, 0, 4, 0, 0, 0, 0 }, 18, "Fire Spin", new int[3] { 100, Constants.TFire, 2 });
 
+            movement[] weedle = new movement[1];
+            weedle[0] = new movement(new int[7] { 0, 0, 0, 1, 0, 0, 0 }, 2, "Poison Sting", new int[2] { 10, 10 });
+
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
 
@@ -183,7 +186,8 @@ namespace shandakemon
             listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Starmie", 121, 120, moveset1, null);
             listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Staryu", 120, -1, moveset, null);
             listBattlers[67] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Vulpix", 37, -1, vulpix, null);
-            
+            listBattlers[68] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Weedle", 13, -1, weedle, null);
+
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(listBattlers, Formatting.Indented);
