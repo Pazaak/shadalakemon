@@ -32,6 +32,7 @@ namespace shandakemon.core
      *      1- Paralyzed
      *      2- Asleep
      *      3- Confused
+     *      10- Poisoned
      *  id- Indicates the number of the pokemon in the national dex (for evolutive purposes)
      *  evolvesFrom- Indicates the number of the previous pokemon of the evolutive chain in the national dex
      *  name- Name of the pokemon

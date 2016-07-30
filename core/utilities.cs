@@ -36,6 +36,7 @@ namespace shandakemon.core
                 case 1: return "paralyzed";
                 case 2: return "asleep";
                 case 3: return "confused";
+                case 10: return "poisoned";
                 default: return "Doge";
 
             }
@@ -47,6 +48,7 @@ namespace shandakemon.core
             if (string.Compare(name, "paralyzed") == 0) return 1;
             if (string.Compare(name, "asleep") == 0) return 2;
             if (string.Compare(name, "confused") == 0) return 3;
+            if (string.Compare(name, "poisoned") == 0) return 10;
             return -1;
         }
     }
