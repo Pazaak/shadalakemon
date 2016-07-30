@@ -154,6 +154,15 @@ namespace shandakemon
             tangela[0] = new movement(new int[7] { 1, 0, 0, 1, 0, 0, 0 }, 2, "Bind", new int[2] { 20, 1 });
             tangela[1] = new movement(new int[7] { 0, 0, 0, 3, 0, 0, 0 }, 20, "Poison Sting", new int[2] { 20, 10 });
 
+            movement[] nidoranm = new movement[1];
+            nidoranm[0] = new movement(new int[7] { 0, 0, 0, 1, 0, 0, 0 }, 6, "Horn Hazard", new int[2] { 30, 1 });
+
+            movement[] metapod = new movement[2];
+            metapod[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Stiffen", new int[2] { Legacies.fog, 2 });
+            metapod[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 20, "Stun Spore", new int[2] { 20, 1 });
+
+            movement[] koffing = new movement[1];
+            koffing[0] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 21, "Foul gas", new int[3] { 10, 10, 3 });
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
 
@@ -182,6 +191,9 @@ namespace shandakemon
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, -1, 0, 1, "Wartortle", 8, 7, moveset3, null);
             listBattlers[45] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Charmander", 4, -1, charmander, null);
             listBattlers[47] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 0, "Dodou", 84, -1, dodou, null);
+            listBattlers[50] = new battler(0, Constants.TGrass, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Koffing", 109, -1, koffing, null);
+            listBattlers[53] = new battler(1, Constants.TGrass, 70, Constants.TFire, 2, Constants.TNone, 0, 2, "Metapod", 11, 10, metapod, null);
+            listBattlers[54] = new battler(0, Constants.TGrass, 40, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Nidoran M", 32, -1, nidoranm, null);
             listBattlers[56] = new battler(0, Constants.TNormal, 40, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgey", 16, -1, pidgey, null);
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, -1, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[59] = new battler(0, Constants.TFire, 40, Constants.TWater, 2, Constants.TNone, 0, 1, "Ponyta", 77, -1, ponyta, null);

@@ -24,20 +24,20 @@ namespace shandakemon.core
                     damage(source.element, parameters[0], target);
                     if (CRandom.RandomInt() < 0)
                     {
-                        utils.Logger.Report("You win the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         inflictStatus(target, parameters[1]);
                     }
                     else
-                        utils.Logger.Report("You lose the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                     break;
                 case 3: // Add condition by coin
                     if (CRandom.RandomInt() < 0)
                     {
-                        utils.Logger.Report("You win the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         addCondition(source, parameters[0], parameters[1]); 
                     }
                     else
-                        utils.Logger.Report("You lose the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                     break;
                 case 4: // Damage empowered by excess of energy
                     int exEner = ExcessEnergy(mov, source, parameters[2], costless);
@@ -84,11 +84,11 @@ namespace shandakemon.core
                 case 16: // Status by coin
                     if (CRandom.RandomInt() < 0)
                     {
-                        utils.Logger.Report("You win the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         inflictStatus(target, parameters[0]);
                     }
                     else
-                        utils.Logger.Report("You lose the coin flip.");
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                     break;
                 case 17: // Damage at both sides
                     damage(source.element, parameters[0], target);
@@ -105,6 +105,19 @@ namespace shandakemon.core
                 case 20: // Damage and status
                     damage(source.element, parameters[0], target);
                     inflictStatus(target, parameters[1]);
+                    break;
+                case 21: // Damage and one of two status by coin
+                    damage(source.element, parameters[0], target);
+                    if (CRandom.RandomInt() < 0)
+                    {
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
+                        inflictStatus(target, parameters[1]);
+                    }
+                    else
+                    {
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        inflictStatus(target, parameters[2]);
+                    }
                     break;
 
             }
