@@ -26,12 +26,20 @@ namespace shandakemon.core
         public bool battleFlow()
         {
             this.initialPhase(); // Initial hands, placement of battlers and prices
+            int result;
 
             while (true)
             {
                 // Player 1
                 energyLimit = false;
-                switch (mainPhase(player1)) // Main phase of the duel
+                result = mainPhase(player1); // Main phase of the duel
+
+                if (endPhase(player1, player2)) // Check for letal damage
+                    return true;
+                if (endPhase(player2, player1))
+                    return false;
+
+                switch (result) 
                 {
                     case -1: return false;
                     case 0: attackPhase(player1, player2); break; // Attack phase of the duel
@@ -45,9 +53,21 @@ namespace shandakemon.core
 
                 betweenTurns(player1, player2); // Between turns phase
 
+                if (endPhase(player1, player2)) // Check for letal damage
+                    return true;
+                if (endPhase(player2, player1))
+                    return false;
+
                 // Player 2
                 energyLimit = false;
-                switch (mainPhase(player2))
+                result = mainPhase(player2);
+
+                if (endPhase(player2, player1))
+                    return false;
+                if (endPhase(player1, player2)) // Check for letal damage
+                    return true;
+
+                switch (result)
                 {
                     case -1: return false;
                     case 0: attackPhase(player2, player1); break;
@@ -60,6 +80,11 @@ namespace shandakemon.core
                     return true;
 
                 betweenTurns(player2, player1);
+
+                if (endPhase(player2, player1))
+                    return false;
+                if (endPhase(player1, player2)) // Check for letal damage
+                    return true;
             }
         }
 
@@ -203,52 +228,13 @@ namespace shandakemon.core
         {
             p1.clearSickness(); // Removes the summoning sicknes
 
-            if (p1.front.status == 1) // Heal if paralyzed
-            {
-                p1.front.status = 0;
-                Console.WriteLine(p1.front.ToString() + " is not longer paralyzed.");
-                utils.Logger.Report(p1.front.ToString() + " is not longer paralyzed.");
-            }
+            p1.ParalysisCheck();
 
-            if (p1.front.status == 2) // Try to heal if asleep
-            {
-                if (CRandom.RandomInt() < 0)
-                {
-                    p1.front.status = 0;
-                    utils.Logger.Report(p1.ToString() + " wins the coin flip.");
-                    Console.WriteLine(p1.front.ToString() + " awakes.");
-                    utils.Logger.Report(p1.front.ToString() + " awakes.");
-                }
-                else
-                    Console.WriteLine(p1.front.ToString() + " still sleeping.");
-            }
+            p1.SleepCheck();
+            p2.SleepCheck();
 
-            if (p2.front.status == 2) // Try to heal if asleep
-            {
-                if (CRandom.RandomInt() < 0)
-                {
-                    p2.front.status = 0;
-                    utils.Logger.Report(p2.ToString() + " wins the coin flip.");
-                    Console.WriteLine(p2.front.ToString() + " awakes.");
-                    utils.Logger.Report(p2.front.ToString() + " awakes.");
-                }
-                else
-                    Console.WriteLine(p2.front.ToString() + " still sleeping.");
-            }
-
-            if ( p1.front.status == 10) // Poison check
-            {
-                Console.WriteLine(p1.front.ToString() + " takes damage due poisoning.");
-                utils.Logger.Report(p1.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 10, p1.front);
-            }
-
-            if (p2.front.status == 10) // Poison check
-            {
-                Console.WriteLine(p2.front.ToString() + " takes damage due poisoning.");
-                utils.Logger.Report(p2.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 10, p2.front);
-            }
+            p1.PoisonCheck();
+            p2.PoisonCheck();
 
             p1.checkConditions();
             p2.checkConditions(); // Decrease the counters of the conditions

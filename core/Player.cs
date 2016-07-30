@@ -260,5 +260,42 @@ namespace shandakemon.core
 
             utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + front.ToString() + " placed in the active area.");
         }
+
+        // Paralysis check
+        public void ParalysisCheck()
+        {
+            if (this.front.status == 1) // Heal if paralyzed
+            {
+                this.front.status = 0;
+                Console.WriteLine(this.front.ToString() + " is not longer paralyzed.");
+                utils.Logger.Report(this.front.ToString() + " is not longer paralyzed.");
+            }
+        }
+
+        public void SleepCheck()
+        {
+            if (this.front.status == 2) // Try to heal if asleep
+            {
+                if (CRandom.RandomInt() < 0)
+                {
+                    this.front.status = 0;
+                    utils.Logger.Report(this.ToString() + " wins the coin flip.");
+                    Console.WriteLine(this.front.ToString() + " awakes.");
+                    utils.Logger.Report(this.front.ToString() + " awakes.");
+                }
+                else
+                    Console.WriteLine(this.front.ToString() + " still sleeping.");
+            }
+        }
+
+        public void PoisonCheck()
+        {
+            if (this.front.status == 10) // Poison check
+            {
+                Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
+                utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
+                effects.damage(Constants.TNone, 10, this.front);
+            }
+        }
     }
 }
