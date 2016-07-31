@@ -209,7 +209,7 @@ namespace shandakemon.core
         {
             Console.WriteLine("1- "+front.ShowEnergyByType(elem));
             for (int i = 0; i < benched.Count; i++)
-                Console.WriteLine((i + 2) + benched[i].ShowEnergyByType(elem));
+                Console.WriteLine((i + 2) + "- " + benched[i].ShowEnergyByType(elem));
         }
 
         // Makes the power active again

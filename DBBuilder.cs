@@ -159,7 +159,7 @@ namespace shandakemon
 
             movement[] metapod = new movement[2];
             metapod[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Stiffen", new int[2] { Legacies.fog, 2 });
-            metapod[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 20, "Stun Spore", new int[2] { 20, 1 });
+            metapod[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 2, "Stun Spore", new int[2] { 20, 1 });
 
             movement[] koffing = new movement[1];
             koffing[0] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 21, "Foul Gas", new int[3] { 10, 10, 3 });
@@ -176,13 +176,21 @@ namespace shandakemon
 
             movement[] kakuna = new movement[2];
             kakuna[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Stiffen", new int[2] { Legacies.fog, 2 });
-            kakuna[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 20, "Poisonpowder", new int[2] { 20, 10 });
+            kakuna[1] = new movement(new int[7] { 0, 0, 0, 2, 0, 0, 0 }, 2, "Poisonpowder", new int[2] { 20, 10 });
 
             movement[] ivysaur = new movement[2];
             ivysaur[0] = new movement(new int[7] { 2, 0, 0, 1, 0, 0, 0 }, 0, "Vine Whip", new int[1] { 30 });
             ivysaur[1] = new movement(new int[7] { 0, 0, 0, 3, 0, 0, 0 }, 20, "Poisonpowder", new int[2] { 20, 10 });
 
+            movement[] beedrill = new movement[2];
+            beedrill[0] = new movement(new int[7] { 3, 0, 0, 0, 0, 0, 0 }, 6, "Twineedle", new int[2] { 30, 2 });
+            beedrill[1] = new movement(new int[7] { 0, 0, 0, 3, 0, 0, 0 }, 2, "Poison Sting", new int[2] { 40, 10 });
+
+            movement[] venusaur = new movement[1];
+            venusaur[0] = new movement(new int[7] { 0, 0, 0, 4, 0, 0, 0 }, 0, "Solar Beam", new int[1] { 60 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
+            Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
 
             battler[] listBattlers = new battler[69];
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
@@ -192,6 +200,8 @@ namespace shandakemon
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
             listBattlers[11] = new battler(1, Constants.TFire, 80, Constants.TWater, 2, Constants.TNone, 0, 1, "Ninetales", 38, 37, ninetales, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
+            listBattlers[14] = new battler(1, Constants.TGrass, 100, Constants.TFire, 2, Constants.TNone, 0, 2, "Venusaur", 3, 2, venusaur, energyTrans);
+            listBattlers[16] = new battler(1, Constants.TGrass, 80, Constants.TFire, 2, Constants.TFighting, 30, 0, "Beedrill", 15, 14, beedrill, null);
             listBattlers[17] = new battler(1, Constants.TNormal, 80, Constants.TNone, 1, Constants.TPsychic, 30, 2, "Dragonair", 148, 147, dragonair, null);
             listBattlers[21] = new battler(1, Constants.TNormal, 60, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgeotto", 17, 16, pidgeotto, null);
             listBattlers[22] = new battler(1, Constants.TFire, 100, Constants.TWater, 2, Constants.TNone, 0, 3, "Arcanine", 59, 58, arcanine, null);

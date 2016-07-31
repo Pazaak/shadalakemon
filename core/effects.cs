@@ -136,6 +136,9 @@ namespace shandakemon.core
                     PlayFreeEnergy(source_controller, parameters[0]);
                     // Can be executed any number of times
                     break;
+                case 1: // Energy trans
+                    SwitchEnergySameType(source_controller, parameters[0]);
+                    break;
             }
         }
 
@@ -252,7 +255,7 @@ namespace shandakemon.core
             }
 
             int counter = 0;
-            while (!source.energies[counter].name.Equals("Water Energy")) // TODO: Only can take Water Energy
+            while (source.energies[counter].elem != elem)
                 counter++;
 
             energy selected = source.energies[counter];
@@ -265,15 +268,10 @@ namespace shandakemon.core
 
             battler target = null;
 
-            if (digit == -1 && source_controller.front.element == elem)
+            if (digit == -1)
                 target = source_controller.front;
-            else if (source_controller.benched[digit].element == elem)
+            else 
                 target = source_controller.benched[digit];
-            else
-            {
-                Console.WriteLine("This pokemon is not " + utilities.numToType(elem) + " type.");
-                return;
-            }
 
             target.attachEnergy(selected);
 
