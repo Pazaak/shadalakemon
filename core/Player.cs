@@ -42,6 +42,16 @@ namespace shandakemon.core
             return "Player " + id;
         }
 
+        // Shows visually the number of damage counters on each battler
+        public string ShowDamage()
+        {
+            string output = "1- " + front.ToString() + " " + front.ShowDamage()+Environment.NewLine;
+
+            for (int i = 0; i < benched.Count; i++)
+                output += (i + 2) + "- " + benched[i].ToString() + " " + benched[i].ShowDamage() + Environment.NewLine;
+            return output;
+        }
+
         // Method that suffles the deck
         public void shuffle()
         {

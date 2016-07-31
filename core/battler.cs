@@ -256,6 +256,15 @@ namespace shandakemon.core
             return output;
         }
 
+        // Method that represents the damage visually
+        public string ShowDamage()
+        {
+            string output = "";
+            for (int i = 0; i < damage / 10; i++)
+                output += "X";
+            return output;
+        }
+
         // Checks if the battler meets the conditions to retreat
         public bool canRetreat()
         {

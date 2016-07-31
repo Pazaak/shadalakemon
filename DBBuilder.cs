@@ -220,10 +220,15 @@ namespace shandakemon
             mewtwo[0] = new movement(new int[7] { 1, 0, 0, 0, 1, 0, 0 }, 28, "Psychic", new int[1] { 10 });
             mewtwo[1] = new movement(new int[7] { 0, 0, 0, 0, 2, 0, 0 }, 24, "Barrier", new int[4] { Constants.TPsychic, 1, Legacies.barrier, 2 });
 
+            movement[] alakazam = new movement[1];
+            alakazam[0] = new movement(new int[7] { 0, 0, 0, 0, 3, 0, 0 }, 2, "Confuse Ray", new int[2] { 30, 3 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
+            Power damageSwap = new Power("Damage Swap", 2, null);
 
             battler[] listBattlers = new battler[69];
+            listBattlers[0] = new battler(1, Constants.TPsychic, 80, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Alakazam", 65, 64, alakazam, damageSwap);
             listBattlers[1] = new battler(1, Constants.TWater, 100, Constants.TElectric, 2, -1, 0, 3, "Blastoise", 9, 8, moveset4, rainDance);
             listBattlers[2] = new battler(0, Constants.TNormal, 120, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Chansey", 113, -1, chansey, null);
             listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, Legacies.energyBurn);

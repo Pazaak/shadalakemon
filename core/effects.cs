@@ -173,6 +173,9 @@ namespace shandakemon.core
                 case 1: // Energy trans
                     SwitchEnergySameType(source_controller, parameters[0]);
                     break;
+                case 2: // Damage Swap
+                    ExchangeDamage(source_controller);
+                    break;
             }
         }
 
@@ -524,6 +527,54 @@ namespace shandakemon.core
 
             target.attachEnergy(selected);
             source.hand.Remove(selected);
+        }
+
+        // Exchange damage between battlers
+        public static void ExchangeDamage(Player source_controller)
+        {
+            Console.WriteLine("Select a pokemon with damage counters on it: (Press 0 to exit)");
+            Console.WriteLine(source_controller.ShowDamage());
+
+            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50; // selection
+            if (digit == -2) return; // 0 equals exit
+
+            battler source; // select the source of the damage
+            if (digit == -1) source = source_controller.front;
+            else source = source_controller.benched[digit];
+
+            if (source.damage == 0) // Discard a selection with zero damage
+            {
+                Console.WriteLine("That pokemon hasn't damage counters on it");
+                return;
+            }
+
+            source.damage -= 10; // Substract the damage from source
+
+            Console.WriteLine("Select a pokemon to put damage counters on it: (Press 0 to exit)");
+            Console.WriteLine(source_controller.ShowDamage());
+
+            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50; // selection
+            if (digit == -2) // 0 equals exit
+            {
+                source.damage += 10;
+                return;
+            } 
+
+            battler target; // select the source of the damage
+            if (digit == -1) target = source_controller.front;
+            else target = source_controller.benched[digit];
+
+            if (target.damage+10 == target.HP) // Discard a selection that will be knocked out
+            {
+                source.damage += 10;
+                Console.WriteLine("That pokemon will be knocked out with further damage");
+                return;
+            }
+
+            // All clear, proceed to exchange damage
+            target.damage += 10;
+            Console.WriteLine(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter");
+            utils.Logger.Report(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter");
         }
     }
 }
