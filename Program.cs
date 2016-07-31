@@ -26,7 +26,7 @@ namespace shandakemon
 
             for (int i = 0; i < 20; i++) // Energies
             {
-                deck1.AddFirst(energies[7].DeepCopy());
+                deck1.AddFirst(energies[6].DeepCopy());
 
                 if ( i < 12)
                     deck2.AddFirst(energies[4].DeepCopy());
