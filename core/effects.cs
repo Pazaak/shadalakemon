@@ -155,6 +155,9 @@ namespace shandakemon.core
                     else
                         Console.WriteLine(target.ToString() + " is not under " + utilities.numToStatus(parameters[1]));
                     break;
+                case 28: // Damage empowered by the energy attached to the target
+                    damage(source.element, parameters[0] + target.energies.Count*10, target, source, target_controller, source_controller);
+                    break;
             }
         }
 

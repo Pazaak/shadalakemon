@@ -284,6 +284,7 @@ namespace shandakemon.core
             return status != 1 && status != 2 && status != 3;
         }
 
+        // Copies the battler
         public battler DeepCopy()
         {
             movement[] neoMovements = new movement[movements.Length];

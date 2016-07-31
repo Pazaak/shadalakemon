@@ -216,6 +216,10 @@ namespace shandakemon
             haunter[0] = new movement(new int[7] { 0, 0, 0, 0, 1, 0, 0 }, 26, "Hypnosis", new int[1] { 2 });
             haunter[1] = new movement(new int[7] { 0, 0, 0, 0, 2, 0, 0 }, 27, "Dream Eater", new int[2] { 50, 2 });
 
+            movement[] mewtwo = new movement[2];
+            mewtwo[0] = new movement(new int[7] { 1, 0, 0, 0, 1, 0, 0 }, 28, "Psychic", new int[1] { 10 });
+            mewtwo[1] = new movement(new int[7] { 0, 0, 0, 0, 2, 0, 0 }, 24, "Barrier", new int[4] { Constants.TPsychic, 1, Legacies.barrier, 2 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
 
@@ -225,6 +229,7 @@ namespace shandakemon
             listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, Legacies.energyBurn);
             listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
+            listBattlers[9] = new battler(0, Constants.TPsychic, 60, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Mewtwo", 150, -1, mewtwo, null);
             listBattlers[10] = new battler(1, Constants.TGrass, 90, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Nidoking", 34, 33, nidoking, null);
             listBattlers[11] = new battler(1, Constants.TFire, 80, Constants.TWater, 2, Constants.TNone, 0, 1, "Ninetales", 38, 37, ninetales, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);

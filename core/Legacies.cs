@@ -14,6 +14,7 @@ namespace shandakemon.core
         public static int deacMov2 = 2; // Movement 2 deactivated
         public static int deacMov3 = 3; // Movement 2 deactivated
         public static int destinyBound = 4; // Kill the opposite if killed
+        public static int barrier = 5; // protected from all effects
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn

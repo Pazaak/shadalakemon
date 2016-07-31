@@ -34,7 +34,13 @@ namespace shandakemon.core
         public void execute(Player source_controller, Player target_controller, battler source, battler target, bool costless = false)
         {
             utils.Logger.Report(source.ToString() + " uses " + this.name + ".");
-            effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
+            if (target.conditions.ContainsKey(Legacies.barrier))
+            {
+                Console.WriteLine(target.ToString() + " is protected from attacks.");
+                utils.Logger.Report(target.ToString() + " is protected from attacks.");
+            }
+            else
+                effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
         }
 
         // Outputs an string with the information of the movement
