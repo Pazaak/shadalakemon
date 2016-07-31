@@ -143,6 +143,9 @@ namespace shandakemon.core
                         discardEnergy(source_controller, source, parameters[0], parameters[1]);
                     addCondition(source, parameters[2], parameters[3]);
                     break;
+                case 25: // Damage + opposite damage counters
+                    damage(source.element, parameters[0] + target.damage, target, source, target_controller, source_controller);
+                    break;
 
             }
         }

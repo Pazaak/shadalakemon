@@ -197,6 +197,21 @@ namespace shandakemon
             ghastly[0] = new movement(new int[7] { 0, 0, 0, 0, 1, 0, 0 }, 16, "Sleeping Gas", new int[1] { 2 });
             ghastly[1] = new movement(new int[7] { 1, 0, 0, 0, 1, 0, 0 }, 24, "Destiny Bond", new int[4] { Constants.TPsychic, 1, Legacies.destinyBound, 2 });
 
+            movement[] drowzee = new movement[2];
+            drowzee[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Pound", new int[1] { 10 });
+            drowzee[1] = new movement(new int[7] { 0, 0, 0, 0, 2, 0, 0 }, 2, "Confuse Ray", new int[2] { 10, 3 });
+
+            movement[] abra = new movement[1];
+            abra[0] = new movement(new int[7] { 0, 0, 0, 0, 1, 0, 0 }, 2, "Psyshock", new int[2] { 10, 1 });
+
+            movement[] kadabra = new movement[2];
+            kadabra[0] = new movement(new int[7] { 0, 0, 0, 0, 2, 0, 0 }, 1, "Recover", new int[2] { 1, 0 });
+            kadabra[1] = new movement(new int[7] { 1, 0, 0, 0, 2, 0, 0 }, 0, "Super Psy", new int[1] { 50 });
+
+            movement[] jynx = new movement[2];
+            jynx[0] = new movement(new int[7] { 0, 0, 0, 0, 1, 0, 0 }, 6, "Doubleslap", new int[2] { 10, 2 });
+            jynx[1] = new movement(new int[7] { 1, 0, 0, 0, 2, 0, 0 }, 25, "Meditate", new int[1] { 20 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
 
@@ -220,6 +235,8 @@ namespace shandakemon
             listBattlers[26] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Farfetch'd", 83, -1, farfetchd, null);
             listBattlers[27] = new battler(0, Constants.TFire, 60, Constants.TWater, 2, Constants.TNone, 0, 1, "Growlithe", 58, -1, growlithe, null);
             listBattlers[29] = new battler(1, Constants.TGrass, 60, Constants.TFire, 2, Constants.TNone, 0, 1, "Ivysaur", 2, 1, ivysaur, null);
+            listBattlers[30] = new battler(0, Constants.TPsychic, 70, Constants.TPsychic, 2, Constants.TNone, 0, 2, "Jynx", 124, -1, jynx, null);
+            listBattlers[31] = new battler(1, Constants.TPsychic, 60, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Kadabra", 64, 63, kadabra, null);
             listBattlers[32] = new battler(1, Constants.TGrass, 80, Constants.TFire, 2, Constants.TNone, 0, 2, "Kakuna", 14, 13, kakuna, null);
             listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, -1, 0, 1, "Magikarp", 129, -1, magikarp, null);
             listBattlers[35] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 2, "Magmar", 126, -1, magmar, null);
@@ -229,10 +246,12 @@ namespace shandakemon
             listBattlers[39] = new battler(1, Constants.TNormal, 60, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Raticate", 20, 19, raticate, null);
             listBattlers[40] = new battler(0, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Seel", 86, -1, seel, null);
             listBattlers[41] = new battler(1, Constants.TWater, 70, Constants.TElectric, 2, -1, 0, 1, "Wartortle", 8, 7, moveset3, null);
+            listBattlers[42] = new battler(0, Constants.TPsychic, 30, Constants.TPsychic, 2, Constants.TNone, 0, 0, "Abra", 63, -1, abra, null);
             listBattlers[43] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Bulbasaur", 1, -1, bulbasaur, null);
             listBattlers[44] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Caterpie", 10, -1, caterpie, null);
             listBattlers[45] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Charmander", 4, -1, charmander, null);
             listBattlers[47] = new battler(0, Constants.TNormal, 50, Constants.TElectric, 2, Constants.TFighting, 30, 0, "Dodou", 84, -1, dodou, null);
+            listBattlers[48] = new battler(0, Constants.TPsychic, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Drowzee", 96, -1, drowzee, null);
             listBattlers[49] = new battler(0, Constants.TPsychic, 30, Constants.TNone, 1, Constants.TFighting, 30, 0, "Ghastly", 92, -1, ghastly, null);
             listBattlers[50] = new battler(0, Constants.TGrass, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Koffing", 109, -1, koffing, null);
             listBattlers[53] = new battler(1, Constants.TGrass, 70, Constants.TFire, 2, Constants.TNone, 0, 2, "Metapod", 11, 10, metapod, null);
