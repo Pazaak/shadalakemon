@@ -13,10 +13,12 @@ namespace shandakemon.core
      *  discarded- List of cards in the discard pile
      *  deck- List of cards in the deck
      *  prices- Array of price cards
+     *  winCOndition- Determines if the player won
      */
     public class Player
     {
         public int id;
+        public bool winCondition;
         public battler front, lastFront;
         public List<battler> benched;
         public List<card> hand;
@@ -32,6 +34,7 @@ namespace shandakemon.core
             this.hand = new List<card>();
             this.prices = new card[nPrices];
             this.benched = new List<battler>();
+            this.winCondition = false;
         }
 
         public override string ToString()
@@ -261,6 +264,47 @@ namespace shandakemon.core
             utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + front.ToString() + " placed in the active area.");
         }
 
+        // Method to select a price
+        public void PriceProcedure()
+        {
+            bool[] prices = this.listPrices(); // Checks available prices
+            string numPrices = "";
+            for (int i = 0; i < prices.Length; i++)
+                numPrices += prices[i] ? (i + 1) + " " : "";
+
+            Console.WriteLine("Select a price card to draw: " + numPrices);
+
+            int index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Asks for the price
+            while (!prices[index])
+            {
+                Console.WriteLine("Invalid selection. Select a price card to draw: " + numPrices);
+                index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+            }
+
+            this.drawPrice(index);  // Draws the price
+
+            prices = this.listPrices(); // Checks if the are not more prices to draw
+            bool accu = false;
+            for (int i = 0; i < prices.Length; i++)
+                accu = accu || prices[i];
+
+            if (!accu)
+            {
+                Console.WriteLine("No more price cards. Player " + this.id + " wins."); // Makes the player win
+                utils.Logger.Report(this.ToString() + " has no more price cards. " + this.ToString() + " wins.");
+                winCondition = true;
+            }
+        }
+
+        // Procedure to select a new front battler
+        public void KnockoutProcedure()
+        {
+            Console.WriteLine(this.ToString() + ": Select a benched pokemon"); // Ask for a battler to put in front
+            Console.WriteLine(this.writeBenched());
+
+            this.toFront(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
+        }
+
         // Paralysis check
         public void ParalysisCheck()
         {
@@ -272,6 +316,7 @@ namespace shandakemon.core
             }
         }
 
+        // Sleep check
         public void SleepCheck()
         {
             if (this.front.status == 2) // Try to heal if asleep
@@ -287,21 +332,22 @@ namespace shandakemon.core
                     Console.WriteLine(this.front.ToString() + " still sleeping.");
             }
         }
-
-        public void PoisonCheck()
+        
+        // Poison check
+        public void PoisonCheck(Player p2)
         {
             if (this.front.status == 10) // Poison check
             {
                 Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
                 utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 10, this.front);
+                effects.damage(Constants.TNone, 10, this.front, null, this, p2);
             }
 
             if (this.front.status == 11) // Strongly Poison check
             {
                 Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
                 utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 20, this.front);
+                effects.damage(Constants.TNone, 20, this.front, null, this, p2);
             }
         }
     }

@@ -32,11 +32,11 @@ namespace shandakemon.core
             {
                 // Player 1
                 energyLimit = false;
-                result = mainPhase(player1); // Main phase of the duel
+                result = mainPhase(player1, player2); // Main phase of the duel
 
-                if (endPhase(player1, player2)) // Check for letal damage
+                if (player1.winCondition) // Check for a winning player
                     return true;
-                if (endPhase(player2, player1))
+                if (player2.winCondition)
                     return false;
 
                 switch (result) 
@@ -45,26 +45,26 @@ namespace shandakemon.core
                     case 0: attackPhase(player1, player2); break; // Attack phase of the duel
                     case 1: break;
                 }
-                    
-                if (endPhase(player1, player2)) // Check for letal damage
+
+                if (player1.winCondition) // Check for a winning player
                     return true;
-                if (endPhase(player2, player1))
+                if (player2.winCondition)
                     return false;
 
                 betweenTurns(player1, player2); // Between turns phase
 
-                if (endPhase(player1, player2)) // Check for letal damage
+                if (player1.winCondition) // Check for a winning player
                     return true;
-                if (endPhase(player2, player1))
+                if (player2.winCondition)
                     return false;
 
                 // Player 2
                 energyLimit = false;
-                result = mainPhase(player2);
+                result = mainPhase(player2, player1);
 
-                if (endPhase(player2, player1))
+                if (player2.winCondition) // Check for a winning player
                     return false;
-                if (endPhase(player1, player2)) // Check for letal damage
+                if (player1.winCondition)
                     return true;
 
                 switch (result)
@@ -74,16 +74,16 @@ namespace shandakemon.core
                     case 1: break;
                 }
 
-                if (endPhase(player2, player1))
+                if (player2.winCondition) // Check for a winning player
                     return false;
-                if (endPhase(player1, player2)) // Check for letal damage
+                if (player1.winCondition)
                     return true;
 
                 betweenTurns(player2, player1);
 
-                if (endPhase(player2, player1))
+                if (player2.winCondition) // Check for a winning player
                     return false;
-                if (endPhase(player1, player2)) // Check for letal damage
+                if (player1.winCondition)
                     return true;
             }
         }
@@ -105,7 +105,7 @@ namespace shandakemon.core
         // -1: p1 lost
         // 0: Normal exit
         // 1: No attack exit
-        public int mainPhase(Player p1)
+        public int mainPhase(Player p1, Player p2)
         {
             utils.Logger.Report("-> " + p1.ToString() + "'s main phase");
 
@@ -146,7 +146,7 @@ namespace shandakemon.core
                             {
                                 Console.WriteLine(p1.ToString() + " lost the coin flip.");
                                 utils.Logger.Report(p1.ToString() + " lost the coin flip.");
-                                effects.damage(Constants.TNone, 30, p1.front);
+                                effects.damage(Constants.TNone, 30, p1.front, null, p1, p2);
                                 utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
                                 return 1;
                             }
@@ -173,59 +173,6 @@ namespace shandakemon.core
             }
         }
 
-        // Controls the cases in which a battler has to be discarded by damage
-        public bool endPhase(Player p1, Player p2)
-        {
-            if (p2.front.damage < p2.front.HP) return (false);
-
-            if (p2.front.conditions.ContainsKey(Legacies.destinyBound))
-                p1.front.damage = p1.front.HP;
-
-            p2.frontToDiscard();
-
-            bool[] prices = p1.listPrices(); // Checks available prices
-            string numPrices = "";
-            for (int i = 0; i < prices.Length; i++)
-                numPrices += prices[i] ? (i+1) + " " : "";
-
-            Console.WriteLine("Select a price card to draw: " + numPrices);
-
-            int index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Asks for the price
-            while (!prices[index])
-            {
-                Console.WriteLine("Invalid selection. Select a price card to draw: " + numPrices);
-                index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-            }
-
-            p1.drawPrice(index);  // Draws the price
-
-            prices = p1.listPrices(); // Checks if the are not more prices to draw
-            bool accu = false;
-            for (int i = 0; i < prices.Length; i++)
-                accu = accu || prices[i];
-
-            if (!accu)
-            {
-                Console.WriteLine("No more price cards. Player " + p1.id + " wins."); // Makes the player win
-                utils.Logger.Report(p1.ToString() + " has no more price cards. " + p1.ToString() + " wins.");
-                return (true);
-            }
-
-            if (p2.benched.Count == 0) // Check if there is no other battler in play
-            {
-                Console.WriteLine(p2.ToString()+" has no benched pokemon. " + p1.ToString() + " wins."); // The player losses
-                utils.Logger.Report(p2.ToString() + " has no benched pokemon. " + p1.ToString() + " wins.");
-                return (true);
-            }
-
-            Console.WriteLine(p1.ToString() + ": Select a benched pokemon"); // Ask for a battler to put in front
-            Console.WriteLine(p2.writeBenched());
-
-            p2.toFront(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
-
-            return (false);
-        }
-
         // Status check phase
         public void betweenTurns(Player p1, Player p2)
         {
@@ -236,8 +183,8 @@ namespace shandakemon.core
             p1.SleepCheck();
             p2.SleepCheck();
 
-            p1.PoisonCheck();
-            p2.PoisonCheck();
+            p1.PoisonCheck(p2);
+            p2.PoisonCheck(p1);
 
             p1.checkConditions();
             p2.checkConditions(); // Decrease the counters of the conditions

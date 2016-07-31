@@ -13,7 +13,7 @@ namespace shandakemon.core
             switch (selector)
             {
                 case 0: // Simple damage
-                    damage(source.element, parameters[0], target); 
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller); 
                     break;
                 case 1: // Discard and heal
                     if ( !costless )
@@ -21,7 +21,7 @@ namespace shandakemon.core
                     heal(source, parameters[1]);
                     break;
                 case 2: // Damage and coin for status
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
@@ -41,29 +41,29 @@ namespace shandakemon.core
                     break;
                 case 4: // Damage empowered by excess of energy
                     int exEner = ExcessEnergy(mov, source, parameters[2], costless);
-                    damage(source.element, parameters[0] + (exEner > parameters[1] ? parameters[1] : exEner), target);
+                    damage(source.element, parameters[0] + (exEner > parameters[1] ? parameters[1] : exEner), target, source, target_controller, source_controller);
                     break;
                 case 5: // Deactivate a movement
                     MoveDeactivator(target);
                     break;
                 case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
-                    FlipDamage(target, source.element, parameters[0], parameters[1]);
+                    damage(source.element, FlipDamage(parameters[0], parameters[1]), target, source, target_controller, source_controller);
                     break;
                 case 7: // Damage and discard
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     discardEnergy(target_controller, target, -1, 1);
                     break;
                 case 8: // Damage equal the number of damage counters
-                    damage(source.element, source.damage, target);
+                    damage(source.element, source.damage, target, source, target_controller, source_controller);
                     break;
                 case 9: // Damage and wheel
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     Wheel(target_controller);
                     break;
                 case 10: // Damage = Half of the remaining HP
                     int result = (target.HP - target.damage) / 2;
                     result += result % 10 == 5 ? 5 : 0;
-                    damage(source.element, result, target);
+                    damage(source.element, result, target, source, target_controller, source_controller);
                     break;
                 case 11: // Change target weakness
                     ChangeWeakness(target);
@@ -72,7 +72,7 @@ namespace shandakemon.core
                     ChangeResistance(source);
                     break;
                 case 13: // Leek Slap!
-                    FlipDamage(target, source.element, 30, 1);
+                    damage(source.element, FlipDamage(30, 1), target, source, target_controller, source_controller);
                     source.leekSlap = true;
                     break;
                 case 14: // Base set mirror movement
@@ -91,23 +91,23 @@ namespace shandakemon.core
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                     break;
                 case 17: // Damage at both sides
-                    damage(source.element, parameters[0], target);
-                    damage(source.element, parameters[1], source);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    damage(Constants.TNone, parameters[1], source, source, target_controller, source_controller);
                     break;
                 case 18: // Discard to do damage
                     if (!costless)
                         discardEnergy(source_controller, source, parameters[1], parameters[2]);
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     break;
                 case 19: // Wheel
                     Wheel(target_controller);
                     break;
                 case 20: // Damage and status
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     inflictStatus(target, parameters[1]);
                     break;
                 case 21: // Damage and one of two status by coin
-                    damage(source.element, parameters[0], target);
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     if (CRandom.RandomInt() < 0)
                     {
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
@@ -120,7 +120,7 @@ namespace shandakemon.core
                     }
                     break;
                 case 22: // Damage and leech
-                    if (damage(source.element, parameters[0], target) > 0)
+                    if (damage(source.element, parameters[0], target, source, target_controller, source_controller) > 0)
                         heal(source, parameters[1]);
                     break;
                 case 23: // Extra damage or recoil
@@ -135,8 +135,8 @@ namespace shandakemon.core
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                         extraDamage = false;
                     }
-                    damage(source.element, extraDamage? parameters[0] + parameters[1] : parameters[0], target);
-                    if (!extraDamage) damage(Constants.TNone, parameters[2], source);
+                    damage(source.element, extraDamage? parameters[0] + parameters[1] : parameters[0], target, source, target_controller, source_controller);
+                    if (!extraDamage) damage(Constants.TNone, parameters[2], source, source, target_controller, source_controller);
                     break;
                 case 24: // Discard type and legacy [element, quantity, legacy, duration]
                     if (!costless)
@@ -163,7 +163,7 @@ namespace shandakemon.core
         }
 
         // Does plain damage taking into account conditions and type effectiveness
-        public static int damage(int type, int quantity, battler target)
+        public static int damage(int type, int quantity, battler target, battler source, Player target_controller, Player source_controller)
         {
             if (target.conditions.ContainsKey(Legacies.fog)) // Prevent damage condition
             {
@@ -182,6 +182,30 @@ namespace shandakemon.core
 
             Console.WriteLine(target.ToString() + " received " + output + " points of damage.");
             utils.Logger.Report(target.ToString() + " received " + output + " points of damage.");
+
+            // Check for knockout
+            if (target.damage >= target.HP)
+            {
+                bool doomIndicator = false;
+                if (source != null && source.conditions.ContainsKey(Legacies.destinyBound))
+                    doomIndicator = true;
+
+                target_controller.frontToDiscard();
+
+                source_controller.PriceProcedure();
+
+                if (target_controller.benched.Count > 0)
+                    target_controller.KnockoutProcedure();
+                else
+                {
+                    Console.WriteLine(target_controller.ToString() + " has no benched pokemon. " + source_controller.ToString() + " wins."); // The player losses
+                    utils.Logger.Report(target_controller.ToString() + " has no benched pokemon. " + source_controller.ToString() + " wins.");
+                    source_controller.winCondition = true;
+                }
+
+                if (doomIndicator)
+                    effects.damage(Constants.TNone, source.HP, source, null, source_controller, target_controller);
+            }
 
             return output;
         }
@@ -331,7 +355,7 @@ namespace shandakemon.core
         }
 
         // Deals damage equals to the number of flips winned
-        public static void FlipDamage(battler target, int type, int quantity, int flips)
+        public static int FlipDamage(int quantity, int flips)
         {
             int multiplier = 0;
 
@@ -341,7 +365,7 @@ namespace shandakemon.core
 
             Console.WriteLine(multiplier + " successful flips.");
             utils.Logger.Report(multiplier + " successful flips.");
-            damage(type, quantity * multiplier, target);
+            return quantity * multiplier;
         }
 
         // Wheels the front pokemon
@@ -407,7 +431,7 @@ namespace shandakemon.core
                 if ( s.Contains(source.ToString() + " received ") )
                 {
                     string[] temp = s.Split(' ');
-                    damage(Constants.TNone, Int32.Parse(temp[2]), target);
+                    damage(Constants.TNone, Int32.Parse(temp[2]), target, source, target_controller, source_controller);
                 }
             }
 
