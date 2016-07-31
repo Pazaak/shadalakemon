@@ -13,6 +13,7 @@ namespace shandakemon.core
         public static int deacMov1 = 1; // Movement 1 deactivated
         public static int deacMov2 = 2; // Movement 2 deactivated
         public static int deacMov3 = 3; // Movement 2 deactivated
+        public static int destinyBound = 4; // Kill the opposite if killed
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn
@@ -29,6 +30,8 @@ namespace shandakemon.core
                     return " has its second attack deactivated.";
                 case 3:
                     return " has its third attack deactivated.";
+                case 4:
+                    return " is under the effects of Destiny Bound";
                 default:
                     return " PANIC PANIC PANIC.";
             }

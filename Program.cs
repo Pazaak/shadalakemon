@@ -28,9 +28,9 @@ namespace shandakemon
             {
                 deck1.AddFirst(energies[6].DeepCopy());
 
-                if ( i < 12)
-                    deck2.AddFirst(energies[4].DeepCopy());
-                if ( i < 8 )
+                if ( i < 20)
+                    deck2.AddFirst(energies[5].DeepCopy());
+                if ( i < 0 )
                     deck2.AddFirst(energies[6].DeepCopy());
 
                 if ( i < 6 )
@@ -51,12 +51,12 @@ namespace shandakemon
                     deck1.AddFirst(battlers[37].DeepCopy());
                 }
 
-                if ( i < 8 )
+                if ( i < 20 )
                 {
-                    deck2.AddFirst(battlers[54].DeepCopy());
+                    deck2.AddFirst(battlers[49].DeepCopy());
                 }
 
-                if ( i < 6 )
+                if ( i < 0 )
                 {
                     deck2.AddFirst(battlers[10].DeepCopy());
                     deck2.AddFirst(battlers[36].DeepCopy());

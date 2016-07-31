@@ -138,6 +138,11 @@ namespace shandakemon.core
                     damage(source.element, extraDamage? parameters[0] + parameters[1] : parameters[0], target);
                     if (!extraDamage) damage(Constants.TNone, parameters[2], source);
                     break;
+                case 24: // Discard type and legacy [element, quantity, legacy, duration]
+                    if (!costless)
+                        discardEnergy(source_controller, source, parameters[0], parameters[1]);
+                    addCondition(source, parameters[2], parameters[3]);
+                    break;
 
             }
         }

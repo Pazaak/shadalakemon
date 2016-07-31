@@ -178,6 +178,9 @@ namespace shandakemon.core
         {
             if (p2.front.damage < p2.front.HP) return (false);
 
+            if (p2.front.conditions.ContainsKey(Legacies.destinyBound))
+                p1.front.damage = p1.front.HP;
+
             p2.frontToDiscard();
 
             bool[] prices = p1.listPrices(); // Checks available prices
