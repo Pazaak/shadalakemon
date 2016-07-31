@@ -296,6 +296,13 @@ namespace shandakemon.core
                 utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
                 effects.damage(Constants.TNone, 10, this.front);
             }
+
+            if (this.front.status == 11) // Strongly Poison check
+            {
+                Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
+                utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
+                effects.damage(Constants.TNone, 20, this.front);
+            }
         }
     }
 }

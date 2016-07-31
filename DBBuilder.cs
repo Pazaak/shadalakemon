@@ -189,6 +189,10 @@ namespace shandakemon
             movement[] venusaur = new movement[1];
             venusaur[0] = new movement(new int[7] { 0, 0, 0, 4, 0, 0, 0 }, 0, "Solar Beam", new int[1] { 60 });
 
+            movement[] nidoking = new movement[2];
+            nidoking[0] = new movement(new int[7] { 2, 0, 0, 1, 0, 0, 0 }, 23, "Thrash", new int[3] { 30, 10, 10 });
+            nidoking[1] = new movement(new int[7] { 0, 0, 0, 3, 0, 0, 0 }, 20, "Toxic", new int[2] { 20, 11 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
 
@@ -198,6 +202,7 @@ namespace shandakemon
             listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, Legacies.energyBurn);
             listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
+            listBattlers[10] = new battler(1, Constants.TGrass, 90, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Nidoking", 34, 33, nidoking, null);
             listBattlers[11] = new battler(1, Constants.TFire, 80, Constants.TWater, 2, Constants.TNone, 0, 1, "Ninetales", 38, 37, ninetales, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
             listBattlers[14] = new battler(1, Constants.TGrass, 100, Constants.TFire, 2, Constants.TNone, 0, 2, "Venusaur", 3, 2, venusaur, energyTrans);

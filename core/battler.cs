@@ -33,6 +33,7 @@ namespace shandakemon.core
      *      2- Asleep
      *      3- Confused
      *      10- Poisoned
+     *      11- Strongly Poisoned (20 damage per turn)
      *  id- Indicates the number of the pokemon in the national dex (for evolutive purposes)
      *  evolvesFrom- Indicates the number of the previous pokemon of the evolutive chain in the national dex
      *  name- Name of the pokemon

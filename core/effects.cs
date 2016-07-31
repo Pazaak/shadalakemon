@@ -123,6 +123,21 @@ namespace shandakemon.core
                     if (damage(source.element, parameters[0], target) > 0)
                         heal(source, parameters[1]);
                     break;
+                case 23: // Extra damage or recoil
+                    bool extraDamage;
+                    if (CRandom.RandomInt() < 0)
+                    {
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
+                        extraDamage = true;
+                    }
+                    else
+                    {
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        extraDamage = false;
+                    }
+                    damage(source.element, extraDamage? parameters[0] + parameters[1] : parameters[0], target);
+                    if (!extraDamage) damage(Constants.TNone, parameters[2], source);
+                    break;
 
             }
         }
