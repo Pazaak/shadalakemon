@@ -187,12 +187,14 @@ namespace shandakemon.core
             if (target.damage >= target.HP)
             {
                 bool doomIndicator = false;
-                if (source != null && source.conditions.ContainsKey(Legacies.destinyBound))
+                if (source != null && target.conditions.ContainsKey(Legacies.destinyBound))
                     doomIndicator = true;
 
                 target_controller.frontToDiscard();
 
                 source_controller.PriceProcedure();
+
+                if (source_controller.winCondition) return output; // break
 
                 if (target_controller.benched.Count > 0)
                     target_controller.KnockoutProcedure();
@@ -204,7 +206,7 @@ namespace shandakemon.core
                 }
 
                 if (doomIndicator)
-                    effects.damage(Constants.TNone, source.HP, source, null, source_controller, target_controller);
+                    effects.damage(Constants.TNone, source.HP - source.damage, source, null, source_controller, target_controller);
             }
 
             return output;
