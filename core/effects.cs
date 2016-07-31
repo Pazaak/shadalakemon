@@ -146,7 +146,15 @@ namespace shandakemon.core
                 case 25: // Damage + opposite damage counters
                     damage(source.element, parameters[0] + target.damage, target, source, target_controller, source_controller);
                     break;
-
+                case 26: // Status
+                    inflictStatus(target, parameters[0]);
+                    break;
+                case 27: // Damage only while statused
+                    if (target.status == parameters[1])
+                        damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    else
+                        Console.WriteLine(target.ToString() + " is not under " + utilities.numToStatus(parameters[1]));
+                    break;
             }
         }
 
