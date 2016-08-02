@@ -237,6 +237,10 @@ namespace shandakemon
             digglet[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 1, 0 }, 0, "Dig", new int[1] { 10 });
             digglet[1] = new movement(new int[7] { 0, 0, 0, 0, 0, 2, 0 }, 0, "Mud Slap", new int[1] { 30 });
 
+            movement[] machoke = new movement[2];
+            machoke[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 2, 0 }, 31, "Karate Chop", new int[1] { 50 });
+            machoke[1] = new movement(new int[7] { 2, 0, 0, 0, 0, 2, 0 }, 17, "Submission", new int[2] { 60, 20 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
             Power damageSwap = new Power("Damage Swap", 2, null);
@@ -267,6 +271,7 @@ namespace shandakemon
             listBattlers[30] = new battler(0, Constants.TPsychic, 70, Constants.TPsychic, 2, Constants.TNone, 0, 2, "Jynx", 124, -1, jynx, null);
             listBattlers[31] = new battler(1, Constants.TPsychic, 60, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Kadabra", 64, 63, kadabra, null);
             listBattlers[32] = new battler(1, Constants.TGrass, 80, Constants.TFire, 2, Constants.TNone, 0, 2, "Kakuna", 14, 13, kakuna, null);
+            listBattlers[33] = new battler(1, Constants.TFighting, 80, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Machoke", 67, 66, machoke, null);
             listBattlers[34] = new battler(0, Constants.TWater, 30, Constants.TElectric, 2, -1, 0, 1, "Magikarp", 129, -1, magikarp, null);
             listBattlers[35] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 2, "Magmar", 126, -1, magmar, null);
             listBattlers[36] = new battler(1, Constants.TGrass, 60, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Nidorino", 33, 32, nidorino, null);

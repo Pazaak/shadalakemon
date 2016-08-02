@@ -174,6 +174,9 @@ namespace shandakemon.core
                     Array.Copy(parameters, 1, temp, 0, temp.Length);
                     addCondition(source, parameters[0], temp);
                     break;
+                case 31: // Damage downpowered by damage
+                    damage(source.element, parameters[0]-source.damage <= 0? 0 : parameters[0] - source.damage, target, source, target_controller, source_controller);
+                    break;
             }
         }
 
