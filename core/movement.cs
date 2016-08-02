@@ -39,6 +39,19 @@ namespace shandakemon.core
                 Console.WriteLine(target.ToString() + " is protected from attacks.");
                 utils.Logger.Report(target.ToString() + " is protected from attacks.");
             }
+            else if (source.conditions.ContainsKey(Legacies.blinded))
+            {
+                Console.WriteLine(source.ToString() + Legacies.IndexToLegacy(Legacies.blinded));
+                utils.Logger.Report(source.ToString() + Legacies.IndexToLegacy(Legacies.blinded));
+                if (CRandom.RandomInt() >= 0)
+                {
+                    Console.WriteLine(source_controller.ToString() + " losses the coin flip. "+source.ToString()+" fails to attack." );
+                    utils.Logger.Report(source_controller.ToString() + " losses the coin flip. " + source.ToString() + " fails to attack.");
+                    return;
+                }
+                Console.WriteLine(source_controller.ToString() + " wins the coin flip. " + source.ToString() + " proceeds to attack.");
+                utils.Logger.Report(source_controller.ToString() + " wins the coin flip. " + source.ToString() + " proceeds to attack.");
+            }
             else
                 effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
         }

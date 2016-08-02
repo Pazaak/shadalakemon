@@ -223,6 +223,9 @@ namespace shandakemon
             movement[] alakazam = new movement[1];
             alakazam[0] = new movement(new int[7] { 0, 0, 0, 0, 3, 0, 0 }, 2, "Confuse Ray", new int[2] { 30, 3 });
 
+            movement[] sandshrew = new movement[1];
+            sandshrew[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 1, 0 }, 29, "Sand-attack", new int[3] { 10, Legacies.blinded, 2 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
             Power damageSwap = new Power("Damage Swap", 2, null);
@@ -275,6 +278,7 @@ namespace shandakemon
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, -1, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[59] = new battler(0, Constants.TFire, 40, Constants.TWater, 2, Constants.TNone, 0, 1, "Ponyta", 77, -1, ponyta, null);
             listBattlers[60] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 0, "Rattata", 19, -1, rattata, null);
+            listBattlers[61] = new battler(0, Constants.TFighting, 40, Constants.TGrass, 2, Constants.TElectric, 30, 1, "Sandshrew", 27, -1, sandshrew, null);
             listBattlers[62] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Squirtle", 7, -1, moveset2, null);
             listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Starmie", 121, 120, moveset1, null);
             listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Staryu", 120, -1, moveset, null);

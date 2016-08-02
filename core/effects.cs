@@ -158,6 +158,10 @@ namespace shandakemon.core
                 case 28: // Damage empowered by the energy attached to the target
                     damage(source.element, parameters[0] + target.energies.Count*10, target, source, target_controller, source_controller);
                     break;
+                case 29: // Damage and legacy to the opponent
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    addCondition(target, parameters[1], parameters[2]);
+                    break;
             }
         }
 
