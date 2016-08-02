@@ -196,10 +196,10 @@ namespace shandakemon.core
         {
             foreach (var key in front.conditions.Keys.ToList())
             {
-                if (front.conditions[key] == 1) // Only front can have conditions (?)
+                if (front.conditions[key][0] == 1) // Only front can have conditions (?)
                     front.conditions.Remove(key);
                 else
-                    front.conditions[key]--;
+                    front.conditions[key][0]--;
             }
         }
 

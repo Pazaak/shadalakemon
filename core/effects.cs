@@ -31,10 +31,13 @@ namespace shandakemon.core
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
                     break;
                 case 3: // Add condition by coin
+                    int[] temp;
                     if (CRandom.RandomInt() < 0)
                     {
+                        temp = new int[parameters.Length-1];
+                        Array.Copy(parameters, 1, temp, 0, temp.Length);
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
-                        addCondition(source, parameters[0], parameters[1]); 
+                        addCondition(source, parameters[0], temp); 
                     }
                     else
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
@@ -141,7 +144,9 @@ namespace shandakemon.core
                 case 24: // Discard type and legacy [element, quantity, legacy, duration]
                     if (!costless)
                         discardEnergy(source_controller, source, parameters[0], parameters[1]);
-                    addCondition(source, parameters[2], parameters[3]);
+                    temp = new int[parameters.Length - 3];
+                    Array.Copy(parameters, 3, temp, 0, temp.Length);
+                    addCondition(source, parameters[2], temp);
                     break;
                 case 25: // Damage + opposite damage counters
                     damage(source.element, parameters[0] + target.damage, target, source, target_controller, source_controller);
@@ -160,7 +165,9 @@ namespace shandakemon.core
                     break;
                 case 29: // Damage and legacy to the opponent
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
-                    addCondition(target, parameters[1], parameters[2]);
+                    temp = new int[parameters.Length - 2];
+                    Array.Copy(parameters, 2, temp, 0, temp.Length);
+                    addCondition(target, parameters[1], temp);
                     break;
             }
         }
@@ -294,9 +301,9 @@ namespace shandakemon.core
         }
 
         // Adds a condition
-        public static void addCondition(battler source, int condition, int duration)
+        public static void addCondition(battler source, int condition, int[] parameters)
         {
-            source.conditions.Add(condition, duration);
+            source.conditions.Add(condition, parameters);
             Console.WriteLine(source.ToString()+Legacies.IndexToLegacy(condition));
             utils.Logger.Report(source.ToString() + Legacies.IndexToLegacy(condition));
         }
@@ -374,7 +381,7 @@ namespace shandakemon.core
             for (int i = 0; i < target.movements.Length; i++)
                 Console.WriteLine((i + 1) +"- "+ target.movements[i].ToString());
 
-            addCondition(target, Convert.ToInt16(Console.ReadKey().KeyChar) - 48, 2);
+            addCondition(target, Legacies.deacMov, new int[2] { 2, Convert.ToInt16(Console.ReadKey().KeyChar) - 49 });
         }
 
         // Deals damage equals to the number of flips winned

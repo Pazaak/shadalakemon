@@ -10,12 +10,10 @@ namespace shandakemon.core
     {
         // Conditions
         public static int fog = 0; // fog effects
-        public static int deacMov1 = 1; // Movement 1 deactivated
-        public static int deacMov2 = 2; // Movement 2 deactivated
-        public static int deacMov3 = 3; // Movement 2 deactivated
-        public static int destinyBound = 4; // Kill the opposite if killed
-        public static int barrier = 5; // protected from all effects
-        public static int blinded = 6; // opponent throws a coin before attacks
+        public static int deacMov = 1; // Movement deactivated
+        public static int destinyBound = 2; // Kill the opposite if killed
+        public static int barrier = 3; // protected from all effects
+        public static int blinded = 4; // opponent throws a coin before attacks
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn
@@ -27,16 +25,12 @@ namespace shandakemon.core
                 case 0:
                     return " is protected from damage.";
                 case 1:
-                    return " has its first attack deactivated.";
+                    return " has a movement deactivated.";
                 case 2:
-                    return " has its second attack deactivated.";
-                case 3:
-                    return " has its third attack deactivated.";
-                case 4:
                     return " is under the effects of Destiny Bound.";
-                case 5:
+                case 3:
                     return " is protected from attack effects.";
-                case 6:
+                case 4:
                     return " is blinded.";
                 default:
                     return " PANIC PANIC PANIC.";

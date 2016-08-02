@@ -57,7 +57,7 @@ namespace shandakemon.core
         public int[] energyTotal;
         public bool sumSick, leekSlap;
         public LinkedList<battler> prevolutions;
-        public Dictionary<int, int> conditions;
+        public Dictionary<int, int[]> conditions;
         public Power power;
 
         public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power, int legacy = -1)
@@ -84,10 +84,10 @@ namespace shandakemon.core
             energies = new List<energy>();
             energyTotal = new int[7];
             this.prevolutions = new LinkedList<battler>();
-            this.conditions = new Dictionary<int, int>();
+            this.conditions = new Dictionary<int, int[]>();
 
             if (legacy != -1)
-                conditions.Add(legacy, 0);
+                conditions.Add(legacy, new int[1] { 0 });
 
         }
 
@@ -101,7 +101,7 @@ namespace shandakemon.core
             Console.WriteLine();
             movement selected = movements[index]; // Finds the movement
 
-            if (conditions.ContainsKey(index+1))
+            if (conditions.ContainsKey(Legacies.deacMov) && conditions[Legacies.deacMov][1] == index)
             {
                 Console.WriteLine("Movement "+(index+1)+" is deactivated!");
                 return;
@@ -153,7 +153,7 @@ namespace shandakemon.core
             output += Environment.NewLine;
 
             for (int i = 0; i < movements.Length; i++)
-                if (isUsable(movements[i]) && !conditions.ContainsKey(i+1))
+                if (isUsable(movements[i]) && (!conditions.ContainsKey(Legacies.deacMov) || conditions[Legacies.deacMov][1] != i))
                 {
                     movements[i].usable = true;
                     output += (i+1)+"- " + movements[i].ToString() + Environment.NewLine;
