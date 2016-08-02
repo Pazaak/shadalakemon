@@ -14,6 +14,7 @@ namespace shandakemon.core
         public static int destinyBound = 2; // Kill the opposite if killed
         public static int barrier = 3; // protected from all effects
         public static int blinded = 4; // opponent throws a coin before attacks
+        public static int lowThreshold = 5; // Prevents damage below the given threshold
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn
@@ -32,6 +33,8 @@ namespace shandakemon.core
                     return " is protected from attack effects.";
                 case 4:
                     return " is blinded.";
+                case 5:
+                    return " is protected against weak attacks.";
                 default:
                     return " PANIC PANIC PANIC.";
             }

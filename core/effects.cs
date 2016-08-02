@@ -169,6 +169,11 @@ namespace shandakemon.core
                     Array.Copy(parameters, 2, temp, 0, temp.Length);
                     addCondition(target, parameters[1], temp);
                     break;
+                case 30: // Legacy
+                    temp = new int[parameters.Length - 1];
+                    Array.Copy(parameters, 1, temp, 0, temp.Length);
+                    addCondition(source, parameters[0], temp);
+                    break;
             }
         }
 
@@ -202,6 +207,13 @@ namespace shandakemon.core
             int output = quantity;
             if (type == target.weak_elem) output *= target.weak_mod; // Apply weaknesses
             else if (type == target.res_elem) output -= target.res_mod; // Apply resistances
+
+            if (target.conditions.ContainsKey(Legacies.lowThreshold) && target.conditions[Legacies.lowThreshold][1] >= output)
+            {
+                Console.WriteLine(target.ToString() + " prevents the damage.");
+                utils.Logger.Report(target.ToString() + " prevents the damage.");
+                return 0;
+            }
 
             if (output > 0)
                 target.damage += output;
