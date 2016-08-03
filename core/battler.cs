@@ -133,9 +133,9 @@ namespace shandakemon.core
 
         // Sends the execute instruction to the powe
         // source_controller- The instance of the controller of the battler
-        public void ExecutePower(Player source_controller)
+        public void ExecutePower(Player source_controller, Player target_controller)
         {
-            this.power.Execute(source_controller, this);
+            this.power.Execute(source_controller, target_controller, this);
         }
 
         // Attach one energy to the pokemon and recalculates the energy total

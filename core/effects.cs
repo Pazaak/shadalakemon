@@ -194,7 +194,7 @@ namespace shandakemon.core
         }
 
         // A big-old which that indicates the effects of the powers
-        public static void power_selector(Player source_controller, battler source, int selector, int[] parameters)
+        public static void power_selector(Player source_controller, Player target_controller, battler source, int selector, int[] parameters)
         {
             switch (selector)
             {
@@ -207,6 +207,13 @@ namespace shandakemon.core
                     break;
                 case 2: // Damage Swap
                     ExchangeDamage(source_controller);
+                    break;
+                case 3: // Buzzap
+                    source_controller.ToDiscard(source);
+                    source_controller.discarded.RemoveFirst();
+                    target_controller.PriceProcedure();
+                    BecomeEnergy(source, source_controller, parameters[0]);
+                    source_controller.KnockoutProcedure();
                     break;
             }
         }
@@ -246,7 +253,7 @@ namespace shandakemon.core
                 if (source != null && target.conditions.ContainsKey(Legacies.destinyBound))
                     doomIndicator = true;
 
-                target_controller.frontToDiscard();
+                target_controller.ToDiscard(target);
 
                 source_controller.PriceProcedure();
 
@@ -524,6 +531,7 @@ namespace shandakemon.core
             mov.execute(source_controller, target_controller, source, target, true);
         }
 
+        // Permits to play energy above the limit
         public static void PlayFreeEnergy(Player source, int elem)
         {
             Console.WriteLine("Attach " + utilities.numToType(elem) + " a energy card from your hand to " + utilities.numToType(elem) + " pokémon. 0 to exit");
@@ -617,6 +625,34 @@ namespace shandakemon.core
             target.damage += 10;
             Console.WriteLine(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter");
             utils.Logger.Report(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter");
+        }
+
+        // Transform into energy and attach it to a battler
+        public static void BecomeEnergy(battler source, Player source_controller, int quantity)
+        {
+            Console.WriteLine("Select the type of energy that you want to produce: ");
+            Console.WriteLine("0 - Normal" + Environment.NewLine + "1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
+                + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
+            int elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+
+            energy attEnergy = new energy(1, elem, quantity, source.name, source);
+
+            Console.WriteLine("Please select the pokemon or press 0 to exit:");
+            Console.WriteLine(source_controller.writeBattlers());
+
+            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Select the receiver
+            if (digit == 0) // Attach the energy to the selected battler
+            {
+                source_controller.front.attachEnergy(attEnergy);
+                Console.WriteLine(attEnergy.name + " attached to " + source_controller.front.ToString());
+                utils.Logger.Report(attEnergy.name + " attached to " + source_controller.front.ToString());
+            }
+            else if (digit > 0)
+            {
+                source_controller.benched[digit - 1].attachEnergy(attEnergy);
+                Console.WriteLine(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
+                utils.Logger.Report(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
+            }
         }
     }
 }

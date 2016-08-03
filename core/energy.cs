@@ -22,13 +22,22 @@ namespace shandakemon.core
     {
         public int type, elem, quan;
         public string name;
+        public bool proxy;
+        public card attached;
 
-        public energy(int type, int elem, int quan, string name)
+        public energy(int type, int elem, int quan, string name, card attached = null)
         {
             this.type = type;
             this.elem = elem;
             this.quan = quan;
             this.name = name;
+            if (attached == null)
+                this.proxy = false;
+            else
+            {
+                this.proxy = true;
+                this.attached = attached;
+            }
         }
 
         public int getSuperType()

@@ -123,9 +123,13 @@ namespace shandakemon.core
         // Utility method to represent all the battlers
         public string writeBattlers()
         {
-            string output = "1- " + front.ToString() + Environment.NewLine;
+            string output = "";
+            if (front != null)
+                output = "1- " + front.ToString() + Environment.NewLine;
+
             for (int i = 0; i < benched.Count; i++)
-                output += (i + 2) + "- " + benched[i].ToString() + Environment.NewLine;
+                if (benched[i] != null)
+                    output += (i + 2) + "- " + benched[i].ToString() + Environment.NewLine;
             return (output);
         }
 
@@ -149,19 +153,26 @@ namespace shandakemon.core
         }
 
         // Sends the front battler to the discard pile
-        public void frontToDiscard()
+        public void ToDiscard(battler target)
         {
-            while (front.energies.Count != 0) // First discard all the energy cards
+            while (target.energies.Count != 0) // First discard all the energy cards
             {
-                energy en = front.energies[0];
-                discarded.AddFirst(en);
-                front.energies.Remove(en);
+                discardEnergy(target, 0, false);
             }
 
-            front.clear();
-            discarded.AddFirst(front);
-            utils.Logger.Report(front.ToString() + " is discarded.");
-            front = null;
+            while (target.prevolutions.Count != 0)
+            {
+                battler bt = target.prevolutions.First.Value;
+                discarded.AddFirst(bt);
+                target.prevolutions.RemoveFirst();
+            }
+
+            target.clear();
+            discarded.AddFirst(target);
+            utils.Logger.Report(target.ToString() + " is discarded.");
+
+            if (target == front) front = null;
+            else benched.Remove(target);
             
         }
 
@@ -182,13 +193,23 @@ namespace shandakemon.core
         }
 
         // Discard the selected energy card from the selected battler (must be done at the player side to use the discard pile)
-        public void discardEnergy(battler source, int energy_index)
+        public void discardEnergy(battler source, int energy_index, bool verbose = true)
         {
             energy output = source.energies[energy_index];
-            discarded.AddFirst(output);
-            source.energies.RemoveAt(energy_index);
-            source.energyTotal[output.elem] -= output.quan;
-            utils.Logger.Report(source.ToString() + " had its energy " + output.ToString() + " discarded.");
+            if (!output.proxy)
+            {
+                discarded.AddFirst(output);
+                source.energies.RemoveAt(energy_index);
+                source.energyTotal[output.elem] -= output.quan;
+            }
+            else
+            {
+                discarded.AddFirst(output.attached);
+                source.energies.RemoveAt(energy_index);
+                source.energyTotal[output.elem] -= output.quan;
+            }
+            if (verbose)
+                utils.Logger.Report(source.ToString() + " had its energy " + output.ToString() + " discarded.");
         }
 
         // Eliminates one turn counter of all the conditions

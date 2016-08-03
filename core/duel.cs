@@ -164,7 +164,7 @@ namespace shandakemon.core
                         retreat(p1); // Retreat menu
                         break;
                     case 112:
-                        PokemonPowerMenu(p1); //Power menu
+                        PokemonPowerMenu(p1, p2); //Power menu
                         break;
                     default:
                         playCard(p1.hand[digit - 49], p1); // Play selected card
@@ -504,16 +504,16 @@ namespace shandakemon.core
         }
 
         // Power menu to select power
-        public void PokemonPowerMenu(Player p1)
+        public void PokemonPowerMenu(Player p1, Player p2)
         {
             if (p1.ListPowers()) // Exit if there are no powers
             {
                 int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
 
                 if (digit == -1)
-                    p1.front.ExecutePower(p1);
+                    p1.front.ExecutePower(p1, p2);
                 else
-                    p1.benched[digit].ExecutePower(p1);
+                    p1.benched[digit].ExecutePower(p1, p2);
             }
         }
 
