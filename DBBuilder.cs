@@ -286,6 +286,14 @@ namespace shandakemon
             zapdos[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 3 }, 23, "Thunder", new int[3] { 60, 0, 30 });
             zapdos[1] = new movement(new int[7] { 0, 0, 0, 0, 0, 0, 4 }, 18, "Thunderbolt", new int[3] { 100, Constants.TNone, -1 });
 
+            movement[] raichu = new movement[2];
+            raichu[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 1 }, 34, "Agility", new int[3] { 20, Legacies.barrier, 2 });
+            raichu[1] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 3 }, 23, "Thunder", new int[3] { 60, 0, 30 });
+
+            movement[] magneton = new movement[2];
+            magneton[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 2 }, 2, "Thunder Wave", new int[2] { 30, 1 });
+            magneton[1] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 2 }, 33, "Selfdestruct", new int[3] { 80, 20, 80 });
+
             #endregion
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
@@ -300,12 +308,14 @@ namespace shandakemon
             listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, new int[1] { Legacies.energyBurn });
             listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
-            listBattlers[7] = new battler(0, Constants.TFighting, 70, Constants.TPsychic, 2, Constants.TNone, 0, 2, "Hitmonchan", 107, -1, hitmonchan, null);
-            listBattlers[8] = new battler(1, Constants.TFighting, 100, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Machamp", 68, 67, machamp, null, new int[2] { Legacies.counter, 10 });
+            listBattlers[6] = new battler(0, Constants.TFighting, 70, Constants.TPsychic, 2, Constants.TNone, 0, 2, "Hitmonchan", 107, -1, hitmonchan, null);
+            listBattlers[7] = new battler(1, Constants.TFighting, 100, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Machamp", 68, 67, machamp, null, new int[2] { Legacies.counter, 10 });
+            listBattlers[8] = new battler(1, Constants.TElectric, 60, Constants.TFighting, 2, Constants.TNone, 0, 1, "Magneton", 82, 81, magneton, null);
             listBattlers[9] = new battler(0, Constants.TPsychic, 60, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Mewtwo", 150, -1, mewtwo, null);
             listBattlers[10] = new battler(1, Constants.TGrass, 90, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Nidoking", 34, 33, nidoking, null);
             listBattlers[11] = new battler(1, Constants.TFire, 80, Constants.TWater, 2, Constants.TNone, 0, 1, "Ninetales", 38, 37, ninetales, null);
             listBattlers[12] = new battler(1, Constants.TWater, 90, Constants.TGrass, 2, -1, 0, 3, "Poliwrath", 62, 61, poliwrath, null);
+            listBattlers[13] = new battler(1, Constants.TElectric, 80, Constants.TFighting, 2, Constants.TNone, 0, 1, "Raichu", 26, 25, raichu, null);
             listBattlers[14] = new battler(1, Constants.TGrass, 100, Constants.TFire, 2, Constants.TNone, 0, 2, "Venusaur", 3, 2, venusaur, energyTrans);
             listBattlers[15] = new battler(0, Constants.TElectric, 90, Constants.TNone, 1, Constants.TFighting, 30, 3, "Zapdos", 145, -1, zapdos, null);
             listBattlers[16] = new battler(1, Constants.TGrass, 80, Constants.TFire, 2, Constants.TFighting, 30, 0, "Beedrill", 15, 14, beedrill, null);

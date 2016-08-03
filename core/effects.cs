@@ -190,6 +190,17 @@ namespace shandakemon.core
                         damage(Constants.TNone, parameters[1], btl, source, target_controller, source_controller);
                     damage(source.element, parameters[2], source, source, source_controller, target_controller);
                     break;
+                case 34: // Damage and legacy on self by coin
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (CRandom.RandomInt() < 0)
+                    {
+                        utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
+                        addCondition(source, parameters[1], new int[1] { parameters[2] });
+                    }
+                    else
+                        utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                    break;
+
             }
         }
 
