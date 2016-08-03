@@ -286,6 +286,13 @@ namespace shandakemon.core
             if (source.energies.Count == 0)
                 Console.WriteLine(source.ToString() + " has no energy to discard.");
 
+            if (quantity == -1)
+            {
+                while (source.energies.Count != 0)
+                    source_controller.discardEnergy(source, 0);
+                return;
+            }
+
             for ( int i = 0; i < quantity; i++)
             {
                 if (source.energies.Count == 0)
