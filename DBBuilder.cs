@@ -29,7 +29,7 @@ namespace shandakemon
 
         public static void pokemon()
         {
-
+            #region watertype
             movement[] moveset = new movement[1]; // Movement list
             moveset[0] = new movement(new int[7] { 0, 1, 0, 0, 0, 0, 0 }, 0, "Slap", new int[1] { 20 }); // Creates a movement
 
@@ -73,7 +73,9 @@ namespace shandakemon
             movement[] dewgong = new movement[2];
             dewgong[0] = new movement(new int[7] { 1, 2, 0, 0, 0, 0, 0 }, 0, "Aurora Beam", new int[1] { 50 });
             dewgong[1] = new movement(new int[7] { 2, 2, 0, 0, 0, 0, 0 }, 2, "Ice Beam", new int[2] { 30, 1 });
+            #endregion
 
+            #region normaltype
             movement[] rattata = new movement[1];
             rattata[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Bite", new int[1] { 20 });
 
@@ -113,7 +115,9 @@ namespace shandakemon
             movement[] chansey = new movement[2];
             chansey[0] = new movement(new int[7] { 2, 0, 0, 0, 0, 0, 0 }, 3, "Scrunch", new int[2] { Legacies.fog, 2 });
             chansey[1] = new movement(new int[7] { 4, 0, 0, 0, 0, 0, 0 }, 17, "Double-Edge", new int[2] { 80, 80 });
+            #endregion
 
+            #region firetype
             movement[] vulpix = new movement[1];
             vulpix[0] = new movement(new int[7] { 0, 0, 2, 0, 0, 0, 0 }, 2, "Confuse Ray", new int[2] { 10, 3 });
 
@@ -146,7 +150,9 @@ namespace shandakemon
 
             movement[] charizard = new movement[1];
             charizard[0] = new movement(new int[7] { 0, 0, 4, 0, 0, 0, 0 }, 18, "Fire Spin", new int[3] { 100, Constants.TFire, 2 });
+            #endregion
 
+            #region grasstype
             movement[] weedle = new movement[1];
             weedle[0] = new movement(new int[7] { 0, 0, 0, 1, 0, 0, 0 }, 2, "Poison Sting", new int[2] { 10, 10 });
 
@@ -192,7 +198,9 @@ namespace shandakemon
             movement[] nidoking = new movement[2];
             nidoking[0] = new movement(new int[7] { 2, 0, 0, 1, 0, 0, 0 }, 23, "Thrash", new int[3] { 30, 10, 10 });
             nidoking[1] = new movement(new int[7] { 0, 0, 0, 3, 0, 0, 0 }, 20, "Toxic", new int[2] { 20, 11 });
+            #endregion
 
+            #region pyschictype
             movement[] gastly = new movement[2];
             gastly[0] = new movement(new int[7] { 0, 0, 0, 0, 1, 0, 0 }, 16, "Sleeping Gas", new int[1] { 2 });
             gastly[1] = new movement(new int[7] { 1, 0, 0, 0, 1, 0, 0 }, 24, "Destiny Bond", new int[4] { Constants.TPsychic, 1, Legacies.destinyBound, 2 });
@@ -222,7 +230,9 @@ namespace shandakemon
 
             movement[] alakazam = new movement[1];
             alakazam[0] = new movement(new int[7] { 0, 0, 0, 0, 3, 0, 0 }, 2, "Confuse Ray", new int[2] { 30, 3 });
+            #endregion
 
+            #region fightingtype
             movement[] sandshrew = new movement[1];
             sandshrew[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 1, 0 }, 29, "Sand-attack", new int[3] { 10, Legacies.blinded, 2 });
 
@@ -251,6 +261,21 @@ namespace shandakemon
             movement[] hitmonchan = new movement[2];
             hitmonchan[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 1, 0 }, 0, "Jab", new int[1] { 20 });
             hitmonchan[1] = new movement(new int[7] { 1, 0, 0, 0, 0, 2, 0 }, 0, "Special Punch", new int[1] { 40 });
+            #endregion
+
+            #region electrictype
+            movement[] voltorb = new movement[1];
+            voltorb[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Tackle", new int[1] { 10 });
+
+            movement[] pikachu = new movement[2];
+            pikachu[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 0 }, 0, "Gnaw", new int[1] { 10 });
+            pikachu[1] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 1 }, 23, "Thunder Jolt", new int[3] { 30, 0, 10 });
+
+            movement[] magnemite = new movement[2];
+            magnemite[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 0, 1 }, 2, "Thunder Wave", new int[2] { 10, 1 });
+            magnemite[1] = new movement(new int[7] { 1, 0, 0, 0, 0, 0, 1 }, 33, "Selfdestruct", new int[3] { 40, 10, 40 });
+
+            #endregion
 
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
@@ -304,10 +329,12 @@ namespace shandakemon
             listBattlers[49] = new battler(0, Constants.TPsychic, 30, Constants.TNone, 1, Constants.TFighting, 30, 0, "Gastly", 92, -1, gastly, null);
             listBattlers[50] = new battler(0, Constants.TGrass, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Koffing", 109, -1, koffing, null);
             listBattlers[51] = new battler(0, Constants.TFighting, 50, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Machop", 66, -1, machop, null);
+            listBattlers[52] = new battler(0, Constants.TElectric, 40, Constants.TFighting, 2, Constants.TNone, 0, 1, "Magnemite", 81, -1, magnemite, null);
             listBattlers[53] = new battler(1, Constants.TGrass, 70, Constants.TFire, 2, Constants.TNone, 0, 2, "Metapod", 11, 10, metapod, null);
             listBattlers[54] = new battler(0, Constants.TGrass, 40, Constants.TPsychic, 2, Constants.TNone, 0, 1, "Nidoran M", 32, -1, nidoranm, null);
             listBattlers[55] = new battler(0, Constants.TFighting, 90, Constants.TGrass, 2, Constants.TNone, 0, 3, "Onix", 95, -1, onix, null);
             listBattlers[56] = new battler(0, Constants.TNormal, 40, Constants.TElectric, 2, Constants.TFighting, 30, 1, "Pidgey", 16, -1, pidgey, null);
+            listBattlers[57] = new battler(0, Constants.TElectric, 40, Constants.TFighting, 2, Constants.TNone, 0, 1, "Pikachu", 25, -1, pikachu, null);
             listBattlers[58] = new battler(0, Constants.TWater, 40, Constants.TGrass, 2, -1, 0, 1, "Poliwag", 60, -1, poliwag, null);
             listBattlers[59] = new battler(0, Constants.TFire, 40, Constants.TWater, 2, Constants.TNone, 0, 1, "Ponyta", 77, -1, ponyta, null);
             listBattlers[60] = new battler(0, Constants.TNormal, 30, Constants.TFighting, 2, Constants.TPsychic, 30, 0, "Rattata", 19, -1, rattata, null);
@@ -316,6 +343,7 @@ namespace shandakemon
             listBattlers[63] = new battler(1, Constants.TWater, 60, Constants.TElectric, 2, -1, 0, 1, "Starmie", 121, 120, moveset1, null);
             listBattlers[64] = new battler(0, Constants.TWater, 40, Constants.TElectric, 2, -1, 0, 1, "Staryu", 120, -1, moveset, null);
             listBattlers[65] = new battler(0, Constants.TGrass, 50, Constants.TFire, 2, Constants.TNone, 0, 2, "Tangela", 114, -1, tangela, null);
+            listBattlers[66] = new battler(0, Constants.TElectric, 40, Constants.TFighting, 2, Constants.TNone, 0, 1, "Voltorb", 100, -1, voltorb, null);
             listBattlers[67] = new battler(0, Constants.TFire, 50, Constants.TWater, 2, Constants.TNone, 0, 1, "Vulpix", 37, -1, vulpix, null);
             listBattlers[68] = new battler(0, Constants.TGrass, 40, Constants.TFire, 2, Constants.TNone, 0, 1, "Weedle", 13, -1, weedle, null);
 

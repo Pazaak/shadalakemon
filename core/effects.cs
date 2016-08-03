@@ -182,6 +182,14 @@ namespace shandakemon.core
                     foreach (battler btl in source_controller.benched)
                         damage(Constants.TNone, parameters[1], btl, null, target_controller, source_controller);
                     break;
+                case 33: // Damage, splash to all benches and recoil
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    foreach (battler btl in source_controller.benched)
+                        damage(Constants.TNone, parameters[1], btl, source, source_controller, target_controller);
+                    foreach (battler btl in target_controller.benched)
+                        damage(Constants.TNone, parameters[1], btl, source, target_controller, source_controller);
+                    damage(source.element, parameters[2], source, source, source_controller, target_controller);
+                    break;
             }
         }
 
