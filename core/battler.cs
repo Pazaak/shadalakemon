@@ -60,7 +60,7 @@ namespace shandakemon.core
         public Dictionary<int, int[]> conditions;
         public Power power;
 
-        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power, int legacy = -1)
+        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power, int[] legacy = null)
         {
             this.type = type;
             this.element = element;
@@ -86,8 +86,18 @@ namespace shandakemon.core
             this.prevolutions = new LinkedList<battler>();
             this.conditions = new Dictionary<int, int[]>();
 
-            if (legacy != -1)
-                conditions.Add(legacy, new int[1] { 0 });
+            if (legacy != null)
+            {
+                if (legacy.Length == 1)
+                    conditions.Add(legacy[0], new int[1] { 0 });
+                else
+                {
+                    int index = legacy[0]; // Store the index of the legacy
+                    legacy[0] = 0; // Add the condition of infinite duration
+                    conditions.Add(index, legacy);
+                }
+            }
+                
 
         }
 
@@ -305,13 +315,21 @@ namespace shandakemon.core
             if (power != null)
                 neoPower = power.DeepCopy();
 
-            int legacy = -1;
-            if (conditions.Count > 0)
+            int[] legacies;
+            if (this.conditions.Count > 0)
             {
-                legacy = conditions.Keys.ToArray()[0];
-            }
+                int[] keys = this.conditions.Keys.ToArray();
 
-            return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower, legacy);
+                legacies = new int[this.conditions[keys[0]].Length];
+
+                Array.Copy(this.conditions[keys[0]], 0, legacies, 0, legacies.Length);
+
+                legacies[0] = keys[0];
+            }
+            else
+                legacies = null;
+
+            return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower, legacies);
         }
     }
 }

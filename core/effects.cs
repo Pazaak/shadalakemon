@@ -177,6 +177,11 @@ namespace shandakemon.core
                 case 31: // Damage downpowered by damage
                     damage(source.element, parameters[0]-source.damage <= 0? 0 : parameters[0] - source.damage, target, source, target_controller, source_controller);
                     break;
+                case 32: // Damage and splash to own benched
+                    damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    foreach (battler btl in source_controller.benched)
+                        damage(Constants.TNone, parameters[1], btl, null, target_controller, source_controller);
+                    break;
             }
         }
 
@@ -251,6 +256,9 @@ namespace shandakemon.core
                 if (doomIndicator)
                     effects.damage(Constants.TNone, source.HP - source.damage, source, null, source_controller, target_controller);
             }
+
+            if (output > 0 && target.conditions.ContainsKey(Legacies.counter) && target.CanUsePowers())
+                effects.damage(Constants.TNone, target.conditions[Legacies.counter][1], source, null, source_controller, target_controller);
 
             return output;
         }
