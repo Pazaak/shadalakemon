@@ -248,6 +248,10 @@ namespace shandakemon
             movement[] machamp = new movement[1];
             machamp[0] = new movement(new int[7] { 1, 0, 0, 0, 0, 3, 0 }, 0, "Seismic Toss", new int[1] { 60 });
 
+            movement[] hitmonchan = new movement[2];
+            hitmonchan[0] = new movement(new int[7] { 0, 0, 0, 0, 0, 1, 0 }, 0, "Jab", new int[1] { 20 });
+            hitmonchan[1] = new movement(new int[7] { 1, 0, 0, 0, 0, 2, 0 }, 0, "Special Punch", new int[1] { 40 });
+
             Power rainDance = new Power("Rain Dance", 0, new int[1] { Constants.TWater }); // Creates a power
             Power energyTrans = new Power("Energy Trans", 1, new int[1] { Constants.TGrass });
             Power damageSwap = new Power("Damage Swap", 2, null);
@@ -259,6 +263,7 @@ namespace shandakemon
             listBattlers[3] = new battler(1, Constants.TFire, 120, Constants.TWater, 2, Constants.TFighting, 30, 3, "Charizard", 6, 5, charizard, null, new int[1] { Legacies.energyBurn });
             listBattlers[4] = new battler(0, Constants.TNormal, 40, Constants.TFighting, 2, Constants.TPsychic, 30, 1, "Clefairy", 35, -1, clefairy, null);
             listBattlers[5] = new battler(1, Constants.TWater, 100, Constants.TGrass, 2, Constants.TFighting, 30, 3, "Gyarados", 130, 129, gyarados, null);
+            listBattlers[7] = new battler(0, Constants.TFighting, 70, Constants.TPsychic, 2, Constants.TNone, 0, 2, "Hitmonchan", 107, -1, hitmonchan, null);
             listBattlers[8] = new battler(1, Constants.TFighting, 100, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Machamp", 68, 67, machamp, null, new int[2] { Legacies.counter, 10 });
             listBattlers[9] = new battler(0, Constants.TPsychic, 60, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Mewtwo", 150, -1, mewtwo, null);
             listBattlers[10] = new battler(1, Constants.TGrass, 90, Constants.TPsychic, 2, Constants.TNone, 0, 3, "Nidoking", 34, 33, nidoking, null);
