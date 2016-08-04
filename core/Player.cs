@@ -168,8 +168,17 @@ namespace shandakemon.core
             }
 
             target.clear();
-            discarded.AddFirst(target);
-            utils.Logger.Report(target.ToString() + " is discarded.");
+            if (target.proxy)
+            {
+                discarded.AddFirst(target.attached);
+                utils.Logger.Report(target.attached.ToString() + " is discarded.");
+            }
+            else
+            {
+                discarded.AddFirst(target);
+                utils.Logger.Report(target.ToString() + " is discarded.");
+            }
+            
 
             if (target == front) front = null;
             else benched.Remove(target);
@@ -380,6 +389,12 @@ namespace shandakemon.core
                 utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
                 effects.damage(Constants.TNone, 20, this.front, null, this, p2);
             }
+        }
+
+        public void TrainerToDiscard(card target)
+        {
+            this.discarded.AddFirst(target);
+            this.hand.Remove(target);
         }
     }
 }

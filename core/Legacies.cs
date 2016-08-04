@@ -19,6 +19,7 @@ namespace shandakemon.core
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn
+        public static int clefairyDoll = 101; // Kinda a pokebody
 
         public static string IndexToLegacy(int legacy)
         {

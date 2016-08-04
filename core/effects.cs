@@ -229,6 +229,17 @@ namespace shandakemon.core
             }
         }
 
+        // A big-old which to hold the trainer effects
+        public static void trainers(Player source_controller, Player target_controller, trainer source, int selector, int[] parameters)
+        {
+            switch(selector)
+            {
+                case 0: // Proxy battler
+                    CreateProxyBattler(source_controller, source, parameters[0], parameters[1]);
+                    break;
+            }
+        }
+
         // Does plain damage taking into account conditions and type effectiveness
         public static int damage(int type, int quantity, battler target, battler source, Player target_controller, Player source_controller)
         {
@@ -261,12 +272,16 @@ namespace shandakemon.core
             if (target.damage >= target.HP)
             {
                 bool doomIndicator = false;
+                bool priceless = false;
                 if (source != null && target.conditions.ContainsKey(Legacies.destinyBound))
                     doomIndicator = true;
 
+                if (target.conditions.ContainsKey(Legacies.clefairyDoll))
+                    priceless = true;
+
                 target_controller.ToDiscard(target);
 
-                source_controller.PriceProcedure();
+                if (!priceless) source_controller.PriceProcedure();
 
                 if (source_controller.winCondition) return output; // break
 
@@ -350,6 +365,12 @@ namespace shandakemon.core
         // Assign an status alignment
         public static void inflictStatus(battler target, int type)
         {
+            if (target.conditions.ContainsKey(Legacies.clefairyDoll))
+            {
+                Console.WriteLine(target.ToString() + " is inmune to status effects");
+                return;
+            }
+
             target.status = type;
             Console.WriteLine(target.ToString() + " is now " + utilities.numToStatus(type));
             utils.Logger.Report(target.ToString() + " is now " + utilities.numToStatus(type));
@@ -671,6 +692,20 @@ namespace shandakemon.core
                 Console.WriteLine(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
                 utils.Logger.Report(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
             }
+        }
+
+        // Creates a proxy battler
+        public static void CreateProxyBattler(Player source_player, trainer source, int HP, int Legacy)
+        {
+            if ( source_player.benched.Count >= 5 )
+            {
+                Console.WriteLine(source.ToString() + " cannot be played as the bench is already full");
+                utils.Logger.Report(source.ToString() + " cannot be played as the bench is already full");
+                return;
+            }
+
+            battler proxy = new battler(0, Constants.TNone, HP, Constants.TNone, 1, Constants.TNone, 0, 0, source.name, -2, -1, new movement[0], null, new int[1] { Legacies.clefairyDoll }, source);
+            source_player.benched.Add(proxy);
         }
     }
 }

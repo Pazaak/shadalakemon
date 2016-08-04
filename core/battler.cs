@@ -46,6 +46,8 @@ namespace shandakemon.core
      *  power- Holds an object which contains the pokemon power if any
      *  originalWeakElem, originalResElem- Holds the original elements printed on the card (the other variables are subject to changes)
      *  leekSlap- The VERY odd attack of farfetch'd has a boolean on each battler to control it
+     *  attached- Indicates that the instance is a proxy and holds the attached card
+     *  proxy- Flag that indicates if the instance is a proxy
      */
     public class battler : card
     {
@@ -55,12 +57,13 @@ namespace shandakemon.core
         public movement[] movements;
         public List<energy> energies;
         public int[] energyTotal;
-        public bool sumSick, leekSlap;
+        public bool sumSick, leekSlap, proxy;
         public LinkedList<battler> prevolutions;
         public Dictionary<int, int[]> conditions;
         public Power power;
+        public card attached;
 
-        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power, int[] legacy = null)
+        public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power = null, int[] legacy = null, card attached = null)
         {
             this.type = type;
             this.element = element;
@@ -96,6 +99,12 @@ namespace shandakemon.core
                     legacy[0] = 0; // Add the condition of infinite duration
                     conditions.Add(index, legacy);
                 }
+            }
+
+            if ( attached != null)
+            {
+                proxy = true;
+                this.attached = attached;
             }
                 
 

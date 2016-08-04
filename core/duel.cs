@@ -151,6 +151,11 @@ namespace shandakemon.core
                                 return 1;
                             }
                         }
+                        else if (p1.front.movements.Count() == 0)
+                        {
+                            Console.WriteLine(p1.front.ToString() + " has no attacks.");
+                            return 1;
+                        }
                         else
                         {
                             utils.Logger.Report(p1.ToString() + " advances to attack phase.");
@@ -167,7 +172,7 @@ namespace shandakemon.core
                         PokemonPowerMenu(p1, p2); //Power menu
                         break;
                     default:
-                        playCard(p1.hand[digit - 49], p1); // Play selected card
+                        playCard(p1.hand[digit - 49], p1, p2); // Play selected card
                         break;
                 }
             }
@@ -360,7 +365,7 @@ namespace shandakemon.core
         }
 
         // Play cards front the hand
-        public void playCard(card selected, Player p1)
+        public void playCard(card selected, Player p1, Player p2)
         {
             if (selected.getSuperType() == 0) // Pokemon card
             {
@@ -425,7 +430,8 @@ namespace shandakemon.core
             }
             else if (selected.getSuperType() == 1)
             {
-                // TODO: Execute trainers
+                trainer trn = (trainer)selected;
+                trn.execute(p1, p2);
             }
             else // Energy
             {
@@ -479,9 +485,19 @@ namespace shandakemon.core
                 return;
             }
 
+            if (p1.front.conditions.ContainsKey(Legacies.clefairyDoll))
+            {
+                Console.WriteLine(p1.front.ToString() + " will be discarded.");
+                p1.ToDiscard(p1.front);
+                p1.front = null;
+                p1.KnockoutProcedure();
+                return;
+            }
+
             int counter = p1.front.retreat;
             int digit;
-            Console.WriteLine("Discard energy until you pay the cost");
+            if ( counter > 0)
+                Console.WriteLine("Discard energy until you pay the cost");
             while (counter > 0) // Discard cards until the cost
             {
                 Console.WriteLine(counter + " energy to go.");

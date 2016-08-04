@@ -14,12 +14,15 @@ namespace shandakemon
         {
             DBBuilder.energies();
             DBBuilder.pokemon();
+            DBBuilder.trainers();
 
             string raw_energy = File.ReadAllText(Directory.GetCurrentDirectory() + @"\data\energies");
             string raw_pokemon = File.ReadAllText(Directory.GetCurrentDirectory() + @"\data\pokemon");
+            string raw_trainers = File.ReadAllText(Directory.GetCurrentDirectory() + @"\data\trainers");
 
             energy[] energies = JsonConvert.DeserializeObject<energy[]>(raw_energy);
             battler[] battlers = JsonConvert.DeserializeObject<battler[]>(raw_pokemon);
+            trainer[] trainers = JsonConvert.DeserializeObject<trainer[]>(raw_trainers);
 
             LinkedList <card> deck1 = new LinkedList<card>(); // Creates a deck
             LinkedList<card> deck2 = new LinkedList<card>();
@@ -50,14 +53,14 @@ namespace shandakemon
                     deck1.AddFirst(battlers[37].DeepCopy());
                 }
 
-                if ( i < 12 )
+                if ( i < 8 )
                 {
                     deck2.AddFirst(battlers[52].DeepCopy());
                 }
 
-                if ( i < 8 )
+                if ( i < 12 )
                 {
-                    deck2.AddFirst(battlers[8].DeepCopy());
+                    deck2.AddFirst(trainers[0].DeepCopy());
                 }
             }
 

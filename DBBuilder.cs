@@ -378,5 +378,16 @@ namespace shandakemon
 
             File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + @"\data\pokemon", ser);
         }
+
+        public static void trainers()
+        {
+            trainer[] trainers = new trainer[26];
+            trainers[0] = new trainer(0, 0, new int[2] { 10, Legacies.clefairyDoll }, "Clefairy Doll");
+
+            MemoryStream stream1 = new MemoryStream();
+            string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);
+
+            File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + @"\data\trainers", ser);
+        }
     }
 }
