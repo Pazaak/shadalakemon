@@ -221,7 +221,7 @@ namespace shandakemon.core
                     break;
                 case 3: // Buzzap
                     source_controller.ToDiscard(source);
-                    source_controller.discarded.RemoveFirst();
+                    source_controller.discarded.Remove(source);
                     target_controller.PriceProcedure();
                     BecomeEnergy(source, source_controller, parameters[0]);
                     source_controller.KnockoutProcedure();
@@ -236,6 +236,17 @@ namespace shandakemon.core
             {
                 case 0: // Proxy battler
                     CreateProxyBattler(source_controller, source, parameters[0], parameters[1]);
+                    break;
+                case 1: // Discard and retrieve from deck
+                    if (DiscardCards(source_controller, parameters[0]))
+                    {
+                        card selected = SearchDeck(source_controller, parameters[1]);
+                        source_controller.hand.Add(selected);
+                        source_controller.deck.Remove(selected);
+                        Console.WriteLine(selected.ToString() + " added to the hand.");
+                        utils.Logger.Report(selected.ToString() + " added to the hand.");
+                        source_controller.shuffle();
+                    }
                     break;
             }
         }
@@ -706,6 +717,43 @@ namespace shandakemon.core
 
             battler proxy = new battler(0, Constants.TNone, HP, Constants.TNone, 1, Constants.TNone, 0, 0, source.name, -2, -1, new movement[0], null, new int[1] { Legacies.clefairyDoll }, source);
             source_player.benched.Add(proxy);
+        }
+
+        // Discard cards from hand
+        public static bool DiscardCards(Player target_player, int quantity)
+        {
+            if (target_player.hand.Count() < quantity)
+            {
+                Console.WriteLine("Not enough cards in hand.");
+                return false;
+            }
+
+            int digit;
+            for (int i = 0; i < quantity; i++)
+            {
+                Console.WriteLine("Select a card to discard ("+(i+1)+"/"+quantity+"):");
+                Console.WriteLine(target_player.writeHand());
+                Int32.TryParse(Console.ReadLine(), out digit);
+                target_player.discarded.Add(target_player.hand[digit-1]);
+                utils.Logger.Report(target_player.hand[digit-1].ToString() + " discarded from hand.");
+                target_player.hand.RemoveAt(digit-1);
+            }
+
+            return true;
+            
+        }
+
+        // Search deck for a card
+        public static card SearchDeck(Player target, int superType)
+        {
+            int digit;
+            do
+            {
+                Console.WriteLine("Select a card from the deck:");
+                target.ShowDeck();
+                Int32.TryParse(Console.ReadLine(), out digit);
+            } while (superType != -1 && target.deck[digit].getSuperType() == superType);
+            return target.deck[digit];
         }
     }
 }

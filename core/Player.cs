@@ -21,16 +21,15 @@ namespace shandakemon.core
         public bool winCondition;
         public battler front, lastFront;
         public List<battler> benched;
-        public List<card> hand;
-        public LinkedList<card> discarded, deck;
+        public List<card> hand, discarded, deck;
         public card[] prices;
 
-        public Player(int id, LinkedList<card> deck, int nPrices)
+        public Player(int id, List<card> deck, int nPrices)
         {
             this.id = id;
             this.deck = deck;
             // Initilization of the lists
-            this.discarded = new LinkedList<card>();
+            this.discarded = new List<card>();
             this.hand = new List<card>();
             this.prices = new card[nPrices];
             this.benched = new List<battler>();
@@ -56,7 +55,7 @@ namespace shandakemon.core
         public void shuffle()
         {
             utils.Logger.Report(ToString() + " shuffles its deck.");
-            this.deck = new LinkedList<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
+            this.deck = new List<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
         }
 
         // Method to draw 'times' number of cards
@@ -67,7 +66,7 @@ namespace shandakemon.core
             for (int i = 0; i < times; i++)
             {
                 hand.Add(deck.First());
-                deck.RemoveFirst();
+                deck.Remove(deck.First());
             }
 
             utils.Logger.Report(ToString() + " draws " + times + (times == 1 ? " card." : " cards."));
@@ -88,7 +87,7 @@ namespace shandakemon.core
             for (int i = 0; i < prices.Length; i++)
             {
                 this.prices[i] = deck.First();
-                deck.RemoveFirst();
+                deck.Remove(deck.First());
             }
 
             utils.Logger.Report(ToString() + " puts " + prices.Length + " price cards.");
@@ -104,7 +103,7 @@ namespace shandakemon.core
             }
 
             foreach (card c1 in hand)
-                deck.AddFirst(c1);
+                deck.Add(c1);
             hand.Clear();
             utils.Logger.Report(ToString() + " puts its hand on the deck.");
             shuffle();
@@ -163,19 +162,19 @@ namespace shandakemon.core
             while (target.prevolutions.Count != 0)
             {
                 battler bt = target.prevolutions.First.Value;
-                discarded.AddFirst(bt);
+                discarded.Add(bt);
                 target.prevolutions.RemoveFirst();
             }
 
             target.clear();
             if (target.proxy)
             {
-                discarded.AddFirst(target.attached);
+                discarded.Add(target.attached);
                 utils.Logger.Report(target.attached.ToString() + " is discarded.");
             }
             else
             {
-                discarded.AddFirst(target);
+                discarded.Add(target);
                 utils.Logger.Report(target.ToString() + " is discarded.");
             }
             
@@ -207,13 +206,13 @@ namespace shandakemon.core
             energy output = source.energies[energy_index];
             if (!output.proxy)
             {
-                discarded.AddFirst(output);
+                discarded.Add(output);
                 source.energies.RemoveAt(energy_index);
                 source.energyTotal[output.elem] -= output.quan;
             }
             else
             {
-                discarded.AddFirst(output.attached);
+                discarded.Add(output.attached);
                 source.energies.RemoveAt(energy_index);
                 source.energyTotal[output.elem] -= output.quan;
             }
@@ -391,10 +390,18 @@ namespace shandakemon.core
             }
         }
 
+        // Discard a trainer
         public void TrainerToDiscard(card target)
         {
-            this.discarded.AddFirst(target);
+            this.discarded.Add(target);
             this.hand.Remove(target);
+        }
+
+        // Show deck
+        public void ShowDeck()
+        {
+            for (int i = 0; i < deck.Count; i++)
+                Console.WriteLine(i +"- "+ deck[i].ToString());
         }
     }
 }
