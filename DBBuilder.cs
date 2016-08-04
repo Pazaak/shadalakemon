@@ -384,6 +384,7 @@ namespace shandakemon
             trainer[] trainers = new trainer[26];
             trainers[0] = new trainer(0, 0, new int[2] { 10, Legacies.clefairyDoll }, "Clefairy Doll");
             trainers[1] = new trainer(0, 1, new int[2] { 2, -1 }, "Computer Search");
+            trainers[2] = new trainer(0, 2, new int[1] { 0 }, "Devolution Spray");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);

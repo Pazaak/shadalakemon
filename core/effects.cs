@@ -248,6 +248,10 @@ namespace shandakemon.core
                         source_controller.shuffle();
                     }
                     break;
+                case 2: // Return the battler to the selected evolutive stage and remove status and legacies
+                    devolution(source_controller, parameters[0]);
+                    break;
+
             }
         }
 
@@ -754,6 +758,58 @@ namespace shandakemon.core
                 Int32.TryParse(Console.ReadLine(), out digit);
             } while (superType != -1 && target.deck[digit].getSuperType() == superType);
             return target.deck[digit];
+        }
+
+        public static void devolution(Player source_controller, int steps)
+        {
+            Console.WriteLine("Select a pokemon:");
+            Console.WriteLine(source_controller.writeBattlers());
+            int digit;
+            Int32.TryParse(Console.ReadLine(), out digit);
+
+            battler target;
+            if (digit == 1)
+                target = source_controller.front;
+            else
+                target = source_controller.benched[digit - 2];
+
+            if (target.prevolution == null)
+            {
+                Console.WriteLine(target.ToString() + " is a basic pokemon.");
+                return;
+            }
+
+            int chain;
+            if (target.prevolution.prevolution != null)
+                chain = 2;
+            else
+                chain = 1;
+
+            int stage_selected;
+            if (steps == 0) // Return to the selected form
+            {
+                Console.WriteLine("Select the form to which the pokemon must return: ");
+                Console.WriteLine(target.ShowEvolutions());
+
+                Int32.TryParse(Console.ReadLine(), out stage_selected);
+            }
+            else
+                stage_selected = chain - steps;
+
+            battler newForm;
+            if ( stage_selected == 1 && chain == 2 )
+                newForm = target.prevolution.prevolution;
+            else
+                newForm = target.prevolution;
+
+            target.devolve(newForm);
+
+            source_controller.ToDiscard(target);
+
+            if (digit == 1)
+                source_controller.front = newForm;
+            else
+                source_controller.benched.Add(newForm);
         }
     }
 }

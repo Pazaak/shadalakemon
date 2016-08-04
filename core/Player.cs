@@ -159,12 +159,9 @@ namespace shandakemon.core
                 discardEnergy(target, 0, false);
             }
 
-            while (target.prevolutions.Count != 0)
-            {
-                battler bt = target.prevolutions.First.Value;
-                discarded.Add(bt);
-                target.prevolutions.RemoveFirst();
-            }
+            if (target.prevolution != null)
+                discarded.Add(target.prevolution);
+            target.prevolution = null;
 
             target.clear();
             if (target.proxy)

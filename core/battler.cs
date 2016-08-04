@@ -58,7 +58,7 @@ namespace shandakemon.core
         public List<energy> energies;
         public int[] energyTotal;
         public bool sumSick, leekSlap, proxy;
-        public LinkedList<battler> prevolutions;
+        public battler prevolution;
         public Dictionary<int, int[]> conditions;
         public Power power;
         public card attached;
@@ -86,7 +86,7 @@ namespace shandakemon.core
             this.sumSick = true;
             energies = new List<energy>();
             energyTotal = new int[7];
-            this.prevolutions = new LinkedList<battler>();
+            this.prevolution = null;
             this.conditions = new Dictionary<int, int[]>();
 
             if (legacy != null)
@@ -257,7 +257,18 @@ namespace shandakemon.core
             this.energyTotal = pre.energyTotal;
 
             pre.clear();
-            this.prevolutions.AddFirst(pre);
+            this.prevolution = pre;
+        }
+
+        // Returns to a previous instance of battler
+        public void devolve(battler pre)
+        {
+            pre.damage = this.damage;
+            pre.energies = this.energies;
+            pre.energyTotal = this.energyTotal;
+
+            this.energies = new List<energy>();
+            this.prevolution = null;
         }
 
         // Generic method to show the energies that a battler has
@@ -339,6 +350,16 @@ namespace shandakemon.core
                 legacies = null;
 
             return new battler(this.type, this.element, this.HP, this.weak_elem, this.weak_mod, this.res_elem, this.res_mod, this.retreat, this.name, this.id, this.evolvesFrom, neoMovements, neoPower, legacies);
+        }
+
+        // Shows the available evolutions
+        public string ShowEvolutions(string buffer = "", int deep = 0)
+        {
+            if (prevolution != null)
+                buffer += deep + "- " + prevolution.ToString() + Environment.NewLine;
+            else
+                return buffer;
+            return prevolution.ShowEvolutions(buffer, deep+1);
         }
     }
 }

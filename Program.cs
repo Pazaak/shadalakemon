@@ -36,12 +36,13 @@ namespace shandakemon
                 if ( i < 0 )
                     deck2.Add(energies[6].DeepCopy());
 
-                if ( i < 8 )
+                if ( i < 6 )
                 {
                     deck1.Add(battlers[58].DeepCopy());
+                    deck1.Add(trainers[2].DeepCopy());
                 }
 
-                if ( i < 6 )
+                if ( i < 4 )
                 {
                     deck1.Add(battlers[37].DeepCopy());
                     deck1.Add(battlers[12].DeepCopy());
