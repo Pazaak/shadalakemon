@@ -802,7 +802,10 @@ namespace shandakemon.core
             else
                 newForm = target.prevolution;
 
-            target.devolve(newForm);
+            battler middle = target.devolve(newForm);
+
+            if (middle != null)
+                source_controller.ToDiscard(middle);
 
             source_controller.ToDiscard(target);
 

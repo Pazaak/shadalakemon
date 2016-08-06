@@ -261,14 +261,23 @@ namespace shandakemon.core
         }
 
         // Returns to a previous instance of battler
-        public void devolve(battler pre)
+        public battler devolve(battler pre)
         {
+            battler middle = null;
+            if ( this.prevolution != pre) // The devolution has two steps
+            {
+                middle = this.prevolution;
+                middle.prevolution = null;
+            }
+
             pre.damage = this.damage;
             pre.energies = this.energies;
             pre.energyTotal = this.energyTotal;
 
             this.energies = new List<energy>();
             this.prevolution = null;
+
+            return middle; // Returns the middle battler in order to eliminate it
         }
 
         // Generic method to show the energies that a battler has
