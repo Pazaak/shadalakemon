@@ -289,6 +289,17 @@ namespace shandakemon.core
                     JumpEvolution(source_controller);
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 7: // Put card from hand in library and a card in library into hand
+                    card toDeck = SearchHand(source_controller, parameters[0]);
+                    card toHand = SearchDeck(source_controller, parameters[0]);
+                    // TODO: Show both cards
+                    source_controller.hand.Remove(toDeck);
+                    source_controller.deck.Add(toDeck);
+                    source_controller.deck.Remove(toHand);
+                    source_controller.hand.Add(toHand);
+                    source_controller.shuffle();
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 
@@ -793,7 +804,7 @@ namespace shandakemon.core
                 Console.WriteLine("Select a card from the deck:");
                 target.ShowDeck();
                 Int32.TryParse(Console.ReadLine(), out digit);
-            } while (superType != -1 && target.deck[digit].getSuperType() == superType);
+            } while (superType != -1 && target.deck[digit].getSuperType() != superType);
             return target.deck[digit];
         }
 
@@ -955,6 +966,19 @@ namespace shandakemon.core
                 target_source.benched[digit - 2] = source;
 
             target_source.hand.Remove(source);
+        }
+
+        // Searches a determined type of card in the hand
+        public static card SearchHand(Player target, int superType)
+        {
+            int digit;
+            do
+            {
+                Console.WriteLine("Select a card from the hand:");
+                Console.WriteLine(target.writeHand());
+                Int32.TryParse(Console.ReadLine(), out digit);
+            } while (target.hand[digit-1].getSuperType() != superType);
+            return target.hand[digit-1];
         }
     } 
 }
