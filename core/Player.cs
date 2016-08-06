@@ -417,5 +417,19 @@ namespace shandakemon.core
             return output;
 
         }
+
+        // Select a battler
+        public battler SelectBattler()
+        {
+            int digit;
+            Console.WriteLine("Select an active pokémon:");
+            Console.WriteLine(this.writeBattlers());
+            Int32.TryParse(Console.ReadLine(), out digit);
+
+            if (digit == 1)
+                return front;
+            else
+                return benched[digit - 2];
+        }
     }
 }

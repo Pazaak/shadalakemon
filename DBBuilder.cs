@@ -391,6 +391,7 @@ namespace shandakemon
             trainers[6] = new trainer(0, 6, new int[] { }, "Pokemon Breeder");
             trainers[7] = new trainer(0, 7, new int[1] { 0 }, "Pokemon Trader");
             trainers[8] = new trainer(0, 8, new int[] { }, "Scoop Up");
+            trainers[9] = new trainer(0, 9, new int[4] { -1, 1, -1, 2 }, "Super Energy Removal");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);

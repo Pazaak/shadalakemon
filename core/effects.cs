@@ -304,7 +304,11 @@ namespace shandakemon.core
                     ScoopUp(source_controller, target_controller);
                     source_controller.TrainerToDiscard(source);
                     break;
-
+                case 9: // Discard one energy from one of the source's battler and two from one of the target's battlers
+                    discardEnergy(source_controller, source_controller.SelectBattler(), parameters[0], parameters[1]);
+                    discardEnergy(target_controller, target_controller.SelectBattler(), parameters[2], parameters[3]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 
