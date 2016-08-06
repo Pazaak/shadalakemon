@@ -280,6 +280,11 @@ namespace shandakemon.core
                     }
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 5: // Search in hand for the cards of an specified type and shuffle them in the deck
+                    ShuffleCards(source_controller, parameters[0]);
+                    ShuffleCards(target_controller, parameters[0]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 
@@ -878,6 +883,35 @@ namespace shandakemon.core
                 Int32.TryParse(Console.ReadLine(), out digit);
             } while (superType != -1 && target.discarded[digit].getSuperType() != superType);
             return target.discarded[digit];
+        }
+
+        // Shuffles the selected cards from the hand in to the deck
+        public static void ShuffleCards(Player target, int superType)
+        {
+            Console.WriteLine(target.ToString() + "'s hand.");
+            Console.WriteLine(target.writeHand());
+
+            string buffer = "";
+            List<card> ToShuffle = new List<card>();
+            foreach (card crd in target.hand)
+                if (crd.getSuperType() == superType)
+                {
+                    buffer += crd.ToString() + " ";
+                    ToShuffle.Add(crd);
+                }
+
+            if (buffer.Length == 0)
+                Console.WriteLine(target.ToString() + " has no cards of the selected type in hand.");
+            else
+                Console.WriteLine(buffer + "will be shuffled.");
+
+            foreach ( card crd in ToShuffle)
+            {
+                target.hand.Remove(crd);
+                target.deck.Add(crd);
+            }
+
+            target.shuffle();
         }
     }
 }
