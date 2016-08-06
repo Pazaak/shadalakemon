@@ -224,7 +224,7 @@ namespace shandakemon.core
                     source_controller.discarded.Remove(source);
                     target_controller.PriceProcedure();
                     BecomeEnergy(source, source_controller, parameters[0]);
-                    source_controller.KnockoutProcedure();
+                    source_controller.KnockoutProcedure(target_controller);
                     break;
             }
         }
@@ -300,6 +300,11 @@ namespace shandakemon.core
                     source_controller.shuffle();
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 8: // Select a battler in play, discard everything and return the basic to hand
+                    ScoopUp(source_controller, target_controller);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+
             }
         }
 
@@ -349,7 +354,7 @@ namespace shandakemon.core
                 if (source_controller.winCondition) return output; // break
 
                 if (target_controller.benched.Count > 0)
-                    target_controller.KnockoutProcedure();
+                    target_controller.KnockoutProcedure(source_controller);
                 else
                 {
                     Console.WriteLine(target_controller.ToString() + " has no benched pokemon. " + source_controller.ToString() + " wins."); // The player losses
@@ -980,5 +985,39 @@ namespace shandakemon.core
             } while (target.hand[digit-1].getSuperType() != superType);
             return target.hand[digit-1];
         }
-    } 
+
+        // Select a battler in play, discard everything and return the basic to hand
+        public static void ScoopUp(Player target_controller, Player opponent)
+        {
+            int digit;
+            Console.WriteLine("Select an active pokemon:");
+            Console.WriteLine(target_controller.writeBattlers());
+            Int32.TryParse(Console.ReadLine(), out digit);
+
+            battler target;
+            if (digit == 1)
+            {
+                target = target_controller.front;
+                target_controller.front = null;
+            }
+            else
+            {
+                target = target_controller.benched[digit - 2];
+                target_controller.benched.Remove(target);
+            }
+
+            battler temp;
+            while (target.prevolution != null)
+            {
+                temp = target.prevolution;
+                target.prevolution = null;
+                target_controller.ToDiscard(target);
+                target = temp;
+            }
+
+            target_controller.hand.Add(target);
+
+            if (digit == 1) target_controller.KnockoutProcedure(opponent);
+        }
+    }
 }

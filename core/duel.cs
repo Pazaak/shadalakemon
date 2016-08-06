@@ -118,6 +118,8 @@ namespace shandakemon.core
 
             while (true)
             {
+                if (p1.winCondition || p2.winCondition) return 1;
+
                 Console.WriteLine("Player " + p1.id + " main phase.");
                 Console.WriteLine("- 'a' to advance to attack phase");
                 Console.WriteLine("- 'e' end the turn");
@@ -166,7 +168,7 @@ namespace shandakemon.core
                         utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
                         return 1; // No attacks
                     case 114:
-                        retreat(p1); // Retreat menu
+                        retreat(p1, p2); // Retreat menu
                         break;
                     case 112:
                         PokemonPowerMenu(p1, p2); //Power menu
@@ -463,7 +465,7 @@ namespace shandakemon.core
         }
 
         // Retreat menu
-        public void retreat(Player p1)
+        public void retreat(Player p1, Player p2)
         {
             if (!p1.front.canRetreat()) // Check if it can retreat
             {
@@ -488,7 +490,7 @@ namespace shandakemon.core
                 Console.WriteLine(p1.front.ToString() + " will be discarded.");
                 p1.ToDiscard(p1.front);
                 p1.front = null;
-                p1.KnockoutProcedure();
+                p1.KnockoutProcedure(p2);
                 return;
             }
 

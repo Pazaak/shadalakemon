@@ -333,8 +333,15 @@ namespace shandakemon.core
         }
 
         // Procedure to select a new front battler
-        public void KnockoutProcedure()
+        public void KnockoutProcedure(Player opponent)
         {
+            if (benched.Count == 0)
+            {
+                Console.WriteLine("There is no other pokémon on the battlefield.");
+                opponent.winCondition = true;
+                return;
+            }
+
             Console.WriteLine(this.ToString() + ": Select a benched pokemon"); // Ask for a battler to put in front
             Console.WriteLine(this.writeBenched());
 
