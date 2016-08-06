@@ -39,7 +39,7 @@ namespace shandakemon
                 if ( i < 6 )
                 {
                     deck1.Add(battlers[58].DeepCopy());
-                    deck1.Add(trainers[2].DeepCopy());
+                    deck1.Add(trainers[6].DeepCopy());
                 }
 
                 if ( i < 4 )
