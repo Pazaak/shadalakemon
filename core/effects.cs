@@ -251,7 +251,18 @@ namespace shandakemon.core
                 case 2: // Return the battler to the selected evolutive stage and remove status and legacies
                     devolution(source_controller, parameters[0]);
                     break;
-
+                case 3: // Shuffle hand in the deck and draw X cards
+                    if ( parameters[0] == 0 ) // Source player
+                    {
+                        source_controller.ShuffleHand();
+                        source_controller.draw(parameters[1]);
+                    }
+                    else // Target player
+                    {
+                        target_controller.ShuffleHand();
+                        target_controller.draw(parameters[1]);
+                    }
+                    break;
             }
         }
 
