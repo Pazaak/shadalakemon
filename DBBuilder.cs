@@ -386,6 +386,7 @@ namespace shandakemon
             trainers[1] = new trainer(0, 1, new int[2] { 2, -1 }, "Computer Search");
             trainers[2] = new trainer(0, 2, new int[1] { 0 }, "Devolution Spray");
             trainers[3] = new trainer(0, 3, new int[2] { 1, 7 }, "Imposter Professor Oak");
+            trainers[4] = new trainer(0, 4, new int[2] { 2, 1 }, "Item Finder");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);

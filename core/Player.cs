@@ -400,5 +400,15 @@ namespace shandakemon.core
             for (int i = 0; i < deck.Count; i++)
                 Console.WriteLine(i +"- "+ deck[i].ToString());
         }
+
+        // Show discard pile
+        public string ShowDiscardPile()
+        {
+            string output = "";
+            for (int i = 0; i < discarded.Count; i++)
+                output += i + "- " + discarded[i].ToString() + Environment.NewLine;
+            return output;
+
+        }
     }
 }

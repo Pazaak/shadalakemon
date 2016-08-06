@@ -247,9 +247,11 @@ namespace shandakemon.core
                         utils.Logger.Report(selected.ToString() + " added to the hand.");
                         source_controller.shuffle();
                     }
+                    source_controller.TrainerToDiscard(source);
                     break;
                 case 2: // Return the battler to the selected evolutive stage and remove status and legacies
                     devolution(source_controller, parameters[0]);
+                    source_controller.TrainerToDiscard(source);
                     break;
                 case 3: // Shuffle hand in the deck and draw X cards
                     if ( parameters[0] == 0 ) // Source player
@@ -262,6 +264,21 @@ namespace shandakemon.core
                         target_controller.ShuffleHand();
                         target_controller.draw(parameters[1]);
                     }
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 4: // Discard and retrieve from discard pile
+                    if (DiscardCards(source_controller, parameters[0]))
+                    {
+                        card selected = SearchPile(source_controller, parameters[1]);
+                        if (selected != null)
+                        {
+                            source_controller.hand.Add(selected);
+                            source_controller.discarded.Remove(selected);
+                            Console.WriteLine(selected.ToString() + " added to the hand.");
+                            utils.Logger.Report(selected.ToString() + " added to the hand.");
+                        }
+                    }
+                    source_controller.TrainerToDiscard(source);
                     break;
             }
         }
@@ -771,6 +788,7 @@ namespace shandakemon.core
             return target.deck[digit];
         }
 
+        // Handles the devolution procedure
         public static void devolution(Player source_controller, int steps)
         {
             Console.WriteLine("Select a pokemon:");
@@ -824,6 +842,42 @@ namespace shandakemon.core
                 source_controller.front = newForm;
             else
                 source_controller.benched.Add(newForm);
+        }
+
+        // Search the discard file for a card
+        public static card SearchPile(Player target, int superType)
+        {
+            if ( target.discarded.Count == 0 )
+            {
+                Console.WriteLine("Discard pile is empty.");
+                return null;
+            }
+
+            if (superType != -1) // Check if there are card of that type
+            {
+                bool flag = false;
+                foreach (card ca in target.discarded)
+                    if (ca.getSuperType() == superType)
+                    {
+                        flag = true;
+                        break;
+                    }
+
+                if (!flag)
+                {
+                    Console.WriteLine("There's no card of the given type in the discard pile.");
+                    return null;
+                }
+            }
+
+            int digit;
+            do
+            {
+                Console.WriteLine("Choose a card from the discard pile:");
+                Console.WriteLine(target.ShowDiscardPile());
+                Int32.TryParse(Console.ReadLine(), out digit);
+            } while (superType != -1 && target.discarded[digit].getSuperType() != superType);
+            return target.discarded[digit];
         }
     }
 }
