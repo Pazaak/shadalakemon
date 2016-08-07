@@ -386,12 +386,16 @@ namespace shandakemon
             trainers[1] = new trainer(0, 1, new int[2] { 2, -1 }, "Computer Search");
             trainers[2] = new trainer(0, 2, new int[1] { 0 }, "Devolution Spray");
             trainers[3] = new trainer(0, 3, new int[2] { 1, 7 }, "Imposter Professor Oak");
-            trainers[4] = new trainer(0, 4, new int[2] { 2, 1 }, "Item Finder");
+            trainers[4] = new trainer(0, 4, new int[3] { 2, 1, 1 }, "Item Finder");
             trainers[5] = new trainer(0, 5, new int[1] { 1 }, "Lass");
             trainers[6] = new trainer(0, 6, new int[] { }, "Pokemon Breeder");
             trainers[7] = new trainer(0, 7, new int[1] { 0 }, "Pokemon Trader");
             trainers[8] = new trainer(0, 8, new int[] { }, "Scoop Up");
             trainers[9] = new trainer(0, 9, new int[4] { -1, 1, -1, 2 }, "Super Energy Removal");
+            trainers[10] = new trainer(0, 10, new int[2] { Legacies.damageReduction, 20 }, "Defender");
+            trainers[11] = new trainer(0, 4, new int[3] { 1, 2, 2 }, "Energy Retrieval");
+            trainers[12] = new trainer(0, 11, new int[0] { }, "Full Heal");
+            trainers[13] = new trainer(0, 12, new int[2] { 2, 1 }, "Maintenance");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);

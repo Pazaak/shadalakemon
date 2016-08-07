@@ -269,20 +269,23 @@ namespace shandakemon.core
                 case 4: // Discard and retrieve from discard pile
                     if (DiscardCards(source_controller, parameters[0]))
                     {
-                        card selected = SearchPile(source_controller, parameters[1]);
-                        if (selected != null)
+                        for (int i = 0; i < parameters[2]; i++)
                         {
-                            source_controller.hand.Add(selected);
-                            source_controller.discarded.Remove(selected);
-                            Console.WriteLine(selected.ToString() + " added to the hand.");
-                            utils.Logger.Report(selected.ToString() + " added to the hand.");
+                            card selected = SearchPile(source_controller, parameters[1]);
+                            if (selected != null)
+                            {
+                                source_controller.hand.Add(selected);
+                                source_controller.discarded.Remove(selected);
+                                Console.WriteLine(selected.ToString() + " added to the hand.");
+                                utils.Logger.Report(selected.ToString() + " added to the hand.");
+                            }
                         }
                     }
                     source_controller.TrainerToDiscard(source);
                     break;
                 case 5: // Search in hand for the cards of an specified type and shuffle them in the deck
-                    ShuffleCards(source_controller, parameters[0]);
-                    ShuffleCards(target_controller, parameters[0]);
+                    ShuffleCardsType(source_controller, parameters[0]);
+                    ShuffleCardsType(target_controller, parameters[0]);
                     source_controller.TrainerToDiscard(source);
                     break;
                 case 6: // Evolve jumping one stage
@@ -309,6 +312,25 @@ namespace shandakemon.core
                     discardEnergy(target_controller, target_controller.SelectBattler(), parameters[2], parameters[3]);
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 10: // Add a legacy to front
+                    int[] arguments = new int[parameters.Length];
+                    for (int i = 1; i < arguments.Length; i++)
+                        arguments[i] = parameters[i];
+                    arguments[0] = 2;
+                    addCondition(source_controller.front, parameters[0], arguments);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 11: // Eliminate status conditions
+                    source_controller.front.status = 0;
+                    Console.WriteLine(source_controller.front.ToString() + " is now healed of status effects.");
+                    utils.Logger.Report(source_controller.front.ToString() + " is now healed of status effects.");
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 12: // Shuffle X cards to draw X cards
+                    if (ShuffleCards(source_controller, parameters[0]))
+                        source_controller.draw(parameters[1]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 
@@ -331,6 +353,13 @@ namespace shandakemon.core
                 utils.Logger.Report(target.ToString() + " prevents the damage.");
                 return 0;
             }
+
+            if (target.conditions.ContainsKey(Legacies.damageReduction))
+            {
+                output = output - target.conditions[Legacies.damageReduction][1];
+                output = output < 0 ? 0 : output;
+            }
+
 
             if (output > 0)
                 target.damage += output;
@@ -910,7 +939,7 @@ namespace shandakemon.core
         }
 
         // Shuffles the selected cards from the hand in to the deck
-        public static void ShuffleCards(Player target, int superType)
+        public static void ShuffleCardsType(Player target, int superType)
         {
             Console.WriteLine(target.ToString() + "'s hand.");
             Console.WriteLine(target.writeHand());
@@ -1022,6 +1051,28 @@ namespace shandakemon.core
             target_controller.hand.Add(target);
 
             if (digit == 1) target_controller.KnockoutProcedure(opponent);
+        }
+
+        // Selects cards from the hand and shuffles them in the deck
+        public static bool ShuffleCards(Player target_controller, int times)
+        {
+            if (target_controller.hand.Count() < times)
+            {
+                Console.WriteLine("Not enough card in hand.");
+                return false;
+            }
+            int digit;
+            while ( times-- != 0)
+            {
+                Console.WriteLine("Select a card from your hand to shuffle in the deck: ");
+                Console.WriteLine(target_controller.writeHand());
+                Int32.TryParse(Console.ReadLine(), out digit);
+                card toDeck = target_controller.hand[digit - 1];
+                target_controller.hand.Remove(toDeck);
+                target_controller.deck.Add(toDeck);
+            }
+            target_controller.shuffle();
+            return true;
         }
     }
 }
