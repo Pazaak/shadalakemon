@@ -24,44 +24,44 @@ namespace shandakemon
             battler[] battlers = JsonConvert.DeserializeObject<battler[]>(raw_pokemon);
             trainer[] trainers = JsonConvert.DeserializeObject<trainer[]>(raw_trainers);
 
-            List<card> deck1 = new List<card>(); // Creates a deck
-            List<card> deck2 = new List<card>();
+            LinkedList<card> deck1 = new LinkedList<card>(); // Creates a deck
+            LinkedList<card> deck2 = new LinkedList<card>();
 
             for (int i = 0; i < 20; i++) // Energies
             {
-                deck1.Add(energies[6].DeepCopy());
+                deck1.AddFirst(energies[6].DeepCopy());
 
                 if ( i < 20)
-                    deck2.Add(energies[4].DeepCopy());
+                    deck2.AddFirst(energies[4].DeepCopy());
                 if ( i < 0 )
-                    deck2.Add(energies[6].DeepCopy());
+                    deck2.AddFirst(energies[6].DeepCopy());
 
                 if ( i < 6 )
                 {
-                    deck1.Add(battlers[58].DeepCopy());
-                    deck1.Add(trainers[16].DeepCopy());
+                    deck1.AddFirst(battlers[58].DeepCopy());
+                    deck1.AddFirst(trainers[16].DeepCopy());
                 }
 
                 if ( i < 4 )
                 {
-                    deck1.Add(battlers[37].DeepCopy());
-                    deck1.Add(battlers[12].DeepCopy());
+                    deck1.AddFirst(battlers[37].DeepCopy());
+                    deck1.AddFirst(battlers[12].DeepCopy());
                 }
 
                 if ( i < 0 )
                 {
-                    deck1.Add(battlers[12].DeepCopy());
-                    deck1.Add(battlers[37].DeepCopy());
+                    deck1.AddFirst(battlers[12].DeepCopy());
+                    deck1.AddFirst(battlers[37].DeepCopy());
                 }
 
                 if ( i < 8 )
                 {
-                    deck2.Add(battlers[52].DeepCopy());
+                    deck2.AddFirst(battlers[52].DeepCopy());
                 }
 
                 if ( i < 12 )
                 {
-                    deck2.Add(trainers[15].DeepCopy());
+                    deck2.AddFirst(trainers[17].DeepCopy());
                 }
             }
 

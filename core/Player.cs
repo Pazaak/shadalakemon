@@ -21,10 +21,11 @@ namespace shandakemon.core
         public bool winCondition;
         public battler front, lastFront;
         public List<battler> benched;
-        public List<card> hand, discarded, deck;
+        public List<card> hand, discarded;
+        public LinkedList<card> deck;
         public card[] prices;
 
-        public Player(int id, List<card> deck, int nPrices)
+        public Player(int id, LinkedList<card> deck, int nPrices)
         {
             this.id = id;
             this.deck = deck;
@@ -55,7 +56,7 @@ namespace shandakemon.core
         public void shuffle()
         {
             utils.Logger.Report(ToString() + " shuffles its deck.");
-            this.deck = new List<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
+            this.deck = new LinkedList<card>(this.deck.OrderBy(x => CRandom.RandomInt()));
         }
 
         // Method to draw 'times' number of cards
@@ -71,6 +72,13 @@ namespace shandakemon.core
 
             utils.Logger.Report(ToString() + " draws " + times + (times == 1 ? " card." : " cards."));
             return true;
+        }
+
+        public card GetFromDeck(int index)
+        {
+            LinkedListNode<card> output = deck.First;
+            for (int i = 0; i < index; i++) output = output.Next;
+            return output.Value;
         }
 
         // Method to draw the selected price
@@ -103,7 +111,7 @@ namespace shandakemon.core
             }
 
             foreach (card c1 in hand)
-                deck.Add(c1);
+                deck.AddFirst(c1);
             hand.Clear();
             utils.Logger.Report(ToString() + " puts its hand on the deck.");
             shuffle();
@@ -402,10 +410,16 @@ namespace shandakemon.core
         }
 
         // Show deck
-        public void ShowDeck()
+        public string ShowDeck()
         {
+            LinkedListNode<card> actual = deck.First;
+            string output = "";
             for (int i = 0; i < deck.Count; i++)
-                Console.WriteLine(i +"- "+ deck[i].ToString());
+            {
+                output += i + "- " + actual.Value.ToString()+Environment.NewLine;
+                actual = actual.Next;
+            }
+            return output;
         }
 
         // Show discard pile

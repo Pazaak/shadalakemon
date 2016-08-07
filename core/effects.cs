@@ -298,7 +298,7 @@ namespace shandakemon.core
                     card toHand = SearchDeck(source_controller, parameters[0]);
                     // TODO: Show both cards
                     source_controller.hand.Remove(toDeck);
-                    source_controller.deck.Add(toDeck);
+                    source_controller.deck.AddFirst(toDeck);
                     source_controller.deck.Remove(toHand);
                     source_controller.hand.Add(toHand);
                     source_controller.shuffle();
@@ -354,6 +354,16 @@ namespace shandakemon.core
                     target_controller.benched.Add(target_battler);
                     target_controller.discarded.Remove(target_battler);
 
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 15: // Look top X cards and rearrange them
+                    if ( source_controller.deck.Count < parameters[0])
+                    {
+                        Console.WriteLine("The deck has not enough cards to perform that action.");
+                        source_controller.hand.Add(source);
+                        return;
+                    }
+                    TopXRearrange(source_controller, parameters[0]);
                     source_controller.TrainerToDiscard(source);
                     break;
             }
@@ -872,13 +882,15 @@ namespace shandakemon.core
         public static card SearchDeck(Player target, int superType)
         {
             int digit;
+            card output;
             do
             {
                 Console.WriteLine("Select a card from the deck:");
-                target.ShowDeck();
+                Console.WriteLine(target.ShowDeck());
                 Int32.TryParse(Console.ReadLine(), out digit);
-            } while (superType != -1 && target.deck[digit].getSuperType() != superType);
-            return target.deck[digit];
+                output = target.GetFromDeck(digit);
+            } while (superType != -1 && output.getSuperType() != superType);
+            return output;
         }
 
         // Handles the devolution procedure
@@ -996,7 +1008,7 @@ namespace shandakemon.core
             foreach (card crd in ToShuffle)
             {
                 target.hand.Remove(crd);
-                target.deck.Add(crd);
+                target.deck.AddFirst(crd);
             }
 
             target.shuffle();
@@ -1104,7 +1116,7 @@ namespace shandakemon.core
                 Int32.TryParse(Console.ReadLine(), out digit);
                 card toDeck = target_controller.hand[digit - 1];
                 target_controller.hand.Remove(toDeck);
-                target_controller.deck.Add(toDeck);
+                target_controller.deck.AddFirst(toDeck);
             }
             target_controller.shuffle();
             return true;
@@ -1131,6 +1143,34 @@ namespace shandakemon.core
                     Console.WriteLine(btl.ToString() + " has its damage healed and energy discarded.");
                     utils.Logger.Report(btl.ToString() + " has its damage healed and energy discarded.");
                 }
+            }
+        }
+
+        // Look at the top X cards of the deck and rearrange them
+        public static void TopXRearrange(Player target, int quantity)
+        {
+            card[] topX = new card[quantity];
+
+            Console.WriteLine("Select cards from bottom to top: ");
+            for (int i = 0; i < quantity; i++)
+            {
+                Console.WriteLine(i + "- " + target.deck.First().ToString());
+                topX[i] = target.deck.First();
+                target.deck.RemoveFirst();
+            }
+
+            int digit;
+            for (int i = 0; i < quantity; i++)
+            {
+                do
+                {
+                    Int32.TryParse(Console.ReadLine(), out digit);
+                    if (topX[digit] == null)
+                        Console.WriteLine("Card already selected");
+                }
+                while (topX[digit] == null);
+                target.deck.AddFirst(topX[digit]);
+                topX[digit] = null; 
             }
         }
     }
