@@ -61,7 +61,7 @@ namespace shandakemon
 
                 if ( i < 12 )
                 {
-                    deck2.Add(trainers[13].DeepCopy());
+                    deck2.Add(trainers[15].DeepCopy());
                 }
             }
 

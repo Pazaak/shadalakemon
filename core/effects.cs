@@ -331,6 +331,10 @@ namespace shandakemon.core
                         source_controller.draw(parameters[1]);
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 13: // Pokemon center
+                    HealAndDiscardEnergy(source_controller);
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 
@@ -352,6 +356,11 @@ namespace shandakemon.core
                 Console.WriteLine(target.ToString() + " prevents the damage.");
                 utils.Logger.Report(target.ToString() + " prevents the damage.");
                 return 0;
+            }
+
+            if (source != null && source.conditions.ContainsKey(Legacies.damageAmplification))
+            {
+                output += source.conditions[Legacies.damageAmplification][1];
             }
 
             if (target.conditions.ContainsKey(Legacies.damageReduction))
@@ -481,6 +490,11 @@ namespace shandakemon.core
         // Adds a condition
         public static void addCondition(battler source, int condition, int[] parameters)
         {
+            if (source.conditions.ContainsKey(condition))
+            {
+                Console.WriteLine(source.ToString() + " has that condition.");
+                return;
+            }
             source.conditions.Add(condition, parameters);
             Console.WriteLine(source.ToString() + Legacies.IndexToLegacy(condition));
             utils.Logger.Report(source.ToString() + Legacies.IndexToLegacy(condition));
@@ -1073,6 +1087,29 @@ namespace shandakemon.core
             }
             target_controller.shuffle();
             return true;
+        }
+
+        // Heal and discard all energy of the damaged battlers
+        public static void HealAndDiscardEnergy(Player target)
+        {
+            List<battler> battlers = new List<battler>();
+            battlers.Add(target.front);
+            battlers = battlers.Concat<battler>(target.benched).ToList<battler>();
+
+            foreach ( battler btl in battlers)
+            {
+                if ( btl.damage > 0 )
+                {
+                    btl.damage = 0;
+                    foreach ( energy en in btl.energies)
+                        target.discarded.Add(en);
+                    for (int i = 0; i < btl.energyTotal.Length; i++)
+                        btl.energyTotal[i] = 0;
+                    btl.energies.Clear();
+                    Console.WriteLine(btl.ToString() + " has its damage healed and energy discarded.");
+                    utils.Logger.Report(btl.ToString() + " has its damage healed and energy discarded.");
+                }
+            }
         }
     }
 }

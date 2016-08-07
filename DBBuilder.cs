@@ -396,6 +396,8 @@ namespace shandakemon
             trainers[11] = new trainer(0, 4, new int[3] { 1, 2, 2 }, "Energy Retrieval");
             trainers[12] = new trainer(0, 11, new int[0] { }, "Full Heal");
             trainers[13] = new trainer(0, 12, new int[2] { 2, 1 }, "Maintenance");
+            trainers[14] = new trainer(0, 10, new int[2] { Legacies.damageAmplification, 10 }, "PlusPower");
+            trainers[15] = new trainer(0, 13, new int[0], "Pokémon Center");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);

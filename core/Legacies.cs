@@ -16,6 +16,7 @@ namespace shandakemon.core
         public static int blinded = 4; // opponent throws a coin before attacks
         public static int lowThreshold = 5; // Prevents damage below the given threshold
         public static int damageReduction = 6; // Reduce the damage of done by the opponent
+        public static int damageAmplification = 7; // Amplifies the damage
 
         // Pokebodies
         public static int energyBurn = 100; // Energy burn
@@ -40,6 +41,8 @@ namespace shandakemon.core
                     return " is protected against weak attacks.";
                 case 6:
                     return " has its defenses increased.";
+                case 7:
+                    return " is empowered.";
                 default:
                     return " PANIC PANIC PANIC.";
             }
