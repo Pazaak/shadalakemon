@@ -445,5 +445,80 @@ namespace shandakemon.core
             else
                 return benched[digit - 2];
         }
+
+        // Search deck for a card
+        public card SearchDeck(int superType)
+        {
+            int digit;
+            card output;
+            do
+            {
+                Console.WriteLine("Select a card from the deck:");
+                Console.WriteLine(this.ShowDeck());
+                Int32.TryParse(Console.ReadLine(), out digit);
+                output = this.GetFromDeck(digit);
+            } while (superType != -1 && output.getSuperType() != superType);
+            return output;
+        }
+
+        // Search the discard file for a card
+        public card SearchPile(int superType = -1)
+        {
+            if (this.discarded.Count == 0)
+            {
+                Console.WriteLine("Discard pile is empty.");
+                return null;
+            }
+
+            if (superType != -1) // Check if there are card of that type
+            {
+                bool flag = false;
+                foreach (card ca in this.discarded)
+                    if (ca.getSuperType() == superType)
+                    {
+                        flag = true;
+                        break;
+                    }
+
+                if (!flag)
+                {
+                    Console.WriteLine("There's no card of the given type in the discard pile.");
+                    return null;
+                }
+            }
+
+            int digit;
+            do
+            {
+                Console.WriteLine("Choose a card from the discard pile:");
+                Console.WriteLine(this.ShowDiscardPile());
+                Int32.TryParse(Console.ReadLine(), out digit);
+            } while (superType != -1 && this.discarded[digit].getSuperType() != superType);
+            return this.discarded[digit];
+        }
+
+        // Searches a determined type of card in the hand
+        public card SearchHand(int superType)
+        {
+            int digit;
+            do
+            {
+                Console.WriteLine("Select a card from the hand:");
+                Console.WriteLine(this.writeHand());
+                Int32.TryParse(Console.ReadLine(), out digit);
+            } while (this.hand[digit - 1].getSuperType() != superType);
+            return this.hand[digit - 1];
+        }
+
+        // Searches a battler on the battlefield
+        public battler SearchField()
+        {
+            Console.WriteLine("Select an active Pokémon: ");
+            Console.WriteLine(this.writeBattlers());
+            int digit;
+            Int32.TryParse(Console.ReadLine(), out digit);
+            if (digit == 1) return this.front;
+            else return this.benched[digit - 2];
+        }
     }
 }

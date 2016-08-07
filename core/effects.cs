@@ -241,7 +241,7 @@ namespace shandakemon.core
                     card selected;
                     if (DiscardCards(source_controller, parameters[0]))
                     {
-                        selected = SearchDeck(source_controller, parameters[1]);
+                        selected = source_controller.SearchDeck(parameters[1]);
                         source_controller.hand.Add(selected);
                         source_controller.deck.Remove(selected);
                         Console.WriteLine(selected.ToString() + " added to the hand.");
@@ -272,7 +272,7 @@ namespace shandakemon.core
                     {
                         for (int i = 0; i < parameters[2]; i++)
                         {
-                            selected = SearchPile(source_controller, parameters[1]);
+                            selected = source_controller.SearchPile(parameters[1]);
                             if (selected != null)
                             {
                                 source_controller.hand.Add(selected);
@@ -294,8 +294,8 @@ namespace shandakemon.core
                     source_controller.TrainerToDiscard(source);
                     break;
                 case 7: // Put card from hand in library and a card in library into hand
-                    card toDeck = SearchHand(source_controller, parameters[0]);
-                    card toHand = SearchDeck(source_controller, parameters[0]);
+                    card toDeck = source_controller.SearchHand(parameters[0]);
+                    card toHand = source_controller.SearchDeck(parameters[0]);
                     // TODO: Show both cards
                     source_controller.hand.Remove(toDeck);
                     source_controller.deck.AddFirst(toDeck);
@@ -336,10 +336,14 @@ namespace shandakemon.core
                     HealAndDiscardEnergy(source_controller);
                     source_controller.TrainerToDiscard(source);
                     break;
-                case 14: // Pokemon flute
-                    if ( target_controller.benched.Count() == 5 )
+                case 14: // basic pokémon from discard pile to bench
+                    Player target;
+                    if (parameters[0] == 0) target = source_controller;
+                    else target = target_controller;
+
+                    if ( target.benched.Count() == 5 )
                     {
-                        Console.WriteLine("Opponent's bench if full, you cannot play " + source.ToString());
+                        Console.WriteLine(target.ToString()+" bench if full, you cannot play " + source.ToString());
                         source_controller.hand.Add(source);
                         return;
                     }
@@ -347,12 +351,19 @@ namespace shandakemon.core
                     battler target_battler;
                     do
                     {
-                        target_battler = (battler) SearchPile(target_controller, 0);
+                        target_battler = (battler) target.SearchPile(0);
                     }
                     while (target_battler != null && target_battler.type != 0);
 
-                    target_controller.benched.Add(target_battler);
-                    target_controller.discarded.Remove(target_battler);
+                    target.benched.Add(target_battler);
+                    target.discarded.Remove(target_battler);
+
+                    if ( parameters[0] == 0)
+                    {
+                        int result = (target_battler.HP - target_battler.damage) / 2;
+                        result -= result % 10 == 5 ? 5 : 0;
+                        target_battler.damage = result;
+                    }
 
                     source_controller.TrainerToDiscard(source);
                     break;
@@ -364,6 +375,23 @@ namespace shandakemon.core
                         return;
                     }
                     TopXRearrange(source_controller, parameters[0]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 16: // Discard and heal
+                    bool end = false;
+                    do
+                    {
+                        target_battler = source_controller.SearchField();
+                        if (target_battler.energies.Count < parameters[0])
+                            Console.WriteLine(target_battler.ToString() + " has not enough energy to discard.");
+                        else
+                            end = true;
+                    } while (!end);
+
+                    discardEnergy(source_controller, target_battler, Constants.TNone, parameters[0]);
+
+                    heal(target_battler, parameters[1]);
+
                     source_controller.TrainerToDiscard(source);
                     break;
             }
@@ -497,7 +525,7 @@ namespace shandakemon.core
             }
             else
             {
-                source.damage -= source.damage >= quantity ? quantity : 0;
+                source.damage -= source.damage >= quantity ? quantity : source.damage;
                 Console.WriteLine(source.ToString() + " has " + quantity + " damage removed.");
                 utils.Logger.Report(source.ToString() + " has " + quantity + " damage removed.");
             }
@@ -878,21 +906,6 @@ namespace shandakemon.core
 
         }
 
-        // Search deck for a card
-        public static card SearchDeck(Player target, int superType)
-        {
-            int digit;
-            card output;
-            do
-            {
-                Console.WriteLine("Select a card from the deck:");
-                Console.WriteLine(target.ShowDeck());
-                Int32.TryParse(Console.ReadLine(), out digit);
-                output = target.GetFromDeck(digit);
-            } while (superType != -1 && output.getSuperType() != superType);
-            return output;
-        }
-
         // Handles the devolution procedure
         public static void devolution(Player source_controller, int steps)
         {
@@ -947,42 +960,6 @@ namespace shandakemon.core
                 source_controller.front = newForm;
             else
                 source_controller.benched.Add(newForm);
-        }
-
-        // Search the discard file for a card
-        public static card SearchPile(Player target, int superType = -1)
-        {
-            if (target.discarded.Count == 0)
-            {
-                Console.WriteLine("Discard pile is empty.");
-                return null;
-            }
-
-            if (superType != -1) // Check if there are card of that type
-            {
-                bool flag = false;
-                foreach (card ca in target.discarded)
-                    if (ca.getSuperType() == superType)
-                    {
-                        flag = true;
-                        break;
-                    }
-
-                if (!flag)
-                {
-                    Console.WriteLine("There's no card of the given type in the discard pile.");
-                    return null;
-                }
-            }
-
-            int digit;
-            do
-            {
-                Console.WriteLine("Choose a card from the discard pile:");
-                Console.WriteLine(target.ShowDiscardPile());
-                Int32.TryParse(Console.ReadLine(), out digit);
-            } while (superType != -1 && target.discarded[digit].getSuperType() != superType);
-            return target.discarded[digit];
         }
 
         // Shuffles the selected cards from the hand in to the deck
@@ -1051,19 +1028,6 @@ namespace shandakemon.core
                 target_source.benched[digit - 2] = source;
 
             target_source.hand.Remove(source);
-        }
-
-        // Searches a determined type of card in the hand
-        public static card SearchHand(Player target, int superType)
-        {
-            int digit;
-            do
-            {
-                Console.WriteLine("Select a card from the hand:");
-                Console.WriteLine(target.writeHand());
-                Int32.TryParse(Console.ReadLine(), out digit);
-            } while (target.hand[digit-1].getSuperType() != superType);
-            return target.hand[digit-1];
         }
 
         // Select a battler in play, discard everything and return the basic to hand
@@ -1173,5 +1137,6 @@ namespace shandakemon.core
                 topX[digit] = null; 
             }
         }
+
     }
 }

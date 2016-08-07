@@ -398,8 +398,11 @@ namespace shandakemon
             trainers[13] = new trainer(0, 12, new int[2] { 2, 1 }, "Maintenance");
             trainers[14] = new trainer(0, 10, new int[2] { Legacies.damageAmplification, 10 }, "PlusPower");
             trainers[15] = new trainer(0, 13, new int[0], "Pokémon Center");
-            trainers[16] = new trainer(0, 14, new int[0], "Pokémon Flute");
+            trainers[16] = new trainer(0, 14, new int[1] { 1 }, "Pokémon Flute");
             trainers[17] = new trainer(0, 15, new int[1] { 5 }, "Pokédex");
+            trainers[18] = new trainer(0, 3, new int[2] { 0, 7 }, "Professor Oak");
+            trainers[19] = new trainer(0, 14, new int[1] { 0 }, "Revive");
+            trainers[20] = new trainer(0, 16, new int[2] { 1, 40 }, "Super Potion");
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);
