@@ -231,6 +231,7 @@ namespace shandakemon.core
             this.res_elem = originalResElem;
             this.weak_elem = originalWeakElem;
             this.leekSlap = false;
+            this.sumSick = true;
         }
 
         // Eliminates temporal conditions

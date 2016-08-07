@@ -238,9 +238,10 @@ namespace shandakemon.core
                     CreateProxyBattler(source_controller, source, parameters[0], parameters[1]);
                     break;
                 case 1: // Discard and retrieve from deck
+                    card selected;
                     if (DiscardCards(source_controller, parameters[0]))
                     {
-                        card selected = SearchDeck(source_controller, parameters[1]);
+                        selected = SearchDeck(source_controller, parameters[1]);
                         source_controller.hand.Add(selected);
                         source_controller.deck.Remove(selected);
                         Console.WriteLine(selected.ToString() + " added to the hand.");
@@ -271,7 +272,7 @@ namespace shandakemon.core
                     {
                         for (int i = 0; i < parameters[2]; i++)
                         {
-                            card selected = SearchPile(source_controller, parameters[1]);
+                            selected = SearchPile(source_controller, parameters[1]);
                             if (selected != null)
                             {
                                 source_controller.hand.Add(selected);
@@ -333,6 +334,26 @@ namespace shandakemon.core
                     break;
                 case 13: // Pokemon center
                     HealAndDiscardEnergy(source_controller);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 14: // Pokemon flute
+                    if ( target_controller.benched.Count() == 5 )
+                    {
+                        Console.WriteLine("Opponent's bench if full, you cannot play " + source.ToString());
+                        source_controller.hand.Add(source);
+                        return;
+                    }
+
+                    battler target_battler;
+                    do
+                    {
+                        target_battler = (battler) SearchPile(target_controller, 0);
+                    }
+                    while (target_battler != null && target_battler.type != 0);
+
+                    target_controller.benched.Add(target_battler);
+                    target_controller.discarded.Remove(target_battler);
+
                     source_controller.TrainerToDiscard(source);
                     break;
             }
@@ -917,7 +938,7 @@ namespace shandakemon.core
         }
 
         // Search the discard file for a card
-        public static card SearchPile(Player target, int superType)
+        public static card SearchPile(Player target, int superType = -1)
         {
             if (target.discarded.Count == 0)
             {
@@ -1094,11 +1115,12 @@ namespace shandakemon.core
         {
             List<battler> battlers = new List<battler>();
             battlers.Add(target.front);
-            battlers = battlers.Concat<battler>(target.benched).ToList<battler>();
+            if (target.benched.Count > 0)
+                battlers = battlers.Concat<battler>(target.benched).ToList<battler>();
 
             foreach ( battler btl in battlers)
             {
-                if ( btl.damage > 0 )
+                if ( btl != null && btl.damage > 0 )
                 {
                     btl.damage = 0;
                     foreach ( energy en in btl.energies)
