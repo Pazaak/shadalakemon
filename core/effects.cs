@@ -394,6 +394,28 @@ namespace shandakemon.core
 
                     source_controller.TrainerToDiscard(source);
                     break;
+                case 17: // Draw X cards
+                    if (parameters[0] == 0) target = source_controller;
+                    else target = target_controller;
+                    target.draw(parameters[1]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 18: // Discard energy from opponent
+                    target_battler = target_controller.SelectBattler();
+                    discardEnergy(target_controller, target_battler, parameters[0], parameters[1]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 19: // Switch a pokémon of the selected player
+                    if (parameters[0] == 0) target = source_controller;
+                    else target = target_controller;
+                    Wheel(target);
+                    source_controller.TrainerToDiscard(source);
+                    break;
+                case 20: // Heal target pokémon
+                    target_battler = source_controller.SelectBattler();
+                    heal(target_battler, parameters[0]);
+                    source_controller.TrainerToDiscard(source);
+                    break;
             }
         }
 

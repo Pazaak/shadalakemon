@@ -403,6 +403,12 @@ namespace shandakemon
             trainers[18] = new trainer(0, 3, new int[2] { 0, 7 }, "Professor Oak");
             trainers[19] = new trainer(0, 14, new int[1] { 0 }, "Revive");
             trainers[20] = new trainer(0, 16, new int[2] { 1, 40 }, "Super Potion");
+            trainers[21] = new trainer(0, 17, new int[2] { 0, 2 }, "Bill");
+            trainers[22] = new trainer(0, 18, new int[2] { -1, 1 }, "Energy Removal");
+            trainers[23] = new trainer(0, 19, new int[1] { 1 }, "Gust of Wind");
+            trainers[24] = new trainer(0, 20, new int[1] { 20 }, "Potion");
+            trainers[25] = new trainer(0, 19, new int[1] { 0 }, "Switch");
+
 
             MemoryStream stream1 = new MemoryStream();
             string ser = JsonConvert.SerializeObject(trainers, Formatting.Indented);
