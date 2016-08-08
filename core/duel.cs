@@ -429,7 +429,6 @@ namespace shandakemon.core
             }
             else if (selected.getSuperType() == 1)
             {
-                p1.hand.Remove(selected);
                 trainer trn = (trainer)selected;
                 trn.execute(p1, p2);
             }

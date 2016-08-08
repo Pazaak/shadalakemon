@@ -905,7 +905,7 @@ namespace shandakemon.core
         }
 
         // Discard cards from hand
-        public static bool DiscardCards(Player target_player, int quantity)
+        public static bool DiscardCards(Player target_player, int quantity, trainer source = null)
         {
             if (target_player.hand.Count() < quantity)
             {
@@ -914,11 +914,20 @@ namespace shandakemon.core
             }
 
             int digit;
+            bool end;
             for (int i = 0; i < quantity; i++)
             {
-                Console.WriteLine("Select a card to discard (" + (i + 1) + "/" + quantity + "):");
-                Console.WriteLine(target_player.writeHand());
-                Int32.TryParse(Console.ReadLine(), out digit);
+                end = false;
+                do
+                {
+                    Console.WriteLine("Select a card to discard (" + (i + 1) + "/" + quantity + "):");
+                    Console.WriteLine(target_player.writeHand());
+                    Int32.TryParse(Console.ReadLine(), out digit);
+                    if (source == null || target_player.hand[digit - 1] != source)
+                        end = true;
+                }
+                while (!end);
+
                 target_player.discarded.Add(target_player.hand[digit - 1]);
                 utils.Logger.Report(target_player.hand[digit - 1].ToString() + " discarded from hand.");
                 target_player.hand.RemoveAt(digit - 1);
