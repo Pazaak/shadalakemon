@@ -289,8 +289,7 @@ namespace shandakemon.core
                     ShuffleCardsType(target_controller, parameters[0]);
                     return parameters[0] != 1; // If it's not a trainer remove from hand and put in the discard pile
                 case 6: // Evolve jumping one stage
-                    JumpEvolution(source_controller);
-                    return true;
+                    return JumpEvolution(source_controller);
                 case 7: // Put card from hand in library and a card in library into hand
                     card toDeck = source_controller.SearchHand(parameters[0]);
                     card toHand = source_controller.SearchDeck(parameters[0]);
@@ -313,12 +312,12 @@ namespace shandakemon.core
                     for (int i = 1; i < arguments.Length; i++)
                         arguments[i] = parameters[i];
                     arguments[0] = 2;
-                    addCondition(source_controller.front, parameters[0], arguments);
+                    addCondition(source_controller.benched[0], parameters[0], arguments);
                     return true;
                 case 11: // Eliminate status conditions
-                    source_controller.front.status = 0;
-                    Console.WriteLine(source_controller.front.ToString() + " is now healed of status effects.");
-                    utils.Logger.Report(source_controller.front.ToString() + " is now healed of status effects.");
+                    source_controller.benched[0].status = 0;
+                    Console.WriteLine(source_controller.benched[0].ToString() + " is now healed of status effects.");
+                    utils.Logger.Report(source_controller.benched[0].ToString() + " is now healed of status effects.");
                     return true;
                 case 12: // Shuffle X cards to draw X cards
                     if (ShuffleCards(source_controller, parameters[0], source))
@@ -368,7 +367,7 @@ namespace shandakemon.core
                     bool end = false;
                     do
                     {
-                        target_battler = source_controller.SearchField();
+                        target_battler = source_controller.SelectBattler();
                         if (target_battler.energies.Count < parameters[0])
                             Console.WriteLine(target_battler.ToString() + " has not enough energy to discard.");
                         else
@@ -569,42 +568,34 @@ namespace shandakemon.core
         // Permits to exchange energy attached to one battler to other
         public static void SwitchEnergySameType(Player source_controller, int elem)
         {
-            Console.WriteLine("Select a Pokemon with an energy card of the selected type");
-            source_controller.DisplayTypedEnergies(elem);
-
-            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-            battler source = null;
-
-            if (digit == -1)
-                source = source_controller.front;
-            else
-                source = source_controller.benched[digit];
-
-            if (source.energies.Count == 0)
+            bool end = false;
+            battler source;
+            do
             {
-                Console.WriteLine("That pokemon has not enough energy cards");
-                return;
+                Console.WriteLine("Select a Pokemon with an energy card of the selected type");
+                Console.WriteLine(source_controller.DisplayTypedEnergies(elem));
+
+                int digit = utils.ConsoleParser.ReadOrExit(source_controller.benched.Count - 1);
+                if (digit == -1) return;
+
+                source = source_controller.SelectBattler(digit);
+
+                if (source.energies.Count == 0)
+                    Console.WriteLine("That pokemon has not enough energy cards");
+                else end = true;
             }
+            while (!end);
+            
 
             int counter = 0;
             while (source.energies[counter].elem != elem)
                 counter++;
 
             energy selected = source.energies[counter];
-            source.energies.RemoveAt(counter);
 
-            Console.WriteLine("Select a Pokemon to attach the energy");
-            source_controller.DisplayTypedEnergies(elem);
+            battler target = source_controller.SelectBattler();
 
-            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-
-            battler target = null;
-
-            if (digit == -1)
-                target = source_controller.front;
-            else
-                target = source_controller.benched[digit];
-
+            source.energies.Remove(selected);
             target.attachEnergy(selected);
 
             Console.WriteLine(selected.name + " attached from " + source.ToString() + " to " + target.ToString());
@@ -666,8 +657,16 @@ namespace shandakemon.core
             }
 
             Console.WriteLine(target.ToString() + "- Select the pokemon to exchange:");
-            Console.WriteLine(target.writeBenched());
-            target.ExchangePosition(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
+            Console.WriteLine(target.ShowBenched());
+            int digit;
+            do
+            {
+                digit = utils.ConsoleParser.ReadNumber(target.benched.Count - 1); // Choose the battler to put in front
+                if (digit == 0)
+                    Console.WriteLine("Not valid input. Try again.");
+            }
+            while (digit == 0);
+            target.ExchangePosition(digit);
             Console.WriteLine("Pokemon exchanged.");
         }
 
@@ -704,10 +703,10 @@ namespace shandakemon.core
         // Mirror move
         public static void MirrorMove(Player source_controller, battler source, Player target_controller, battler target, int parameter)
         {
-            if (source_controller.lastFront != source_controller.front)
+            if (source_controller.lastFront != source_controller.benched[0])
             {
-                Console.WriteLine(source_controller.front.ToString() + " wasn't attacked last turn.");
-                utils.Logger.Report(source_controller.front.ToString() + " wasn't attacked last turn.");
+                Console.WriteLine(source_controller.benched[0].ToString() + " wasn't attacked last turn.");
+                utils.Logger.Report(source_controller.benched[0].ToString() + " wasn't attacked last turn.");
                 return;
             }
 
@@ -754,92 +753,99 @@ namespace shandakemon.core
         // Permits to play energy above the limit
         public static void PlayFreeEnergy(Player source, int elem)
         {
-            Console.WriteLine("Attach " + utilities.numToType(elem) + " a energy card from your hand to " + utilities.numToType(elem) + " pokémon. 0 to exit");
-            Console.WriteLine(source.writeHand());
-
-            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
-
-            if (digit == -1) // Exit without selecting
-                return;
-
-            if (source.hand[digit].getSuperType() != 2) // Not an energy card
+            bool end = false;
+            energy selected = null;
+            do
             {
-                Console.WriteLine("That isn't a energy card.");
-                return;
+                Console.WriteLine("Attach " + utilities.numToType(elem) + " a energy card from your hand to " + utilities.numToType(elem) + " pokémon. 'e' to exit");
+                Console.WriteLine(source.ShowHand());
+                int digit = utils.ConsoleParser.ReadOrExit(source.hand.Count-1);
+                if (digit == -1) // Exit without selecting
+                    return;
+                if (source.hand[digit].getSuperType() != 2) // Not an energy card
+                    Console.WriteLine("That isn't a energy card.");
+                else
+                {
+                    selected = (energy)source.hand[digit];
+
+                    if (selected.elem != elem)
+                        Console.WriteLine("That isn't a " + utilities.numToType(elem) + " energy card.");
+                    else
+                        end = true;
+                }
             }
+            while (!end);
 
-            energy selected = (energy)source.hand[digit];
-
-            if (selected.elem != elem)
+            do
             {
-                Console.WriteLine("That isn't a " + utilities.numToType(elem) + " energy card.");
-                return;
+                Console.WriteLine("Select a " + utilities.numToType(elem) + " pokémon. 'e' to exit");
+                Console.WriteLine(source.ShowBattlers());
+
+                int digit = utils.ConsoleParser.ReadOrExit(source.benched.Count);
+
+                if (digit == -1) // Exit without selecting
+                    return;
+
+                battler target = source.SelectBattler(digit);
+
+                if (target.element != elem) // Not a pokémon of the selected type
+                    Console.WriteLine("That isn't a " + utilities.numToType(elem) + " pokémon.");
+                else
+                {
+                    target.attachEnergy(selected);
+                    source.hand.Remove(selected);
+                    return;
+                }
             }
-
-            Console.WriteLine("Select a " + utilities.numToType(elem) + " pokémon. 0 to exit");
-            Console.WriteLine(source.writeBattlers());
-
-            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50;
-
-            if (digit == -2) // Exit without selecting
-                return;
-
-            battler target = null;
-
-            if (digit == -1) target = source.front;
-            else target = source.benched[digit];
-
-            if (target.element != elem) // Not a pokémon of the selected type
-            {
-                Console.WriteLine("That isn't a " + utilities.numToType(elem) + " pokémon.");
-                return;
-            }
-
-            target.attachEnergy(selected);
-            source.hand.Remove(selected);
+            while (true);            
         }
 
         // Exchange damage between battlers
         public static void ExchangeDamage(Player source_controller)
         {
-            Console.WriteLine("Select a pokemon with damage counters on it: (Press 0 to exit)");
-            Console.WriteLine(source_controller.ShowDamage());
-
-            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50; // selection
-            if (digit == -2) return; // 0 equals exit
-
-            battler source; // select the source of the damage
-            if (digit == -1) source = source_controller.front;
-            else source = source_controller.benched[digit];
-
-            if (source.damage == 0) // Discard a selection with zero damage
+            bool end = false;
+            battler source;
+            do
             {
-                Console.WriteLine("That pokemon hasn't damage counters on it");
-                return;
-            }
+                Console.WriteLine("Select a pokemon with damage counters on it: (Press 'e' to exit)");
+                Console.WriteLine(source_controller.ShowDamage());
 
+                int digit = utils.ConsoleParser.ReadOrExit(source_controller.benched.Count - 1);
+                if (digit == -1) return; // exit
+
+                source = source_controller.SelectBattler(digit); // select the source of the damage
+
+                if (source.damage == 0) // Discard a selection with zero damage
+                    Console.WriteLine("That pokemon hasn't damage counters on it");
+                else
+                    end = true;
+            }
+            while (!end);
+            
             source.damage -= 10; // Substract the damage from source
 
-            Console.WriteLine("Select a pokemon to put damage counters on it: (Press 0 to exit)");
-            Console.WriteLine(source_controller.ShowDamage());
-
-            digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 50; // selection
-            if (digit == -2) // 0 equals exit
+            end = false;
+            battler target;
+            do
             {
-                source.damage += 10;
-                return;
-            }
+                Console.WriteLine("Select a pokemon to put damage counters on it: (Press 'e' to exit)");
+                Console.WriteLine(source_controller.ShowDamage());
 
-            battler target; // select the source of the damage
-            if (digit == -1) target = source_controller.front;
-            else target = source_controller.benched[digit];
+                int digit = utils.ConsoleParser.ReadNumber(source_controller.benched.Count - 1);
+                if (digit == -1) //  exit
+                {
+                    source.damage += 10;
+                    return;
+                }
 
-            if (target.damage + 10 == target.HP) // Discard a selection that will be knocked out
-            {
-                source.damage += 10;
-                Console.WriteLine("That pokemon will be knocked out with further damage");
-                return;
+                target = source_controller.SelectBattler(digit); // select the source of the damage
+
+                if (target.damage + 10 == target.HP) // Discard a selection that will be knocked out
+                    Console.WriteLine("That pokemon will be knocked out with further damage");
+                else
+                    end = true;
             }
+            while (!end);
 
             // All clear, proceed to exchange damage
             target.damage += 10;
@@ -858,21 +864,13 @@ namespace shandakemon.core
             energy attEnergy = new energy(1, elem, quantity, source.name, source);
 
             Console.WriteLine("Please select the pokemon or press 0 to exit:");
-            Console.WriteLine(source_controller.writeBattlers());
+            Console.WriteLine(source_controller.ShowBattlers());
 
-            int digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Select the receiver
-            if (digit == 0) // Attach the energy to the selected battler
-            {
-                source_controller.front.attachEnergy(attEnergy);
-                Console.WriteLine(attEnergy.name + " attached to " + source_controller.front.ToString());
-                utils.Logger.Report(attEnergy.name + " attached to " + source_controller.front.ToString());
-            }
-            else if (digit > 0)
-            {
-                source_controller.benched[digit - 1].attachEnergy(attEnergy);
-                Console.WriteLine(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
-                utils.Logger.Report(attEnergy.name + " attached to " + source_controller.benched[digit - 1].ToString());
-            }
+            int digit = utils.ConsoleParser.ReadNumber(source_controller.benched.Count-1); // Select the receiver
+
+            source_controller.benched[digit].attachEnergy(attEnergy);
+            Console.WriteLine(attEnergy.name + " attached to " + source_controller.benched[digit].ToString());
+            utils.Logger.Report(attEnergy.name + " attached to " + source_controller.benched[digit].ToString());
         }
 
         // Creates a proxy battler
@@ -898,27 +896,32 @@ namespace shandakemon.core
                 return false;
             }
 
-            int digit;
             bool end;
+            int digit;
+            card selected;
+            List<card> toDiscard = new List<card>();
             for (int i = 0; i < quantity; i++)
             {
                 end = false;
                 do
                 {
-                    Console.WriteLine("Select a card to discard (" + (i + 1) + "/" + quantity + "):");
-                    Console.WriteLine(target_player.writeHand());
-                    Int32.TryParse(Console.ReadLine(), out digit);
-                    if (source == null || target_player.hand[digit - 1] != source)
+                    Console.WriteLine("Select a card to discard (" + (i + 1) + "/" + quantity + "). Press 'e' to exit:");
+                    Console.WriteLine(target_player.ShowHand());
+                    digit = utils.ConsoleParser.ReadNumber(target_player.hand.Count - 1);
+                    if (digit == -1) return false;
+                    selected = target_player.hand[digit];
+                    if ( (source == null || selected != source) && !toDiscard.Contains(selected))
                         end = true;
                     else
-                        Console.WriteLine("You cannot select the card that you are playing");
+                        Console.WriteLine("You cannot select that card");
                 }
                 while (!end);
 
-                target_player.discarded.Add(target_player.hand[digit - 1]);
-                utils.Logger.Report(target_player.hand[digit - 1].ToString() + " discarded from hand.");
-                target_player.hand.RemoveAt(digit - 1);
+                toDiscard.Add(selected);
             }
+
+            foreach (card ca in toDiscard)
+                target_player.CardToDiscard(ca);
 
             return true;
 
@@ -927,22 +930,25 @@ namespace shandakemon.core
         // Handles the devolution procedure
         public static void devolution(Player source_controller, int steps)
         {
-            Console.WriteLine("Select a pokemon:");
-            Console.WriteLine(source_controller.writeBattlers());
-            int digit;
-            Int32.TryParse(Console.ReadLine(), out digit);
-
+            bool end = false;
             battler target;
-            if (digit == 1)
-                target = source_controller.front;
-            else
-                target = source_controller.benched[digit - 2];
-
-            if (target.prevolution == null)
+            int digit;
+            do
             {
-                Console.WriteLine(target.ToString() + " is a basic pokemon.");
-                return;
+                Console.WriteLine("Select an active Pokémon. Press 'e' to exit:");
+                Console.WriteLine(source_controller.ShowBattlers());
+                digit = utils.ConsoleParser.ReadOrExit(source_controller.benched.Count - 1);
+                if (digit == -1) return;
+                target = source_controller.SelectBattler(digit);
+
+                if (target.prevolution == null)
+                    Console.WriteLine(target.ToString() + " is a basic pokemon.");
+                else
+                    end = true;
+
             }
+            while (!end);
+            
 
             int chain;
             if (target.prevolution.prevolution != null)
@@ -953,10 +959,11 @@ namespace shandakemon.core
             int stage_selected;
             if (steps == 0) // Return to the selected form
             {
-                Console.WriteLine("Select the form to which the pokemon must return: ");
+                Console.WriteLine("Select the form to which the pokemon must return. Press 'e' to exit: ");
                 Console.WriteLine(target.ShowEvolutions());
 
-                Int32.TryParse(Console.ReadLine(), out stage_selected);
+                stage_selected = utils.ConsoleParser.ReadOrExit(chain - 1);
+                if (stage_selected == -1) return;
             }
             else
                 stage_selected = chain - steps;
@@ -974,8 +981,8 @@ namespace shandakemon.core
 
             source_controller.ToDiscard(target);
 
-            if (digit == 1)
-                source_controller.front = newForm;
+            if (digit == 0)
+                source_controller.benched[0] = newForm;
             else
                 source_controller.benched.Add(newForm);
         }
@@ -984,7 +991,7 @@ namespace shandakemon.core
         public static void ShuffleCardsType(Player target, int superType)
         {
             Console.WriteLine(target.ToString() + "'s hand.");
-            Console.WriteLine(target.writeHand());
+            Console.WriteLine(target.ShowHand());
 
             string buffer = "";
             List<card> ToShuffle = new List<card>();
@@ -1010,7 +1017,7 @@ namespace shandakemon.core
         }
 
         // Evolves a basic pokemon jumping one stage
-        public static void JumpEvolution(Player target_source)
+        public static bool JumpEvolution(Player target_source)
         {
             int digit;
             battler source = null;
@@ -1018,11 +1025,14 @@ namespace shandakemon.core
             do
             {
                 Console.WriteLine(target_source.ToString() + " choose an evolution card:");
-                Console.WriteLine(target_source.writeHand());
-                Int32.TryParse(Console.ReadLine(), out digit);
-                if (target_source.hand[digit - 1].getSuperType() == 0)
+                Console.WriteLine(target_source.ShowHand());
+                digit = utils.ConsoleParser.ReadOrExit(target_source.hand.Count - 1);
+
+                if (digit == -1) return false;
+
+                if (target_source.hand[digit].getSuperType() == 0)
                 {
-                    source = (battler)target_source.hand[digit - 1];
+                    source = (battler)target_source.hand[digit];
                     if (source.type == 1) found = true;
                 }
             } while (!found); // Select an evolution card
@@ -1031,42 +1041,38 @@ namespace shandakemon.core
             do
             {
                 Console.WriteLine(target_source.ToString() + " a basic pokemon:");
-                Console.WriteLine(target_source.writeBattlers());
-                Int32.TryParse(Console.ReadLine(), out digit);
-                if (digit == 1)
-                    target = (battler)target_source.front;
-                else
-                    target = (battler)target_source.benched[digit - 2];
+                Console.WriteLine(target_source.ShowBattlers());
+                digit = utils.ConsoleParser.ReadOrExit(target_source.benched.Count);
+
+                if (digit == -1) return false;
+
+                target = (battler)target_source.SelectBattler(digit);
             } while (source.id - 2 != target.id); // Select a matching basic card
 
             source.evolve(target);
-            if (digit == 1)
-                target_source.front = source;
-            else
-                target_source.benched[digit - 2] = source;
+            target_source.benched[digit] = source;
 
             target_source.hand.Remove(source);
+
+            return true;
         }
 
         // Select a battler in play, discard everything and return the basic to hand
         public static void ScoopUp(Player target_controller, Player opponent)
         {
             int digit;
-            Console.WriteLine("Select an active pokemon:");
-            Console.WriteLine(target_controller.writeBattlers());
-            Int32.TryParse(Console.ReadLine(), out digit);
 
-            battler target;
-            if (digit == 1)
-            {
-                target = target_controller.front;
-                target_controller.front = null;
-            }
+            Console.WriteLine("Select an active pokemon:");
+            Console.WriteLine(target_controller.ShowBattlers());
+            digit = utils.ConsoleParser.ReadOrExit(target_controller.benched.Count - 1);
+
+            if (digit == -1) return;
+
+            battler target = target_controller.SelectBattler(digit);
+            if (digit == 0)
+                target_controller.benched[0]= null;
             else
-            {
-                target = target_controller.benched[digit - 2];
                 target_controller.benched.Remove(target);
-            }
 
             battler temp;
             while (target.prevolution != null)
@@ -1079,7 +1085,7 @@ namespace shandakemon.core
 
             target_controller.hand.Add(target);
 
-            if (digit == 1) target_controller.KnockoutProcedure(opponent);
+            if (digit == 0) target_controller.KnockoutProcedure(opponent);
         }
 
         // Selects cards from the hand and shuffles them in the deck
@@ -1091,21 +1097,31 @@ namespace shandakemon.core
                 return false;
             }
             int digit;
+            List<card> toShuffle = new List<card>();
             while (times != 0)
             {
-                Console.WriteLine("Select a card from your hand to shuffle in the deck: ");
-                Console.WriteLine(target_controller.writeHand());
-                Int32.TryParse(Console.ReadLine(), out digit);
-                card toDeck = target_controller.hand[digit - 1];
-                if (source == null || toDeck != source)
+                Console.WriteLine("Select a card from your hand to shuffle in the deck. Press 'e' to exit: ");
+                Console.WriteLine(target_controller.ShowHand());
+                digit = utils.ConsoleParser.ReadOrExit(target_controller.hand.Count-1);
+
+                if (digit == -1) return false;
+
+                card toDeck = target_controller.hand[digit];
+                if ( (source == null || toDeck != source) && !toShuffle.Contains(toDeck))
                 {
-                    target_controller.hand.Remove(toDeck);
-                    target_controller.deck.AddFirst(toDeck);
+                    toShuffle.Add(toDeck);
                     times--;
                 }
                 else
-                    Console.WriteLine("You cannot select the card that is being played");
+                    Console.WriteLine("You cannot select the card.");
             }
+
+            foreach (card ca in toShuffle)
+            {
+                target_controller.hand.Remove(ca);
+                target_controller.deck.AddFirst(ca);
+            }
+                
             target_controller.shuffle();
             return true;
         }
@@ -1114,9 +1130,7 @@ namespace shandakemon.core
         public static void HealAndDiscardEnergy(Player target)
         {
             List<battler> battlers = new List<battler>();
-            battlers.Add(target.front);
-            if (target.benched.Count > 0)
-                battlers = battlers.Concat<battler>(target.benched).ToList<battler>();
+            battlers = battlers.Concat<battler>(target.benched).ToList<battler>();
 
             foreach ( battler btl in battlers)
             {

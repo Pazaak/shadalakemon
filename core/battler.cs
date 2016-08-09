@@ -175,7 +175,7 @@ namespace shandakemon.core
                 if (isUsable(movements[i]) && (!conditions.ContainsKey(Legacies.deacMov) || conditions[Legacies.deacMov][1] != i))
                 {
                     movements[i].usable = true;
-                    output += (i+1)+"- " + movements[i].ToString() + Environment.NewLine;
+                    output += i+"- " + movements[i].ToString() + Environment.NewLine;
                 }
                 else
                     movements[i].usable = false;
@@ -288,10 +288,10 @@ namespace shandakemon.core
 
             if (conditions.ContainsKey(Legacies.energyBurn)) // Energy burn is on
                 for (int i = 0; i < energies.Count; i++)
-                    output += (i + 1) + "- " + "Fire Energy" + Environment.NewLine;
+                    output += i + "- " + "Fire Energy" + Environment.NewLine;
             else
                 for (int i = 0; i < energies.Count; i++)
-                    output += (i + 1) + "- " + energies[i].ToString() + Environment.NewLine;
+                    output += i + "- " + energies[i].ToString() + Environment.NewLine;
 
             return output;
         }

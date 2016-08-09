@@ -7,8 +7,7 @@ namespace shandakemon.core
 {
     /* Holds information about the player
      *  id- Identifier of the player
-     *  front- The battler positioned in front
-     *  benched- List of backup battlers
+     *  benched- List of battlers
      *  hand- List of cards in hand
      *  discarded- List of cards in the discard pile
      *  deck- List of cards in the deck
@@ -19,7 +18,7 @@ namespace shandakemon.core
     {
         public int id;
         public bool winCondition;
-        public battler front, lastFront;
+        public battler lastFront;
         public List<battler> benched;
         public List<card> hand, discarded;
         public LinkedList<card> deck;
@@ -45,10 +44,10 @@ namespace shandakemon.core
         // Shows visually the number of damage counters on each battler
         public string ShowDamage()
         {
-            string output = "1- " + front.ToString() + " " + front.ShowDamage()+Environment.NewLine;
+            string output = "";
 
             for (int i = 0; i < benched.Count; i++)
-                output += (i + 2) + "- " + benched[i].ToString() + " " + benched[i].ShowDamage() + Environment.NewLine;
+                output += i + "- " + benched[i].ToString() + " " + benched[i].ShowDamage() + Environment.NewLine;
             return output;
         }
 
@@ -119,33 +118,31 @@ namespace shandakemon.core
         }
 
         // Utility method to represent the hand of the player
-        public string writeHand()
+        public string ShowHand()
         {
             string output = "";
             for (int i = 0; i < hand.Count; i++)
-                output += (i + 1) + "- " + hand[i].ToString() + Environment.NewLine;
+                output += i + "- " + hand[i].ToString() + Environment.NewLine;
             return (output);
         }
 
         // Utility method to represent all the battlers
-        public string writeBattlers()
+        public string ShowBattlers()
         {
             string output = "";
-            if (front != null)
-                output = "1- " + front.ToString() + Environment.NewLine;
 
             for (int i = 0; i < benched.Count; i++)
                 if (benched[i] != null)
-                    output += (i + 2) + "- " + benched[i].ToString() + Environment.NewLine;
+                    output += i + "- " + benched[i].ToString() + Environment.NewLine;
             return (output);
         }
 
         // Utility method to represent only the benched battlers
-        public string writeBenched()
+        public string ShowBenched()
         {
             string output = "";
-            for (int i = 0; i < benched.Count; i++)
-                output += (i + 1) + "- " + benched[i].ToString() + Environment.NewLine;
+            for (int i = 1; i < benched.Count; i++)
+                output += i + "- " + benched[i].ToString() + Environment.NewLine;
             return (output);
         }
 
@@ -184,7 +181,7 @@ namespace shandakemon.core
             }
             
 
-            if (target == front) front = null;
+            if (target == benched[0]) benched[0] = null;
             else benched.Remove(target);
             
         }
@@ -192,15 +189,14 @@ namespace shandakemon.core
         // Takes a battler on the bench an place it on the front
         public void toFront(int index)
         {
-            front = benched[index];
+            benched[0] = benched[index];
             benched.RemoveAt(index);
-            utils.Logger.Report(front.ToString() + " is put in the active position.");
+            utils.Logger.Report(benched[0].ToString() + " is put in the active position.");
         }
 
         // Eliminates the condition that determines if the battler was placed or evolved in this turn
         public void clearSickness()
         {
-            front.sumSick = false;
             foreach (battler bt in benched)
                 bt.sumSick = false;
         }
@@ -228,12 +224,12 @@ namespace shandakemon.core
         // Eliminates one turn counter of all the conditions
         public void checkConditions()
         {
-            foreach (var key in front.conditions.Keys.ToList())
+            foreach (var key in benched[0].conditions.Keys.ToList())
             {
-                if (front.conditions[key][0] == 1) // Only front can have conditions (?)
-                    front.conditions.Remove(key);
+                if (benched[0].conditions[key][0] == 1) // Only front can have conditions (?)
+                    benched[0].conditions.Remove(key);
                 else
-                    front.conditions[key][0]--;
+                    benched[0].conditions[key][0]--;
             }
         }
 
@@ -252,17 +248,17 @@ namespace shandakemon.core
         }
 
         // Shows the attached energies of the selected type
-        public void DisplayTypedEnergies(int elem)
+        public string DisplayTypedEnergies(int elem)
         {
-            Console.WriteLine("1- "+front.ShowEnergyByType(elem));
+            string output = "";
             for (int i = 0; i < benched.Count; i++)
-                Console.WriteLine((i + 2) + "- " + benched[i].ShowEnergyByType(elem));
+                output += i + "- " + benched[i].ShowEnergyByType(elem);
+            return output;
         }
 
         // Makes the power active again
         public void ResetPowers()
         {
-            if (front.power != null) front.power.active = true;
             foreach (battler bt in benched)
                 if (bt.power != null) bt.power.active = true;
         }
@@ -271,17 +267,12 @@ namespace shandakemon.core
         public bool ListPowers()
         {
             bool somethingToShow = false;
-            if (front.power != null && front.power.active && front.CanUsePowers()) 
-            {
-                Console.WriteLine("1- " + front.ToString() + ": " + front.power.name);
-                somethingToShow = true;
-            }
 
             for (int i = 0; i < benched.Count; i++)
             {
-                if (benched[i].power != null && benched[i].power.active && front.CanUsePowers())
+                if (benched[i].power != null && benched[i].power.active && benched[i].CanUsePowers())
                 {
-                    Console.WriteLine((i + 2) +"- "+ benched[i].ToString() + ": " + benched[i].power.name);
+                    Console.WriteLine(i +"- "+ benched[i].ToString() + ": " + benched[i].power.name);
                     somethingToShow = true;
                 }
                 
@@ -299,13 +290,13 @@ namespace shandakemon.core
         // Exchanges the position of the front battler with a benched battler
         public void ExchangePosition(int index)
         {
-            battler temp = front;
+            battler temp = benched[0];
             temp.ToBench();
-            front = benched[index];
+            benched[0] = benched[index];
             benched.RemoveAt(index);
             benched.Add(temp);
 
-            utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + front.ToString() + " placed in the active area.");
+            utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + benched[0].ToString() + " placed in the active area.");
         }
 
         // Method to select a price
@@ -351,54 +342,63 @@ namespace shandakemon.core
             }
 
             Console.WriteLine(this.ToString() + ": Select a benched pokemon"); // Ask for a battler to put in front
-            Console.WriteLine(this.writeBenched());
+            Console.WriteLine(this.ShowBenched());
 
-            this.toFront(Convert.ToInt16(Console.ReadKey().KeyChar) - 49);
+            int digit;
+            do
+            {
+                digit = utils.ConsoleParser.ReadNumber(this.benched.Count - 1); // Choose the battler to put in front
+                if (digit == 0)
+                    Console.WriteLine("Not valid input. Try again.");
+            }
+            while (digit == 0);
+
+            this.toFront(digit);
         }
 
         // Paralysis check
         public void ParalysisCheck()
         {
-            if (this.front.status == 1) // Heal if paralyzed
+            if (this.benched[0].status == 1) // Heal if paralyzed
             {
-                this.front.status = 0;
-                Console.WriteLine(this.front.ToString() + " is not longer paralyzed.");
-                utils.Logger.Report(this.front.ToString() + " is not longer paralyzed.");
+                this.benched[0].status = 0;
+                Console.WriteLine(this.benched[0].ToString() + " is not longer paralyzed.");
+                utils.Logger.Report(this.benched[0].ToString() + " is not longer paralyzed.");
             }
         }
 
         // Sleep check
         public void SleepCheck()
         {
-            if (this.front.status == 2) // Try to heal if asleep
+            if (this.benched[0].status == 2) // Try to heal if asleep
             {
                 if (CRandom.RandomInt() < 0)
                 {
-                    this.front.status = 0;
+                    this.benched[0].status = 0;
                     utils.Logger.Report(this.ToString() + " wins the coin flip.");
-                    Console.WriteLine(this.front.ToString() + " awakes.");
-                    utils.Logger.Report(this.front.ToString() + " awakes.");
+                    Console.WriteLine(this.benched[0].ToString() + " awakes.");
+                    utils.Logger.Report(this.benched[0].ToString() + " awakes.");
                 }
                 else
-                    Console.WriteLine(this.front.ToString() + " still sleeping.");
+                    Console.WriteLine(this.benched[0].ToString() + " still sleeping.");
             }
         }
         
         // Poison check
         public void PoisonCheck(Player p2)
         {
-            if (this.front.status == 10) // Poison check
+            if (this.benched[0].status == 10) // Poison check
             {
-                Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
-                utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 10, this.front, null, this, p2);
+                Console.WriteLine(this.benched[0].ToString() + " takes damage due poisoning.");
+                utils.Logger.Report(this.benched[0].ToString() + " takes damage due poisoning.");
+                effects.damage(Constants.TNone, 10, this.benched[0], null, this, p2);
             }
 
-            if (this.front.status == 11) // Strongly Poison check
+            if (this.benched[0].status == 11) // Strongly Poison check
             {
-                Console.WriteLine(this.front.ToString() + " takes damage due poisoning.");
-                utils.Logger.Report(this.front.ToString() + " takes damage due poisoning.");
-                effects.damage(Constants.TNone, 20, this.front, null, this, p2);
+                Console.WriteLine(this.benched[0].ToString() + " takes damage due poisoning.");
+                utils.Logger.Report(this.benched[0].ToString() + " takes damage due poisoning.");
+                effects.damage(Constants.TNone, 20, this.benched[0], null, this, p2);
             }
         }
 
@@ -407,6 +407,7 @@ namespace shandakemon.core
         {
             this.discarded.Add(target);
             this.hand.Remove(target);
+            utils.Logger.Report(target.ToString() + " discarded from hand.");
         }
 
         // Discard hand
@@ -441,17 +442,16 @@ namespace shandakemon.core
         }
 
         // Select a battler
-        public battler SelectBattler()
+        public battler SelectBattler(int digit = -1)
         {
-            int digit;
-            Console.WriteLine("Select an active pokémon:");
-            Console.WriteLine(this.writeBattlers());
-            Int32.TryParse(Console.ReadLine(), out digit);
-
-            if (digit == 1)
-                return front;
-            else
-                return benched[digit - 2];
+            if ( digit == -1)
+            {
+                Console.WriteLine("Select an active pokémon:");
+                Console.WriteLine(this.ShowBattlers());
+                digit = utils.ConsoleParser.ReadNumber(benched.Count-1);
+            }
+            
+            return benched[digit];
         }
 
         // Search deck for a card
@@ -512,21 +512,10 @@ namespace shandakemon.core
             do
             {
                 Console.WriteLine("Select a card from the hand:");
-                Console.WriteLine(this.writeHand());
-                Int32.TryParse(Console.ReadLine(), out digit);
-            } while (this.hand[digit - 1].getSuperType() != superType);
-            return this.hand[digit - 1];
-        }
-
-        // Searches a battler on the battlefield
-        public battler SearchField()
-        {
-            Console.WriteLine("Select an active Pokémon: ");
-            Console.WriteLine(this.writeBattlers());
-            int digit;
-            Int32.TryParse(Console.ReadLine(), out digit);
-            if (digit == 1) return this.front;
-            else return this.benched[digit - 2];
+                Console.WriteLine(this.ShowHand());
+                digit = utils.ConsoleParser.ReadNumber(hand.Count - 1);
+            } while (this.hand[digit].getSuperType() != superType);
+            return this.hand[digit];
         }
     }
 }
