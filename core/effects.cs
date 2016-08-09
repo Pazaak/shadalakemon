@@ -230,16 +230,17 @@ namespace shandakemon.core
         }
 
         // A big-old which to hold the trainer effects
-        public static void trainers(Player source_controller, Player target_controller, trainer source, int selector, int[] parameters)
+        public static bool trainers(Player source_controller, Player target_controller, trainer source, int selector, int[] parameters)
         {
             switch (selector)
             {
                 case 0: // Proxy battler
                     CreateProxyBattler(source_controller, source, parameters[0], parameters[1]);
-                    break;
+                    source_controller.hand.Remove(source);
+                    return false;
                 case 1: // Discard and retrieve from deck
                     card selected;
-                    if (DiscardCards(source_controller, parameters[0]))
+                    if (DiscardCards(source_controller, parameters[0], source))
                     {
                         selected = source_controller.SearchDeck(parameters[1]);
                         source_controller.hand.Add(selected);
@@ -247,28 +248,27 @@ namespace shandakemon.core
                         Console.WriteLine(selected.ToString() + " added to the hand.");
                         utils.Logger.Report(selected.ToString() + " added to the hand.");
                         source_controller.shuffle();
+                        return true;
                     }
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return false;
                 case 2: // Return the battler to the selected evolutive stage and remove status and legacies
                     devolution(source_controller, parameters[0]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 3: // Shuffle hand in the deck and draw X cards
                     if (parameters[0] == 0) // Source player
                     {
-                        source_controller.ShuffleHand();
+                        source_controller.DiscardHand();
                         source_controller.draw(parameters[1]);
+                        return false;
                     }
                     else // Target player
                     {
-                        target_controller.ShuffleHand();
+                        target_controller.DiscardHand();
                         target_controller.draw(parameters[1]);
+                        return true;
                     }
-                    source_controller.TrainerToDiscard(source);
-                    break;
                 case 4: // Discard and retrieve from discard pile
-                    if (DiscardCards(source_controller, parameters[0]))
+                    if (DiscardCards(source_controller, parameters[0], source))
                     {
                         for (int i = 0; i < parameters[2]; i++)
                         {
@@ -281,18 +281,16 @@ namespace shandakemon.core
                                 utils.Logger.Report(selected.ToString() + " added to the hand.");
                             }
                         }
+                        return true;
                     }
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return false;
                 case 5: // Search in hand for the cards of an specified type and shuffle them in the deck
                     ShuffleCardsType(source_controller, parameters[0]);
                     ShuffleCardsType(target_controller, parameters[0]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return parameters[0] != 1; // If it's not a trainer remove from hand and put in the discard pile
                 case 6: // Evolve jumping one stage
                     JumpEvolution(source_controller);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 7: // Put card from hand in library and a card in library into hand
                     card toDeck = source_controller.SearchHand(parameters[0]);
                     card toHand = source_controller.SearchDeck(parameters[0]);
@@ -302,40 +300,33 @@ namespace shandakemon.core
                     source_controller.deck.Remove(toHand);
                     source_controller.hand.Add(toHand);
                     source_controller.shuffle();
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 8: // Select a battler in play, discard everything and return the basic to hand
                     ScoopUp(source_controller, target_controller);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 9: // Discard one energy from one of the source's battler and two from one of the target's battlers
                     discardEnergy(source_controller, source_controller.SelectBattler(), parameters[0], parameters[1]);
                     discardEnergy(target_controller, target_controller.SelectBattler(), parameters[2], parameters[3]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 10: // Add a legacy to front
                     int[] arguments = new int[parameters.Length];
                     for (int i = 1; i < arguments.Length; i++)
                         arguments[i] = parameters[i];
                     arguments[0] = 2;
                     addCondition(source_controller.front, parameters[0], arguments);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 11: // Eliminate status conditions
                     source_controller.front.status = 0;
                     Console.WriteLine(source_controller.front.ToString() + " is now healed of status effects.");
                     utils.Logger.Report(source_controller.front.ToString() + " is now healed of status effects.");
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 12: // Shuffle X cards to draw X cards
-                    if (ShuffleCards(source_controller, parameters[0]))
+                    if (ShuffleCards(source_controller, parameters[0], source))
                         source_controller.draw(parameters[1]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 13: // Pokemon center
                     HealAndDiscardEnergy(source_controller);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 14: // basic pokémon from discard pile to bench
                     Player target;
                     if (parameters[0] == 0) target = source_controller;
@@ -344,8 +335,7 @@ namespace shandakemon.core
                     if ( target.benched.Count() == 5 )
                     {
                         Console.WriteLine(target.ToString()+" bench if full, you cannot play " + source.ToString());
-                        source_controller.hand.Add(source);
-                        return;
+                        return false;
                     }
 
                     battler target_battler;
@@ -365,18 +355,15 @@ namespace shandakemon.core
                         target_battler.damage = result;
                     }
 
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 15: // Look top X cards and rearrange them
                     if ( source_controller.deck.Count < parameters[0])
                     {
                         Console.WriteLine("The deck has not enough cards to perform that action.");
-                        source_controller.hand.Add(source);
-                        return;
+                        return false;
                     }
                     TopXRearrange(source_controller, parameters[0]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 16: // Discard and heal
                     bool end = false;
                     do
@@ -392,30 +379,28 @@ namespace shandakemon.core
 
                     heal(target_battler, parameters[1]);
 
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 17: // Draw X cards
                     if (parameters[0] == 0) target = source_controller;
                     else target = target_controller;
                     target.draw(parameters[1]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 18: // Discard energy from opponent
                     target_battler = target_controller.SelectBattler();
                     discardEnergy(target_controller, target_battler, parameters[0], parameters[1]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 19: // Switch a pokémon of the selected player
                     if (parameters[0] == 0) target = source_controller;
                     else target = target_controller;
                     Wheel(target);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
                 case 20: // Heal target pokémon
                     target_battler = source_controller.SelectBattler();
                     heal(target_battler, parameters[0]);
-                    source_controller.TrainerToDiscard(source);
-                    break;
+                    return true;
+                default: // Error
+                    Console.WriteLine(" PANIC -------- NOT IMPLEMENTED");
+                    return false;
             }
         }
 
@@ -925,6 +910,8 @@ namespace shandakemon.core
                     Int32.TryParse(Console.ReadLine(), out digit);
                     if (source == null || target_player.hand[digit - 1] != source)
                         end = true;
+                    else
+                        Console.WriteLine("You cannot select the card that you are playing");
                 }
                 while (!end);
 
@@ -1096,7 +1083,7 @@ namespace shandakemon.core
         }
 
         // Selects cards from the hand and shuffles them in the deck
-        public static bool ShuffleCards(Player target_controller, int times)
+        public static bool ShuffleCards(Player target_controller, int times, card source = null)
         {
             if (target_controller.hand.Count() < times)
             {
@@ -1104,14 +1091,20 @@ namespace shandakemon.core
                 return false;
             }
             int digit;
-            while ( times-- != 0)
+            while (times != 0)
             {
                 Console.WriteLine("Select a card from your hand to shuffle in the deck: ");
                 Console.WriteLine(target_controller.writeHand());
                 Int32.TryParse(Console.ReadLine(), out digit);
                 card toDeck = target_controller.hand[digit - 1];
-                target_controller.hand.Remove(toDeck);
-                target_controller.deck.AddFirst(toDeck);
+                if (source == null || toDeck != source)
+                {
+                    target_controller.hand.Remove(toDeck);
+                    target_controller.deck.AddFirst(toDeck);
+                    times--;
+                }
+                else
+                    Console.WriteLine("You cannot select the card that is being played");
             }
             target_controller.shuffle();
             return true;

@@ -403,10 +403,18 @@ namespace shandakemon.core
         }
 
         // Discard a trainer
-        public void TrainerToDiscard(card target)
+        public void CardToDiscard(card target)
         {
             this.discarded.Add(target);
             this.hand.Remove(target);
+        }
+
+        // Discard hand
+        public void DiscardHand()
+        {
+            foreach (card ca in hand)
+                discarded.Add(ca);
+            hand.Clear();
         }
 
         // Show deck

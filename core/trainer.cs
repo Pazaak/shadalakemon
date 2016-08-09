@@ -30,7 +30,8 @@ namespace shandakemon.core
         {
             Console.WriteLine(source_controller.ToString() + " uses " + this.ToString());
             utils.Logger.Report(source_controller.ToString() + " uses " + this.ToString());
-            effects.trainers(source_controller, target_controller, this, effect, parameters);
+            if (effects.trainers(source_controller, target_controller, this, effect, parameters)) // If execution is successful
+                source_controller.CardToDiscard(this);
         }
 
         public int getSuperType()
