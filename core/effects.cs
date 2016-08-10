@@ -235,8 +235,8 @@ namespace shandakemon.core
             switch (selector)
             {
                 case 0: // Proxy battler
-                    CreateProxyBattler(source_controller, source, parameters[0], parameters[1]);
-                    source_controller.hand.Remove(source);
+                    if (CreateProxyBattler(source_controller, source, parameters[0], parameters[1]))
+                        source_controller.hand.Remove(source);
                     return false;
                 case 1: // Discard and retrieve from deck
                     card selected;
@@ -252,8 +252,7 @@ namespace shandakemon.core
                     }
                     return false;
                 case 2: // Return the battler to the selected evolutive stage and remove status and legacies
-                    devolution(source_controller, parameters[0]);
-                    return true;
+                    return devolution(source_controller, parameters[0]);
                 case 3: // Shuffle hand in the deck and draw X cards
                     if (parameters[0] == 0) // Source player
                     {
@@ -874,17 +873,18 @@ namespace shandakemon.core
         }
 
         // Creates a proxy battler
-        public static void CreateProxyBattler(Player source_player, trainer source, int HP, int Legacy)
+        public static bool CreateProxyBattler(Player source_player, trainer source, int HP, int Legacy)
         {
             if (source_player.benched.Count >= 5)
             {
                 Console.WriteLine(source.ToString() + " cannot be played as the bench is already full");
                 utils.Logger.Report(source.ToString() + " cannot be played as the bench is already full");
-                return;
+                return false;
             }
 
             battler proxy = new battler(0, Constants.TNone, HP, Constants.TNone, 1, Constants.TNone, 0, 0, source.name, -2, -1, new movement[0], null, new int[1] { Legacies.clefairyDoll }, source);
             source_player.benched.Add(proxy);
+            return true;
         }
 
         // Discard cards from hand
@@ -928,7 +928,7 @@ namespace shandakemon.core
         }
 
         // Handles the devolution procedure
-        public static void devolution(Player source_controller, int steps)
+        public static bool devolution(Player source_controller, int steps)
         {
             bool end = false;
             battler target;
@@ -938,7 +938,7 @@ namespace shandakemon.core
                 Console.WriteLine("Select an active Pokémon. Press 'e' to exit:");
                 Console.WriteLine(source_controller.ShowBattlers());
                 digit = utils.ConsoleParser.ReadOrExit(source_controller.benched.Count - 1);
-                if (digit == -1) return;
+                if (digit == -1) return false;
                 target = source_controller.SelectBattler(digit);
 
                 if (target.prevolution == null)
@@ -963,7 +963,7 @@ namespace shandakemon.core
                 Console.WriteLine(target.ShowEvolutions());
 
                 stage_selected = utils.ConsoleParser.ReadOrExit(chain - 1);
-                if (stage_selected == -1) return;
+                if (stage_selected == -1) return false;
             }
             else
                 stage_selected = chain - steps;
@@ -985,6 +985,8 @@ namespace shandakemon.core
                 source_controller.benched[0] = newForm;
             else
                 source_controller.benched.Add(newForm);
+
+            return true;
         }
 
         // Shuffles the selected cards from the hand in to the deck
