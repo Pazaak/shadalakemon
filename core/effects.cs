@@ -507,8 +507,8 @@ namespace shandakemon.core
                 end = false;
                 while (!end)
                 {
-                    Console.WriteLine(source.showEnergy());
-                    digit = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+                    Console.WriteLine(source.ShowEnergy());
+                    digit = utils.ConsoleParser.ReadNumber(source.energies.Count-1);
                     if (source.energies[digit].elem == type || type == -1 || (type == Constants.TFire && source.conditions.ContainsKey(Legacies.energyBurn)))
                     {
                         source_controller.discardEnergy(source, digit);
@@ -630,7 +630,7 @@ namespace shandakemon.core
             for (int i = 0; i < target.movements.Length; i++)
                 Console.WriteLine((i + 1) + "- " + target.movements[i].ToString());
 
-            addCondition(target, Legacies.deacMov, new int[2] { 2, Convert.ToInt16(Console.ReadKey().KeyChar) - 49 });
+            addCondition(target, Legacies.deacMov, new int[2] { 2, utils.ConsoleParser.ReadNumber(target.movements.Length -1) });
         }
 
         // Deals damage equals to the number of flips winned
@@ -682,7 +682,7 @@ namespace shandakemon.core
             Console.WriteLine("Select the new type for the defending weakness: ");
             Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
-            target.weak_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+            target.weak_elem = utils.ConsoleParser.ReadNumber(6);
 
             Console.WriteLine(target.ToString() + " is now weak to " + utilities.numToType(target.weak_elem) + ".");
             utils.Logger.Report(target.ToString() + " is now weak to " + utilities.numToType(target.weak_elem) + ".");
@@ -694,7 +694,7 @@ namespace shandakemon.core
             Console.WriteLine("Select the new type for the defending resistance: ");
             Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
-            target.res_elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+            target.weak_elem = utils.ConsoleParser.ReadNumber(6);
 
             Console.WriteLine(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
             utils.Logger.Report(target.ToString() + " is now resistant to " + utilities.numToType(target.res_elem) + ".");
@@ -746,7 +746,7 @@ namespace shandakemon.core
         {
             Console.WriteLine(target.BattleDescription());
             Console.WriteLine("Select a movement: ");
-            movement mov = target.movements[Convert.ToInt16(Console.ReadKey().KeyChar) - 49];
+            movement mov = target.movements[utils.ConsoleParser.ReadNumber(target.movements.Length)];
             mov.execute(source_controller, target_controller, source, target, true);
         }
 
@@ -859,7 +859,7 @@ namespace shandakemon.core
             Console.WriteLine("Select the type of energy that you want to produce: ");
             Console.WriteLine("0 - Normal" + Environment.NewLine + "1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
-            int elem = Convert.ToInt16(Console.ReadKey().KeyChar) - 48;
+            int elem = utils.ConsoleParser.ReadNumber(6); ;
 
             energy attEnergy = new energy(1, elem, quantity, source.name, source);
 

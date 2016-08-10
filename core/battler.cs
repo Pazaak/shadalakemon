@@ -282,7 +282,7 @@ namespace shandakemon.core
         }
 
         // Generic method to show the energies that a battler has
-        public string showEnergy()
+        public string ShowEnergy()
         {
             string output = "";
 
