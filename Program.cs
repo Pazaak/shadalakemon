@@ -27,42 +27,26 @@ namespace shandakemon
             LinkedList<card> deck1 = new LinkedList<card>(); // Creates a deck
             LinkedList<card> deck2 = new LinkedList<card>();
 
-            for (int i = 0; i < 20; i++) // Energies
+            List<int> deckIndexes = utils.ReadDeck.ReadIndexes("player1.txt");
+            foreach (int index in deckIndexes)
             {
-                deck1.AddFirst(energies[6].DeepCopy());
+                if (index < 70) // Battler card
+                    deck1.AddFirst(battlers[index - 1].DeepCopy());
+                else if (index < 96) // Trainer card
+                    deck1.AddFirst(trainers[index - 70].DeepCopy());
+                else
+                    deck1.AddFirst(energies[index - 96].DeepCopy());
+            }
 
-                if ( i < 20)
-                    deck2.AddFirst(energies[4].DeepCopy());
-                if ( i < 0 )
-                    deck2.AddFirst(energies[6].DeepCopy());
-
-                if ( i < 6 )
-                {
-                    deck1.AddFirst(battlers[58].DeepCopy());
-                    deck1.AddFirst(trainers[20].DeepCopy());
-                }
-
-                if ( i < 4 )
-                {
-                    deck1.AddFirst(battlers[37].DeepCopy());
-                    deck1.AddFirst(battlers[12].DeepCopy());
-                }
-
-                if ( i < 0 )
-                {
-                    deck1.AddFirst(battlers[12].DeepCopy());
-                    deck1.AddFirst(battlers[37].DeepCopy());
-                }
-
-                if ( i < 8 )
-                {
-                    deck2.AddFirst(battlers[52].DeepCopy());
-                }
-
-                if ( i < 12 )
-                {
-                    deck2.AddFirst(trainers[11].DeepCopy());
-                }
+            deckIndexes = utils.ReadDeck.ReadIndexes("player2.txt");
+            foreach (int index in deckIndexes)
+            {
+                if (index < 70) // Battler card
+                    deck2.AddFirst(battlers[index - 1].DeepCopy());
+                else if (index < 96) // Trainer card
+                    deck2.AddFirst(trainers[index - 70].DeepCopy());
+                else
+                    deck2.AddFirst(energies[index - 96].DeepCopy());
             }
 
             Player player1 = new Player(1, deck1, 2);

@@ -482,7 +482,7 @@ namespace shandakemon.core
             {
                 Console.WriteLine(counter + " energy to go.");
 
-                Console.WriteLine(p1.benched[0].showEnergy());
+                Console.WriteLine(p1.benched[0].ShowEnergy());
 
                 digit = utils.ConsoleParser.ReadNumber(p1.benched[0].energies.Count-1);
 
