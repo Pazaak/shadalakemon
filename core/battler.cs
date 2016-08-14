@@ -163,7 +163,7 @@ namespace shandakemon.core
         // Utility method to represent the battler
         public string BattleDescription()
         {
-            string output = name + ": ";
+            string output = name + " ("+ damage + "/" + HP +"): ";
             foreach (energy en in energies)
                 if (conditions.ContainsKey(Legacies.energyBurn))
                     output += "F";
