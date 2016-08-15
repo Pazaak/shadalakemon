@@ -39,7 +39,7 @@ namespace shandakemon
                     deck1.AddFirst(energies[index - 96].DeepCopy());
             }
 
-            deckIndexes = utils.ReadDeck.ReadIndexes("player2.txt");
+            deckIndexes = utils.ReadDeck.ReadIndexes("overgrowth.txt");
             foreach (int index in deckIndexes)
             {
                 if (index < 70) // Battler card

@@ -35,7 +35,7 @@ namespace shandakemon.AI
                     scores.Add(btl, 0);
                     foreach (battler ev in evolutions) // Checks for valid evolutions
                     {
-                        if (btl.id == ev.evolvesFrom) scores[btl] += 2; // direct evolution
+                        if (btl.id == ev.evolvesFrom) scores[btl] += 1; // direct evolution
                         if (btl.id + 1 == ev.evolvesFrom ) scores[btl] += 1; // second evolution (flawed if no evols followed by a family)
                     }
                     battler clone = btl.DeepCopy(); // Create a clone of the battler and add all the energies
@@ -48,11 +48,47 @@ namespace shandakemon.AI
                 selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max()).Key;
             }
 
+            basics.Remove((battler)selected);
             host.hand.Remove(selected);
             host.benched.Add((battler)selected); // Play the card
-            Console.WriteLine(selected.ToString() + " selected as active pokemon");
+            Console.WriteLine(host.ToString() + " selects " + selected.ToString() + " as active pokemon");
             utils.Logger.Report(host.ToString() + " selects " + selected.ToString() + " as active pokemon");
-            modified = true;
+        }
+
+        public void SelectBenched()
+        {
+            if (modified) CheckModifications();
+
+            Dictionary<battler, int> scores = new Dictionary<battler, int>();
+
+            do
+            {
+                if (basics.Count() == 0) return; // No more basics
+                scores.Clear();
+                foreach (battler btl in basics)
+                {
+                    scores.Add(btl, 0);
+                    foreach (battler ev in evolutions) // Checks for valid evolutions
+                    {
+                        if (btl.id == ev.evolvesFrom) scores[btl] += 1; // direct evolution
+                        if (btl.id + 1 == ev.evolvesFrom) scores[btl] += 1; // second evolution (flawed if no evols followed by a family)
+                    }
+
+                    var filter = host.benched.Where(x => x.element == btl.element); // Check for battlers of the same element
+                    if (filter.Count() == 0)
+                        scores[btl] += 1;
+                }
+
+                battler selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max() && x.Value > 0).Key;
+                if (selected == null) return; // The best battler isn't good enough
+
+                basics.Remove(selected);
+                host.hand.Remove(selected);
+                host.benched.Add(selected);
+                Console.WriteLine(host.ToString() + " selects " + selected.ToString() + " as benched pokemon");
+                utils.Logger.Report(host.ToString() + " selects " + selected.ToString() + " as benched pokemon");
+            }
+            while (scores.Values.Max() > 0);
         }
 
         private void CheckModifications()

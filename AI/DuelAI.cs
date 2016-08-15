@@ -9,5 +9,6 @@ namespace shandakemon.AI
     public interface DuelAI
     {
         void SelectActive();
+        void SelectBenched();
     }
 }

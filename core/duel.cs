@@ -332,6 +332,12 @@ namespace shandakemon.core
         // Selects benched battlers
         public void selectBenched(Player p1)
         {
+            if (p1.isAI)
+            {
+                p1.controller.SelectBenched();
+                return;
+            }
+
             Console.WriteLine("Player " + p1.id + " select any number of benched pokemon, press 'e' to exit.");
             Console.WriteLine(p1.ShowHand());
             bool correct = false;
