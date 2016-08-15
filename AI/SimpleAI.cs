@@ -25,12 +25,36 @@ namespace shandakemon.AI
         {
             if (modified) CheckModifications();
 
-            /*
-            p1.hand.Remove(selected);
-            p1.benched.Add((battler)selected); // Play the card
+            card selected;
+            if (basics.Count == 1) // Only one option
+                selected = basics[0];
+            else // Many options
+            {
+                Dictionary<battler, int> scores = new Dictionary<battler, int>();
+                foreach (battler btl in basics)
+                {
+                    scores.Add(btl, 0);
+                    foreach (battler ev in evolutions) // Checks for valid evolutions
+                    {
+                        if (btl.id == ev.evolvesFrom) scores[btl] += 2; // direct evolution
+                        if (btl.id + 1 == ev.evolvesFrom ) scores[btl] += 1; // second evolution (flawed if no evols followed by a family)
+                    }
+                    battler clone = btl.DeepCopy(); // Create a clone of the battler and add all the energies
+                    foreach (energy en in energies)
+                        clone.attachEnergy(en);
+                    foreach (movement mov in clone.movements)
+                        if (clone.isUsable(mov)) scores[btl] += 1; // Check for usable movements
+                }
+
+                selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max()).Key;
+            }
+
+            host.hand.Remove(selected);
+            host.benched.Add((battler)selected); // Play the card
             Console.WriteLine(selected.ToString() + " selected as active pokemon");
-            utils.Logger.Report(p1.ToString() + " selects " + selected.ToString() + " as active pokemon");*/
-        } 
+            utils.Logger.Report(host.ToString() + " selects " + selected.ToString() + " as active pokemon");
+            modified = true;
+        }
 
         private void CheckModifications()
         {

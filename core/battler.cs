@@ -191,7 +191,7 @@ namespace shandakemon.core
 
         // Checks energy conditions to determine if a movement is usable
         // mov- The movement to check usability
-        private bool isUsable(movement mov)
+        public bool isUsable(movement mov)
         {
             if (conditions.ContainsKey(Legacies.energyBurn) && (mov.cost[0] + mov.cost[2] <= energyTotal.Sum()))
                 return true;
