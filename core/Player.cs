@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using shandakemon.AI;
 
 namespace shandakemon.core
 {
@@ -13,16 +14,18 @@ namespace shandakemon.core
      *  deck- List of cards in the deck
      *  prices- Array of price cards
      *  winCOndition- Determines if the player won
+     *  isAI- Determines if the player is controlled by an AI
      */
     public class Player
     {
         public int id;
-        public bool winCondition;
+        public bool winCondition, isAI;
         public battler lastFront;
         public List<battler> benched;
         public List<card> hand, discarded;
         public LinkedList<card> deck;
         public card[] prices;
+        public DuelAI controller;
 
         public Player(int id, LinkedList<card> deck, int nPrices)
         {
@@ -34,11 +37,18 @@ namespace shandakemon.core
             this.prices = new card[nPrices];
             this.benched = new List<battler>();
             this.winCondition = false;
+            this.isAI = false;
         }
 
         public override string ToString()
         {
             return "Player " + id;
+        }
+
+        public void AddAIController(DuelAI cont)
+        {
+            controller = cont;
+            isAI = true;
         }
 
         // Shows visually the number of damage counters on each battler

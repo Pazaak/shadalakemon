@@ -6,19 +6,18 @@ using shandakemon.core;
 
 namespace shandakemon.AI
 {
-    class SimpleAI
+    public class SimpleAI: DuelAI
     {
-        Player host;
         bool modified;
         List<battler> basics;
         List<battler> evolutions;
         List<energy> energies;
+        Player host;
 
-
-        public SimpleAI(Player dhost)
+        public SimpleAI(Player _host)
         {
-            host = dhost;
             modified = true;
+            host = _host;
         }
         
         public void SelectActive()

@@ -295,6 +295,12 @@ namespace shandakemon.core
         // Selects the active battler
         public void selectActive(Player p1)
         {
+            if ( p1.isAI )
+            {
+                p1.controller.SelectActive();
+                return;
+            }
+
             Console.WriteLine("Player " + p1.id + " select your active pokemon.");
             Console.WriteLine(p1.ShowHand());
             bool correct = false;
