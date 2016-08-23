@@ -197,11 +197,11 @@ namespace shandakemon.core
         }
 
         // Takes a battler on the bench an place it on the front
-        public void toFront(int index)
+        public void toFront(battler btl)
         {
-            benched[0] = benched[index];
-            benched.RemoveAt(index);
-            utils.Logger.Report(benched[0].ToString() + " is put in the active position.");
+            benched.Remove(btl);
+            benched[0] = btl;
+            utils.Logger.Report(btl.ToString() + " is put in the active position.");
         }
 
         // Eliminates the condition that determines if the battler was placed or evolved in this turn
@@ -312,6 +312,11 @@ namespace shandakemon.core
         // Method to select a price
         public void PriceProcedure()
         {
+            if ( isAI )
+            {
+                this.controller.PriceProcedure();
+            }
+
             bool[] prices = this.listPrices(); // Checks available prices
             string numPrices = "";
             for (int i = 0; i < prices.Length; i++)
@@ -319,11 +324,11 @@ namespace shandakemon.core
 
             Console.WriteLine("Select a price card to draw: " + numPrices);
 
-            int index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49; // Asks for the price
+            int index = utils.ConsoleParser.ReadNumber(prices.Length); // Asks for the price
             while (!prices[index])
             {
                 Console.WriteLine("Invalid selection. Select a price card to draw: " + numPrices);
-                index = Convert.ToInt16(Console.ReadKey().KeyChar) - 49;
+                index = utils.ConsoleParser.ReadNumber(prices.Length);
             }
 
             this.drawPrice(index);  // Draws the price
@@ -346,8 +351,16 @@ namespace shandakemon.core
         {
             if (benched.Count == 0)
             {
-                Console.WriteLine("There is no other pokémon on the battlefield.");
+                Console.WriteLine(this.ToString()+" has no other pokémon on the battlefield.");
+                Console.WriteLine(opponent.ToString() + " wins the game.");
+                utils.Logger.Report(this.ToString() + " losses by lack of active pokémon.");
                 opponent.winCondition = true;
+                return;
+            }
+
+            if (isAI)
+            {
+                this.controller.KnockoutProcedure();
                 return;
             }
 
@@ -363,7 +376,7 @@ namespace shandakemon.core
             }
             while (digit == 0);
 
-            this.toFront(digit);
+            this.toFront(this.benched[digit]);
         }
 
         // Paralysis check

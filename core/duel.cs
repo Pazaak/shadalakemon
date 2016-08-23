@@ -92,6 +92,11 @@ namespace shandakemon.core
         public void attackPhase(Player att, Player def)
         {
             def.lastFront = def.benched[0];
+            if (att.isAI)
+            {
+                att.controller.SelectMovement(def);
+                return;
+            }
             utils.Logger.Report("-> " + att.ToString() + "'s attack phase");
             Console.WriteLine("Player " + att.id);
             Console.WriteLine("Active pokemon: ");

@@ -303,8 +303,23 @@ namespace shandakemon.core
                     ScoopUp(source_controller, target_controller);
                     return true;
                 case 9: // Discard one energy from one of the source's battler and two from one of the target's battlers
-                    discardEnergy(source_controller, source_controller.SelectBattler(), parameters[0], parameters[1]);
-                    discardEnergy(target_controller, target_controller.SelectBattler(), parameters[2], parameters[3]);
+                    battler target1 = null;
+
+                    if (source_controller.isAI)
+                        target1 = source_controller.controller.ChooseForDiscard(source_controller, parameters[1], true);
+                    else
+                        target1 = source_controller.SelectBattler();
+
+                    discardEnergy(source_controller, target1, parameters[0], parameters[1]);
+
+                    battler target2 = null;
+
+                    if (source_controller.isAI)
+                        target2 = source_controller.controller.ChooseForDiscard(target_controller, parameters[3], false);
+                    else
+                        target2 = target_controller.SelectBattler();
+
+                    discardEnergy(target_controller, target2, parameters[2], parameters[3]);
                     return true;
                 case 10: // Add a legacy to front
                     int[] arguments = new int[parameters.Length];
@@ -1062,16 +1077,25 @@ namespace shandakemon.core
         // Select a battler in play, discard everything and return the basic to hand
         public static void ScoopUp(Player target_controller, Player opponent)
         {
-            int digit;
+            battler target = null;
+            if ( target_controller.isAI )
+            {
+                target = target_controller.controller.ChooseBattler(false, false);
+            }
+            else
+            {
+                int digit;
 
-            Console.WriteLine("Select an active pokemon:");
-            Console.WriteLine(target_controller.ShowBattlers());
-            digit = utils.ConsoleParser.ReadOrExit(target_controller.benched.Count - 1);
+                Console.WriteLine("Select an active pokemon:");
+                Console.WriteLine(target_controller.ShowBattlers());
+                digit = utils.ConsoleParser.ReadOrExit(target_controller.benched.Count - 1);
 
-            if (digit == -1) return;
+                if (digit == -1) return;
 
-            battler target = target_controller.SelectBattler(digit);
-            if (digit == 0)
+                target = target_controller.SelectBattler(digit);
+            }
+            
+            if (target == target_controller.benched[0])
                 target_controller.benched[0]= null;
             else
                 target_controller.benched.Remove(target);
@@ -1087,7 +1111,8 @@ namespace shandakemon.core
 
             target_controller.hand.Add(target);
 
-            if (digit == 0) target_controller.KnockoutProcedure(opponent);
+            if (target_controller.benched[0] == null)
+                target_controller.KnockoutProcedure(opponent);
         }
 
         // Selects cards from the hand and shuffles them in the deck

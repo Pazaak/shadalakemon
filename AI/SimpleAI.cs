@@ -91,6 +91,88 @@ namespace shandakemon.AI
             while (scores.Values.Max() > 0);
         }
 
+        public void SelectMovement(Player opp)
+        {
+            movement[] movelist = host.benched[0].movements;
+            int[] scoreTable = new int[movelist.Length];
+
+            int lastMax = int.MinValue;
+            int lastIndex = int.MinValue;
+            int newMax = 0;
+            host.benched[0].BattleDescription();
+            for (int i = 0; i < movelist.Length; i++)
+            {
+                if (movelist[i].usable)
+                    newMax = i + EvaluateMovement(movelist[i], opp);
+                else
+                    newMax = -1;   
+
+                if (newMax > lastMax)
+                {
+                    lastMax = newMax;
+                    lastIndex = i;
+                }
+            }
+            
+            host.benched[0].execute(lastIndex, host, opp, opp.benched[0]);
+        }
+
+        public void PriceProcedure()
+        {
+            bool[] prices = host.listPrices(); // Checks available prices
+            int i = 0;
+            while (!prices[i]) i++; 
+
+            host.drawPrice(i);  // Draws the price
+            prices[i] = false;
+
+            if (prices.All(x => x == false))
+            {
+                Console.WriteLine("No more price cards. " + host.id + " wins."); // Makes the player win
+                utils.Logger.Report(host.ToString() + " has no more price cards. " + host.ToString() + " wins.");
+                host.winCondition = true;
+            }
+        }
+
+        public void KnockoutProcedure()
+        {
+            Dictionary<battler, int> scores = EvaluateBenched();
+
+            battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max<int>()).Key;
+
+            host.toFront(selected);
+        }
+
+        public battler ChooseBattler(bool maxHP = true, bool maxEnergy = true)
+        {
+            Dictionary<battler, int> scores = new Dictionary<battler, int>();
+
+            foreach (battler btl in host.benched)
+            {
+                scores.Add(btl, (btl.HP - btl.damage) / 10);
+                scores[btl] = maxHP ? scores[btl] : -scores[btl];
+                scores[btl] += maxEnergy ? btl.energies.Count*2 : -btl.energies.Count*2;
+            }
+
+            return scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+        }
+
+        public battler ChooseForDiscard(Player source, int quantity, bool max)
+        {
+            // TODO: Only take in to account those who meet the energy requirements
+            Dictionary<battler, int> scores = new Dictionary<battler, int>();
+            foreach (battler btl in source.benched)
+                if ( btl.energies.Count < quantity)
+                    scores.Add(btl, max? int.MinValue : int.MaxValue);
+                else
+                    scores.Add(btl, EvaluateEnergy(btl));
+
+            if (max) // Best score
+                return scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            else
+                return scores.FirstOrDefault(x => x.Value <= scores.Values.Min()).Key;
+        }
+
         private void CheckModifications()
         {
             basics = new List<battler>();
@@ -116,6 +198,74 @@ namespace shandakemon.AI
             }
 
             modified = false;
+        }
+
+        private int EvaluateMovement(movement cast, Player opp)
+        {
+            // TODO: Do movement evaluations
+            return 0;
+        }
+
+        // Scores the current damage
+        private int DamageTiers(int max, int curr)
+        {
+            if (max < curr << 2)
+                return -5;
+            int result = 1;
+            result += (int)(max * 0.75) < curr ? 2 : 0;
+            result += (int)(max * 0.9) < curr ? 2 : 0;
+            return result;
+        }
+
+        // Scores the current energy holding
+        private int EnergyTiers(battler source, movement cast)
+        {
+            int totalCost = cast.cost.Sum();
+            int totalProduction = source.energyTotal.Sum();
+
+            if (totalCost <= totalProduction) return 0;
+            int output = 0;
+            output += (int)totalCost * 1.25 >= totalProduction ? 1 : 0;
+            output += (int)totalCost * 1.5 >= totalProduction ? 1 : 0;
+
+            return output;
+        }
+
+        private Dictionary<battler, int> EvaluateBenched()
+        {
+            // TODO: Take into account the opposing battlers
+            Dictionary<battler, int> output = new Dictionary<battler, int>();
+
+            foreach ( battler btl in host.benched )
+                if ( btl != null )
+                {
+                    output.Add(btl, 0);
+                    output[btl] += EvaluateEnergy(btl) * 30; // Heuristic multiplier
+                    output[btl] += (btl.HP - btl.damage);
+                }
+
+            return output;
+        }
+
+        private int EvaluateEnergy(battler btl)
+        {
+            int energySum = btl.energies.Count;
+            int lastIndex = btl.movements.Length - 1;
+            int movCost = btl.movements[lastIndex].cost.Sum();
+
+            if (energySum >= movCost)
+                return energySum - movCost; // Enough or excess of energy
+
+            int result = 0;
+
+            while ( energySum < btl.movements[lastIndex].cost.Sum() && lastIndex >= 0 )
+            {
+                result--;
+                lastIndex--;
+            }
+
+            return result;
+
         }
     }
 }
