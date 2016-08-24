@@ -171,7 +171,7 @@ namespace shandakemon.core
         {
             while (target.energies.Count != 0) // First discard all the energy cards
             {
-                discardEnergy(target, 0, false);
+                discardEnergy(target, target.energies.First(), false);
             }
 
             if (target.prevolution != null)
@@ -212,19 +212,18 @@ namespace shandakemon.core
         }
 
         // Discard the selected energy card from the selected battler (must be done at the player side to use the discard pile)
-        public void discardEnergy(battler source, int energy_index, bool verbose = true)
+        public void discardEnergy(battler source, energy output, bool verbose = true)
         {
-            energy output = source.energies[energy_index];
             if (!output.proxy)
             {
                 discarded.Add(output);
-                source.energies.RemoveAt(energy_index);
+                source.energies.Remove(output);
                 source.energyTotal[output.elem] -= output.quan;
             }
             else
             {
                 discarded.Add(output.attached);
-                source.energies.RemoveAt(energy_index);
+                source.energies.Remove(output);
                 source.energyTotal[output.elem] -= output.quan;
             }
             if (verbose)
@@ -315,12 +314,13 @@ namespace shandakemon.core
             if ( isAI )
             {
                 this.controller.PriceProcedure();
+                return;
             }
 
             bool[] prices = this.listPrices(); // Checks available prices
             string numPrices = "";
             for (int i = 0; i < prices.Length; i++)
-                numPrices += prices[i] ? (i + 1) + " " : "";
+                numPrices += prices[i] ? i + " " : "";
 
             Console.WriteLine("Select a price card to draw: " + numPrices);
 

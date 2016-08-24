@@ -17,7 +17,7 @@ namespace shandakemon.core
                     break;
                 case 1: // Discard and heal
                     if (!costless)
-                        discardEnergy(source_controller, source, source.element, parameters[0]);
+                        discardEnergy(source_controller, source_controller, source, source.element, parameters[0]);
                     heal(source, parameters[1]);
                     break;
                 case 2: // Damage and coin for status
@@ -47,21 +47,21 @@ namespace shandakemon.core
                     damage(source.element, parameters[0] + (exEner > parameters[1] ? parameters[1] : exEner), target, source, target_controller, source_controller);
                     break;
                 case 5: // Deactivate a movement
-                    MoveDeactivator(target);
+                    MoveDeactivator(source_controller, target_controller, target);
                     break;
                 case 6: // Flip Q2 coins, do goodFlips(Q2)*Q1 damage
                     damage(source.element, FlipDamage(parameters[0], parameters[1]), target, source, target_controller, source_controller);
                     break;
                 case 7: // Damage and discard
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
-                    discardEnergy(target_controller, target, -1, 1);
+                    discardEnergy(source_controller, target_controller, target, -1, 1);
                     break;
                 case 8: // Damage equal the number of damage counters
                     damage(source.element, source.damage, target, source, target_controller, source_controller);
                     break;
                 case 9: // Damage and wheel
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
-                    Wheel(target_controller);
+                    Wheel(source_controller, target_controller);
                     break;
                 case 10: // Damage = Half of the remaining HP
                     int result = (target.HP - target.damage) / 2;
@@ -69,10 +69,10 @@ namespace shandakemon.core
                     damage(source.element, result, target, source, target_controller, source_controller);
                     break;
                 case 11: // Change target weakness
-                    ChangeWeakness(target);
+                    ChangeWeakness(source_controller, source_controller, target);
                     break;
                 case 12: // Change own resistance
-                    ChangeResistance(source);
+                    ChangeResistance(source_controller, target_controller, source);
                     break;
                 case 13: // Leek Slap!
                     damage(source.element, FlipDamage(30, 1), target, source, target_controller, source_controller);
@@ -99,11 +99,11 @@ namespace shandakemon.core
                     break;
                 case 18: // Discard to do damage
                     if (!costless)
-                        discardEnergy(source_controller, source, parameters[1], parameters[2]);
+                        discardEnergy(source_controller, source_controller, source, parameters[1], parameters[2]);
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     break;
                 case 19: // Wheel
-                    Wheel(target_controller);
+                    Wheel(source_controller, target_controller);
                     break;
                 case 20: // Damage and status
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
@@ -143,7 +143,7 @@ namespace shandakemon.core
                     break;
                 case 24: // Discard type and legacy [element, quantity, legacy, duration]
                     if (!costless)
-                        discardEnergy(source_controller, source, parameters[0], parameters[1]);
+                        discardEnergy(source_controller, source_controller, source, parameters[0], parameters[1]);
                     temp = new int[parameters.Length - 3];
                     Array.Copy(parameters, 3, temp, 0, temp.Length);
                     addCondition(source, parameters[2], temp);
@@ -179,15 +179,15 @@ namespace shandakemon.core
                     break;
                 case 32: // Damage and splash to own benched
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
-                    foreach (battler btl in source_controller.benched)
-                        damage(Constants.TNone, parameters[1], btl, null, target_controller, source_controller);
+                    for (int i = 1; i < source_controller.benched.Count; i++)
+                        damage(Constants.TNone, parameters[1], source_controller.benched[i], null, target_controller, source_controller);
                     break;
                 case 33: // Damage, splash to all benches and recoil
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
-                    foreach (battler btl in source_controller.benched)
-                        damage(Constants.TNone, parameters[1], btl, source, source_controller, target_controller);
-                    foreach (battler btl in target_controller.benched)
-                        damage(Constants.TNone, parameters[1], btl, source, target_controller, source_controller);
+                    for (int i = 1; i < source_controller.benched.Count; i++)
+                        damage(Constants.TNone, parameters[1], source_controller.benched[i], null, target_controller, source_controller);
+                    for (int i = 1; i < target_controller.benched.Count; i++)
+                        damage(Constants.TNone, parameters[1], target_controller.benched[i], null, target_controller, source_controller);
                     damage(source.element, parameters[2], source, source, source_controller, target_controller);
                     break;
                 case 34: // Damage and legacy on self by coin
@@ -310,7 +310,7 @@ namespace shandakemon.core
                     else
                         target1 = source_controller.SelectBattler();
 
-                    discardEnergy(source_controller, target1, parameters[0], parameters[1]);
+                    discardEnergy(source_controller, source_controller, target1, parameters[0], parameters[1]);
 
                     battler target2 = null;
 
@@ -319,7 +319,7 @@ namespace shandakemon.core
                     else
                         target2 = target_controller.SelectBattler();
 
-                    discardEnergy(target_controller, target2, parameters[2], parameters[3]);
+                    discardEnergy(source_controller, target_controller, target2, parameters[2], parameters[3]);
                     return true;
                 case 10: // Add a legacy to front
                     int[] arguments = new int[parameters.Length];
@@ -388,7 +388,7 @@ namespace shandakemon.core
                             end = true;
                     } while (!end);
 
-                    discardEnergy(source_controller, target_battler, Constants.TNone, parameters[0]);
+                    discardEnergy(source_controller, source_controller, target_battler, Constants.TNone, parameters[0]);
 
                     heal(target_battler, parameters[1]);
 
@@ -400,12 +400,12 @@ namespace shandakemon.core
                     return true;
                 case 18: // Discard energy from opponent
                     target_battler = target_controller.SelectBattler();
-                    discardEnergy(target_controller, target_battler, parameters[0], parameters[1]);
+                    discardEnergy(source_controller, target_controller, target_battler, parameters[0], parameters[1]);
                     return true;
                 case 19: // Switch a pokémon of the selected player
                     if (parameters[0] == 0) target = source_controller;
                     else target = target_controller;
-                    Wheel(target);
+                    Wheel(source_controller, target);
                     return true;
                 case 20: // Heal target pokémon
                     target_battler = source_controller.SelectBattler();
@@ -494,25 +494,31 @@ namespace shandakemon.core
         }
 
         // Effect to discard a card, as a cost or as an effect
-        public static void discardEnergy(Player source_controller, battler source, int type, int quantity)
+        public static void discardEnergy(Player caller, Player target_controller, battler target, int type, int quantity)
         {
             bool end;
-            int digit;
-            if (source.energies.Count == 0)
-                Console.WriteLine(source.ToString() + " has no energy to discard.");
+            energy selected;
+            if (target.energies.Count == 0)
+                Console.WriteLine(target.ToString() + " has no energy to discard.");
 
             if (quantity == -1)
             {
-                while (source.energies.Count != 0)
-                    source_controller.discardEnergy(source, 0);
+                while (target.energies.Count != 0)
+                    target_controller.discardEnergy(target, target.energies.First());
+                return;
+            }
+
+            if (caller.isAI)
+            {
+                caller.controller.DiscardEnergy(caller, target_controller, target, type, quantity);
                 return;
             }
 
             for (int i = 0; i < quantity; i++)
             {
-                if (source.energies.Count == 0)
+                if (target.energies.Count == 0)
                 {
-                    Console.WriteLine(source.ToString() + " has no more energy to discard.");
+                    Console.WriteLine(target.ToString() + " has no more energy to discard.");
                     Console.WriteLine("Energy succcessfully discarded");
                     return;
                 }
@@ -521,11 +527,11 @@ namespace shandakemon.core
                 end = false;
                 while (!end)
                 {
-                    Console.WriteLine(source.ShowEnergy());
-                    digit = utils.ConsoleParser.ReadNumber(source.energies.Count-1);
-                    if (source.energies[digit].elem == type || type == -1 || (type == Constants.TFire && source.conditions.ContainsKey(Legacies.energyBurn)))
+                    Console.WriteLine(target.ShowEnergy());
+                    selected = target.energies[utils.ConsoleParser.ReadNumber(target.energies.Count-1)];
+                    if (selected.elem == type || type == -1 || (type == Constants.TFire && target.conditions.ContainsKey(Legacies.energyBurn)))
                     {
-                        source_controller.discardEnergy(source, digit);
+                        target_controller.discardEnergy(target, selected);
                         end = true;
                     }
 
@@ -638,11 +644,17 @@ namespace shandakemon.core
         }
 
         // Deactivates a movement
-        public static void MoveDeactivator(battler target)
+        public static void MoveDeactivator(Player caller, Player target_cont, battler target)
         {
+            if ( caller.isAI )
+            {
+                caller.controller.DeactivateMovement(target_cont, target);
+                return;
+            }
+
             Console.WriteLine("Select the movement to deactivate:");
             for (int i = 0; i < target.movements.Length; i++)
-                Console.WriteLine((i + 1) + "- " + target.movements[i].ToString());
+                Console.WriteLine(i + "- " + target.movements[i].ToString());
 
             addCondition(target, Legacies.deacMov, new int[2] { 2, utils.ConsoleParser.ReadNumber(target.movements.Length -1) });
         }
@@ -662,11 +674,17 @@ namespace shandakemon.core
         }
 
         // Wheels the front pokemon
-        public static void Wheel(Player target)
+        public static void Wheel(Player caller, Player target)
         {
             if (target.benched.Count == 0)
             {
                 Console.WriteLine("There are no pokemon in the bench.");
+                return;
+            }
+
+            if ( caller.isAI )
+            {
+                caller.controller.Wheel(target);
                 return;
             }
 
@@ -685,7 +703,7 @@ namespace shandakemon.core
         }
 
         // Change weakness of target battler
-        public static void ChangeWeakness(battler target)
+        public static void ChangeWeakness(Player caller, Player opp, battler target)
         {
             if (target.weak_elem == Constants.TNone)
             {
@@ -693,6 +711,13 @@ namespace shandakemon.core
                 utils.Logger.Report("Defending Pokemon has no weakness");
                 return;
             }
+
+            if ( caller.isAI )
+            {
+                caller.controller.ChangeWeakness(opp, target);
+                return;
+            }
+
             Console.WriteLine("Select the new type for the defending weakness: ");
             Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
@@ -703,8 +728,14 @@ namespace shandakemon.core
         }
 
         // Change resistance of target battler
-        public static void ChangeResistance(battler target)
+        public static void ChangeResistance(Player caller, Player opp, battler target)
         {
+            if (caller.isAI)
+            {
+                caller.controller.ChangeResistance(opp, target);
+                return;
+            }
+
             Console.WriteLine("Select the new type for the defending resistance: ");
             Console.WriteLine("1 - Water" + Environment.NewLine + "2 - Fire" + Environment.NewLine + "3 - Grass"
                 + Environment.NewLine + "4 - Psychic" + Environment.NewLine + "5 - Fighting" + Environment.NewLine + "6 - Lightning");
@@ -741,16 +772,16 @@ namespace shandakemon.core
                 foreach (string s in log)
                 {
                     if (s.Contains(source.ToString() + " had its energy "))
-                        discardEnergy(target_controller, target, -1, 1);
+                        discardEnergy(source_controller, target_controller, target, -1, 1);
                     if (s.Contains(source.ToString() + " is now "))
                     {
                         string[] temp = s.Split(' ');
                         inflictStatus(target, utilities.nameToStatus(temp[3]));
                     }
                     if (s.Contains(" attack deactivated.") && s.Contains(source.ToString()))
-                        MoveDeactivator(target);
+                        MoveDeactivator(source_controller, target_controller, target);
                     if (s.Contains(source.ToString() + " is now weak to "))
-                        ChangeWeakness(target);
+                        ChangeWeakness(source_controller, source_controller, target);
                 }
             }
         }
@@ -758,6 +789,11 @@ namespace shandakemon.core
         // Execute a movement of the defending pokemon
         public static void ExDefMovement(Player source_controller, Player target_controller, battler source, battler target)
         {
+            if (source_controller.isAI)
+            {
+                source_controller.controller.CastMovement(target_controller);
+                return;
+            }
             Console.WriteLine(target.BattleDescription());
             Console.WriteLine("Select a movement: ");
             movement mov = target.movements[utils.ConsoleParser.ReadNumber(target.movements.Length)];

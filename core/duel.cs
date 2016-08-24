@@ -505,7 +505,7 @@ namespace shandakemon.core
 
                 counter -= p1.benched[0].energies[digit].quan;
 
-                p1.discardEnergy(p1.benched[0], digit);
+                p1.discardEnergy(p1.benched[0], p1.benched[0].energies[digit]);
             }
 
             Console.WriteLine("Choose the benched pokemon to put in front.");

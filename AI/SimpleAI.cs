@@ -136,11 +136,91 @@ namespace shandakemon.AI
 
         public void KnockoutProcedure()
         {
-            Dictionary<battler, int> scores = EvaluateBenched();
+            Dictionary<battler, int> scores = EvaluateBenched(host);
 
             battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max<int>()).Key;
 
             host.toFront(selected);
+        }
+
+        public void DiscardEnergy(Player caller, Player t_cont, battler target, int type, int quantity)
+        {
+            energy temp;
+            if ( type != -1 || (type == Constants.TFire && target.conditions.ContainsKey(Legacies.energyBurn)) )
+            {
+                for (int i = 0; i < quantity; i++)
+                {
+                    temp = target.energies.FirstOrDefault(x => x.elem == type);
+                    t_cont.discardEnergy(target, temp);
+                }
+            }
+            else
+            {
+                int counter = 0;
+                while ( counter++ < quantity)
+                {
+                    temp = target.energies.First(x => x.elem == type);
+                    t_cont.discardEnergy(target, temp);
+                }
+            }
+        }
+
+        public void DeactivateMovement(Player target_controller, battler target)
+        {
+            // TODO: Do this with some intelligence
+            int index;
+            if ( target_controller == host)
+            {
+                index = target.movements.Length - 1;
+                while (!target.movements[index].usable && index >= 0) index--;
+            }
+            else
+            {
+                index = 0;
+                while (!target.movements[index].usable && index < target.movements.Length) index++;
+            }
+
+            effects.addCondition(target, Legacies.deacMov, new int[2] { 2, index });
+        }
+
+        public void Wheel(Player target)
+        {
+            Dictionary<battler, int> scores = EvaluateBenched(target);
+
+            battler selected = null;
+            if (target == host)
+                selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            else
+                selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Min()).Key;
+
+            target.ExchangePosition(target.benched.LastIndexOf(selected));
+        }
+
+        public void ChangeResistance(Player opp, battler target)
+        {
+            // TODO: Improve AI
+            if ( opp == host ) // Changing the resistance of the opponent
+                target.res_elem = host.benched[0].element + 1 % 7;
+            else // Changing own resistance
+                target.res_elem = opp.benched[0].element;
+        }
+
+        public void ChangeWeakness(Player opp, battler target)
+        {
+            // TODO: Improve AI
+            if (opp == host) // Changing the weakness of the opponent
+                target.res_elem = host.benched[0].element;
+            else // Changing own weakness
+                target.res_elem = opp.benched[0].element + 1 % 7;
+        }
+
+        public void CastMovement(Player opp)
+        {
+            battler target = opp.benched[0];
+            int index = target.movements.Length - 1;
+            while (!target.movements[index].usable && index >= 0) index--;
+
+            target.movements[index].execute(host, opp, host.benched[0], target, true);
         }
 
         public battler ChooseBattler(bool maxHP = true, bool maxEnergy = true)
@@ -231,12 +311,12 @@ namespace shandakemon.AI
             return output;
         }
 
-        private Dictionary<battler, int> EvaluateBenched()
+        private Dictionary<battler, int> EvaluateBenched(Player target)
         {
             // TODO: Take into account the opposing battlers
             Dictionary<battler, int> output = new Dictionary<battler, int>();
 
-            foreach ( battler btl in host.benched )
+            foreach ( battler btl in target.benched )
                 if ( btl != null )
                 {
                     output.Add(btl, 0);
