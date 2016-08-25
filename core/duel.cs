@@ -26,7 +26,7 @@ namespace shandakemon.core
         public bool battleFlow()
         {
             this.initialPhase(); // Initial hands, placement of battlers and prices
-            int result;
+            bool result;
 
             while (true)
             {
@@ -39,12 +39,8 @@ namespace shandakemon.core
                 if (player2.winCondition)
                     return false;
 
-                switch (result) 
-                {
-                    case -1: return false;
-                    case 0: attackPhase(player1, player2); break; // Attack phase of the duel
-                    case 1: break;
-                }
+                if (result)
+                    attackPhase(player1, player2); // Attack phase of the duel
 
                 if (player1.winCondition) // Check for a winning player
                     return true;
@@ -67,12 +63,8 @@ namespace shandakemon.core
                 if (player1.winCondition)
                     return true;
 
-                switch (result)
-                {
-                    case -1: return false;
-                    case 0: attackPhase(player2, player1); break;
-                    case 1: break;
-                }
+                if (result)
+                    attackPhase(player2, player1);
 
                 if (player2.winCondition) // Check for a winning player
                     return false;
@@ -107,10 +99,9 @@ namespace shandakemon.core
 
         // Controls the main phase of the selected player
         // Return codes:
-        // -1: p1 lost
-        // 0: Normal exit
-        // 1: No attack exit
-        public int mainPhase(Player p1, Player p2)
+        // true: Attack exit
+        // false: No attack exit
+        public bool mainPhase(Player p1, Player p2)
         {
             utils.Logger.Report("-> " + p1.ToString() + "'s main phase");
 
@@ -118,12 +109,15 @@ namespace shandakemon.core
             {
                 Console.WriteLine(p1.ToString()+" cannot draw any more cards. "+ p1.ToString()+" losses.");
                 utils.Logger.Report(p1.ToString() + " cannot draw any more cards. " + p1.ToString() + " losses.");
-                return -1;
+                return false;
             }
+
+            if (p1.isAI)
+                return p1.controller.MainPhase(p2);
 
             while (true)
             {
-                if (p1.winCondition || p2.winCondition) return 1;
+                if (p1.winCondition || p2.winCondition) return false;
 
                 Console.WriteLine("Player " + p1.id + " main phase.");
                 Console.WriteLine("- 'a' to advance to attack phase");
@@ -147,7 +141,7 @@ namespace shandakemon.core
                                 Console.WriteLine(p1.ToString() + " won the coin flip.");
                                 utils.Logger.Report(p1.ToString() + " won the coin flip.");
                                 utils.Logger.Report(p1.ToString() + " advances to attack phase.");
-                                return 0;
+                                return true;
                             }
                             else
                             {
@@ -155,23 +149,23 @@ namespace shandakemon.core
                                 utils.Logger.Report(p1.ToString() + " lost the coin flip.");
                                 effects.damage(Constants.TNone, 30, p1.benched[0], null, p1, p2);
                                 utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
-                                return 1;
+                                return false;
                             }
                         }
                         else if (p1.benched[0].movements.Count() == 0)
                         {
                             Console.WriteLine(p1.benched[0].ToString() + " has no attacks.");
-                            return 1;
+                            return false;
                         }
                         else
                         {
                             utils.Logger.Report(p1.ToString() + " advances to attack phase.");
-                            return 0; // Advance to attack phase
+                            return true; // Advance to attack phase
                         }
                         break;
                     case -1:
                         utils.Logger.Report(p1.ToString() + " ends the turn without attacking.");
-                        return 1; // No attacks
+                        return false; // No attacks
                     case -3:
                         retreat(p1, p2); // Retreat menu
                         break;
@@ -427,8 +421,6 @@ namespace shandakemon.core
                                 p1.benched[digit] = newBattler;
                                 p1.hand.Remove(selected);
                                 done = true;
-                                Console.WriteLine(target.ToString() + " evolved into " + newBattler.ToString());
-                                utils.Logger.Report(target.ToString() + " evolved into " + newBattler.ToString());
                             }
 
                         }

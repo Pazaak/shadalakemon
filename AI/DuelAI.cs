@@ -19,6 +19,7 @@ namespace shandakemon.AI
         void ChangeWeakness(Player opp, battler target);
         void ChangeResistance(Player opp, battler target);
         void CastMovement(Player opp);
+        bool MainPhase(Player opp);
         battler ChooseBattler(bool a, bool b);
         battler ChooseForDiscard(Player source, int quantity, bool max);
     }

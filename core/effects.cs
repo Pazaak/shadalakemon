@@ -474,7 +474,7 @@ namespace shandakemon.core
 
                 if (source_controller.winCondition) return output; // break
 
-                if (target_controller.benched.Count > 0)
+                if (target_controller.benched.Count > 1)
                     target_controller.KnockoutProcedure(source_controller);
                 else
                 {

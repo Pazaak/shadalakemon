@@ -12,6 +12,7 @@ namespace shandakemon.AI
         List<battler> basics;
         List<battler> evolutions;
         List<energy> energies;
+        List<trainer> trainers;
         Player host;
 
         public SimpleAI(Player _host)
@@ -31,19 +32,7 @@ namespace shandakemon.AI
             {
                 Dictionary<battler, int> scores = new Dictionary<battler, int>();
                 foreach (battler btl in basics)
-                {
-                    scores.Add(btl, 0);
-                    foreach (battler ev in evolutions) // Checks for valid evolutions
-                    {
-                        if (btl.id == ev.evolvesFrom) scores[btl] += 1; // direct evolution
-                        if (btl.id + 1 == ev.evolvesFrom ) scores[btl] += 1; // second evolution (flawed if no evols followed by a family)
-                    }
-                    battler clone = btl.DeepCopy(); // Create a clone of the battler and add all the energies
-                    foreach (energy en in energies)
-                        clone.attachEnergy(en);
-                    foreach (movement mov in clone.movements)
-                        if (clone.isUsable(mov)) scores[btl] += 1; // Check for usable movements
-                }
+                    scores.Add(btl, EvaluateEvolutions(btl) + EvaluateEnergy(btl));
 
                 selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max()).Key;
             }
@@ -64,20 +53,7 @@ namespace shandakemon.AI
             do
             {
                 if (basics.Count() == 0) return; // No more basics
-                scores.Clear();
-                foreach (battler btl in basics)
-                {
-                    scores.Add(btl, 0);
-                    foreach (battler ev in evolutions) // Checks for valid evolutions
-                    {
-                        if (btl.id == ev.evolvesFrom) scores[btl] += 1; // direct evolution
-                        if (btl.id + 1 == ev.evolvesFrom) scores[btl] += 1; // second evolution (flawed if no evols followed by a family)
-                    }
-
-                    var filter = host.benched.Where(x => x.element == btl.element); // Check for battlers of the same element
-                    if (filter.Count() == 0)
-                        scores[btl] += 1;
-                }
+                scores = EvaluateBasic(basics);
 
                 battler selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max() && x.Value > 0).Key;
                 if (selected == null) return; // The best battler isn't good enough
@@ -136,7 +112,7 @@ namespace shandakemon.AI
 
         public void KnockoutProcedure()
         {
-            Dictionary<battler, int> scores = EvaluateBenched(host);
+            Dictionary<battler, int> scores = EvaluateActive(host.benched);
 
             battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max<int>()).Key;
 
@@ -185,7 +161,7 @@ namespace shandakemon.AI
 
         public void Wheel(Player target)
         {
-            Dictionary<battler, int> scores = EvaluateBenched(target);
+            Dictionary<battler, int> scores = EvaluateActive(target.benched);
 
             battler selected = null;
             if (target == host)
@@ -223,6 +199,20 @@ namespace shandakemon.AI
             target.movements[index].execute(host, opp, host.benched[0], target, true);
         }
 
+        public bool MainPhase(Player opp)
+        {
+            Console.WriteLine(host.ToString() + " advances to main phase.");
+            utils.Logger.Report(host.ToString() + " advances to main phase.");
+            if (host.winCondition || opp.winCondition) return false;
+            this.EvolutionPhase();
+            if (host.winCondition || opp.winCondition) return false;
+            this.SelectBenched();
+            if (host.winCondition || opp.winCondition) return false;
+            this.EnergyPhase();
+            if (host.winCondition || opp.winCondition) return false;
+            return this.CanAttack(opp);
+        }
+
         public battler ChooseBattler(bool maxHP = true, bool maxEnergy = true)
         {
             Dictionary<battler, int> scores = new Dictionary<battler, int>();
@@ -245,7 +235,7 @@ namespace shandakemon.AI
                 if ( btl.energies.Count < quantity)
                     scores.Add(btl, max? int.MinValue : int.MaxValue);
                 else
-                    scores.Add(btl, EvaluateEnergy(btl));
+                    scores.Add(btl, EvaluateAttachedEnergy(btl));
 
             if (max) // Best score
                 return scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
@@ -258,8 +248,10 @@ namespace shandakemon.AI
             basics = new List<battler>();
             evolutions = new List<battler>();
             energies = new List<energy>();
+            trainers = new List<trainer>();
             battler temp1;
             energy temp2;
+            trainer temp3;
             foreach (card c0 in host.hand)
             {
                 if (c0.getSuperType() == 0) // Check if it is a battler
@@ -275,6 +267,13 @@ namespace shandakemon.AI
                     temp2 = (energy)c0;
                     energies.Add(temp2);
                 }
+                else // trainer
+                {
+                    temp3 = (trainer)c0;
+                    trainers.Add(temp3);
+                }
+                 
+                    
             }
 
             modified = false;
@@ -311,23 +310,59 @@ namespace shandakemon.AI
             return output;
         }
 
-        private Dictionary<battler, int> EvaluateBenched(Player target)
+        private Dictionary<battler, int> EvaluateActive(List<battler> argument)
         {
             // TODO: Take into account the opposing battlers
             Dictionary<battler, int> output = new Dictionary<battler, int>();
 
-            foreach ( battler btl in target.benched )
+            foreach ( battler btl in argument )
                 if ( btl != null )
                 {
                     output.Add(btl, 0);
-                    output[btl] += EvaluateEnergy(btl) * 30; // Heuristic multiplier
+                    output[btl] += EvaluateAttachedEnergy(btl) * 30; // Heuristic multiplier
                     output[btl] += (btl.HP - btl.damage);
                 }
 
             return output;
         }
 
+        private Dictionary<battler, int> EvaluateBasic(List<battler> argument)
+        {
+            Dictionary<battler, int> output = new Dictionary<battler, int>();
+            foreach (battler btl in argument)
+                output.Add(btl, EvaluateEvolutions(btl) + EvaluateTypes(btl));
+            return output;
+        }
+
+        private int EvaluateEvolutions(battler btl)
+        {
+            int score = 0;
+            foreach (battler ev in evolutions) // Checks for valid evolutions
+            {
+                if (btl.id == ev.evolvesFrom) score += 1; // direct evolution
+                if (btl.id + 1 == ev.evolvesFrom) score += 1; // second evolution (flawed if no evols followed by a family)
+            }
+            return score;
+        }
+
         private int EvaluateEnergy(battler btl)
+        {
+            int score = 0;
+            battler clone = btl.DeepCopy(); // Create a clone of the battler and add all the energies
+            foreach (energy en in energies)
+                clone.attachEnergy(en);
+            foreach (movement mov in clone.movements)
+                if (clone.isUsable(mov)) score+= 1; // Check for usable movements
+            return score;
+        }
+
+        private int EvaluateTypes(battler btl)
+        {
+            var filter = host.benched.Where(x => x.element == btl.element); // Check for battlers of the same element
+            return filter.Count() == 0 ? 1 : 0;
+        }
+
+        private int EvaluateAttachedEnergy(battler btl)
         {
             int energySum = btl.energies.Count;
             int lastIndex = btl.movements.Length - 1;
@@ -338,7 +373,7 @@ namespace shandakemon.AI
 
             int result = 0;
 
-            while ( energySum < btl.movements[lastIndex].cost.Sum() && lastIndex >= 0 )
+            while ( lastIndex >= 0 && energySum < btl.movements[lastIndex].cost.Sum() )
             {
                 result--;
                 lastIndex--;
@@ -346,6 +381,162 @@ namespace shandakemon.AI
 
             return result;
 
+        }
+
+        private void EvolutionPhase()
+        {
+            // TODO: Do this only when necessary
+            this.CheckModifications();
+
+            bool breeder = trainers.Any(x => x.effect == 6); // Has pkm breeder in hand
+
+            List<battler> candidates;
+            foreach ( battler evo in evolutions )
+            {
+                candidates = new List<battler>();
+                candidates = candidates.Concat(host.benched.Where(x => x.id == evo.evolvesFrom).ToList()).ToList();
+                if (breeder)
+                    candidates = candidates.Concat(host.benched.Where(x => x.id+1 == evo.evolvesFrom).ToList()).ToList();
+
+                if ( candidates.Count > 0)
+                {
+                    Dictionary<battler, int> scores = EvaluateActive(candidates);
+
+                    if ( scores.Values.Max() > 0 )
+                    {
+                        battler target = scores.FirstOrDefault(x => x.Value == scores.Values.Max()).Key;
+
+                        if (host.benched[0] == target)
+                            host.benched[0] = evo;
+                        else
+                        {
+                            host.benched.Remove(target);
+                            host.benched.Add(evo);
+                        }
+
+                        if (target.id + 1 == evo.evolvesFrom)
+                        {
+                            card bree = trainers.FirstOrDefault(x => x.effect == 6);
+                            Console.WriteLine(host.ToString() + " used " + bree.ToString() + ".");
+                            utils.Logger.Report(host.ToString() + " used " + bree.ToString() + ".");
+                            host.CardToDiscard(bree);
+                        }
+
+                        evo.evolve(target);
+                    }
+                }
+            }   
+        }
+
+        private void EnergyPhase()
+        {
+            // TODO
+            CheckModifications();
+
+            if (energies.Count == 0) // No energies in hand
+                return;
+
+            bool[] types = new bool[Constants.NTypes];
+
+            Dictionary<battler, int> negScores = new Dictionary<battler, int>();
+            Dictionary<battler, int> posScores = new Dictionary<battler, int>();
+            int score;
+            foreach (battler btl in host.benched)
+            {
+                score = EvaluateAttachedEnergy(btl);
+                if (score < 0 && !negScores.ContainsKey(btl)) negScores.Add(btl, score);
+                else if ( !posScores.ContainsKey(btl)) posScores.Add(btl, score);
+            }
+            
+            if ( negScores.Count == 0 ) // All battlers have excess of energy
+            {
+                Dictionary<battler, int> typeMatch = posScores.Where(x => types[x.Key.element]).ToDictionary(x => x.Key, x => x.Value);
+
+                if ( typeMatch.Count > 0) // There is type match among
+                {
+                    battler selected = typeMatch.FirstOrDefault(x => x.Value <= typeMatch.Values.Min()).Key;
+                    energy en = energies.FirstOrDefault(x => x.elem == selected.element);
+                    selected.attachEnergy(en);
+                    host.hand.Remove(en);
+                    Console.WriteLine(en.name + " attached to " + selected.ToString());
+                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                }
+                else // There are no type matches
+                {
+                    battler selected = posScores.FirstOrDefault(x => x.Value <= posScores.Values.Min()).Key;
+                    energy en = energies.First();
+                    selected.attachEnergy(en);
+                    host.hand.Remove(en);
+                    Console.WriteLine(en.name + " attached to " + selected.ToString());
+                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                }
+            }
+            else // Battlers need more energy
+            {
+                Dictionary<battler, int> typeMatch = negScores.Where(x => types[x.Key.element]).ToDictionary(x => x.Key, x => x.Value);
+
+                if (typeMatch.Count > 0) // There is type match among
+                {
+                    battler selected = typeMatch.FirstOrDefault(x => x.Value >= typeMatch.Values.Max()).Key;
+                    energy en = energies.FirstOrDefault(x => x.elem == selected.element);
+                    selected.attachEnergy(en);
+                    host.hand.Remove(en);
+                    Console.WriteLine(en.name + " attached to " + selected.ToString());
+                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                }
+                else // There are no type matches
+                {
+                    battler selected = negScores.FirstOrDefault(x => x.Value >= negScores.Values.Max()).Key;
+                    energy en = energies.First();
+                    selected.attachEnergy(en);
+                    host.hand.Remove(en);
+                    Console.WriteLine(en.name + " attached to " + selected.ToString());
+                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                }
+            }
+        }
+
+        private bool CanAttack(Player opp)
+        {
+            battler front = host.benched[0];
+            front.BattleDescription();
+
+            if (front.movements.Length == 0 || !front.isUsable(front.movements[0]))
+            {
+
+                return false;
+            }
+            else if (front.status == 1 || front.status == 2) // Statused
+            {
+                Console.WriteLine("Front pokemon is " + utilities.numToStatus(front.status) + " and can't attack");
+                return false;
+            }
+            else if (front.status == 3) // Confusion check
+            {
+                Console.WriteLine("Confusion check:");
+                utils.Logger.Report("Confusion check:");
+                if (CRandom.RandomInt() < 0)
+                {
+                    Console.WriteLine(host.ToString() + " won the coin flip.");
+                    utils.Logger.Report(host.ToString() + " won the coin flip.");
+                    utils.Logger.Report(host.ToString() + " advances to attack phase.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine(host.ToString() + " lost the coin flip.");
+                    utils.Logger.Report(host.ToString() + " lost the coin flip.");
+                    effects.damage(Constants.TNone, 30, front, null, host, opp);
+                    utils.Logger.Report(host.ToString() + " ends the turn without attacking.");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine(host.ToString() + " advances to attack phase.");
+                utils.Logger.Report(host.ToString() + " advances to attack phase.");
+                return true; // Advance to attack phase
+            }
         }
     }
 }

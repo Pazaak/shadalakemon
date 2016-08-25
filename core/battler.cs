@@ -62,7 +62,7 @@ namespace shandakemon.core
         public Dictionary<int, int[]> conditions;
         public Power power;
         public card attached;
-
+        
         public battler(int type, int element, int HP, int weak_elem, int weak_mod, int res_elem, int res_mod, int retreat, string name, int id, int evolvesFrom, movement[] movements, Power power = null, int[] legacy = null, card attached = null)
         {
             this.type = type;
@@ -259,6 +259,9 @@ namespace shandakemon.core
 
             pre.clear();
             this.prevolution = pre;
+
+            Console.WriteLine(pre.ToString() + " evolved into " + this.ToString());
+            utils.Logger.Report(pre.ToString() + " evolved into " + this.ToString());
         }
 
         // Returns to a previous instance of battler
