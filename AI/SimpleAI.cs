@@ -210,6 +210,7 @@ namespace shandakemon.AI
             if (host.winCondition || opp.winCondition) return false;
             this.EnergyPhase();
             if (host.winCondition || opp.winCondition) return false;
+            this.PowerPhase(opp);
             return this.CanAttack(opp);
         }
 
@@ -494,6 +495,193 @@ namespace shandakemon.AI
                     utils.Logger.Report(en.name + " attached to " + selected.ToString());
                 }
             }
+        }
+
+        private void PowerPhase(Player opp)
+        {
+            List<battler> powers = host.benched.Where(x => x.power != null).ToList();
+            bool end = false; // No power was used in the last iteration
+
+            while ( !end )
+            {
+                end = true;
+                foreach (battler btl in powers)
+                {
+                    switch ( btl.power.effect )
+                    {
+                        case 0: // Rain dance
+                            end = end && !this.RainDance(btl);
+                            break;
+                        case 1: // Energy trans
+                            end = end && !this.EnergyTrans(btl);
+                            break;
+                        case 2: // Damage swap
+                            end = end && !this.DamageSwap(btl);
+                            break;
+                        case 3: // Buzzap
+                            end = end && !this.Buzzap(btl, opp);
+                            break;
+                    }
+                }
+            }
+
+        }
+        
+        private bool RainDance(battler caller)
+        {
+            CheckModifications();
+            // Check for needs of energy
+            Dictionary<battler, int> scores = new Dictionary<battler, int>();
+
+            int score;
+            foreach (battler btl in host.benched)
+            {
+                score = EvaluateAttachedEnergy(btl);
+                if (btl.element == Constants.TWater && score < 0 && !scores.ContainsKey(btl))
+                    scores.Add(btl, score);
+            }
+
+            if (scores.Count == 0) return false; // No need of energy
+
+            if (energies.Any(x => x.elem == Constants.TWater)) return false; // No energy of the selected type
+
+            // Activating Rain Dance
+            battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            energy en = energies.FirstOrDefault(x => x.elem == Constants.TWater);
+            selected.attachEnergy(en);
+            host.hand.Remove(en);
+            utils.Logger.Report(caller.ToString() + " uses " + caller.power.name + ".");
+            Console.WriteLine(caller.ToString() + " uses " + caller.power.name + ".");
+            utils.Logger.Report(en.name + " attached to " + selected.ToString());
+            Console.WriteLine(en.name + " attached to " + selected.ToString());
+            return true;
+        }
+
+        private bool EnergyTrans(battler caller)
+        {
+            if (host.benched.Count < 2) return false; // Cannot transfer energy with only 1
+
+            // Calculate energy scores
+            Dictionary<battler, int> negScores = new Dictionary<battler, int>();
+            Dictionary<battler, int> posScores = new Dictionary<battler, int>();
+            int score;
+            foreach (battler btl in host.benched)
+            {
+                score = EvaluateAttachedEnergy(btl);
+                if (score < 0 && !negScores.ContainsKey(btl)) negScores.Add(btl, score);
+                else if ( score > 0 && !posScores.ContainsKey(btl)) posScores.Add(btl, score);
+            }
+
+            battler source = null; // Check for benched dying battler
+            energy en = null;
+            for (int i = 1; i < host.benched.Count; i++)
+                if ( host.benched[i].HP * 0.9 <= host.benched[i].damage && host.benched[i].energies.Any() )
+                {
+                    source = host.benched[i];
+                    break;
+                }
+
+            if ( source != null)
+                // Energy transfering commence
+                en = source.energies.First(); // Any energy will do
+            else // Not dying battler, check for excess of energy
+            {
+                if (posScores.Any())
+                    return false; // No excess of energy on any battler
+
+                // Select the battler with most excess of energy
+                source = posScores.FirstOrDefault(x => x.Value >= posScores.Values.Max()).Key;
+
+                // Try to select an energy which is not from the battler's type
+                en = source.energies.FirstOrDefault(x => x.elem != source.element);
+                if (en == null) // Else, get one of the same type
+                    en = source.energies.First();
+            }
+
+            // Look for battler of the same type as the energy
+            Dictionary<battler, int> typedNeg = negScores.Where(x => x.Key.element == en.elem).ToDictionary(x => x.Key, x => x.Value);
+            battler target = null;
+            if (typedNeg.Any()) // At least one negative score has the energy's type
+                target = typedNeg.FirstOrDefault(x => x.Value >= typedNeg.Values.Max()).Key;
+            else // None of the negative scored battlers has the same type as the energy
+                target = negScores.FirstOrDefault(x => x.Value >= negScores.Values.Max()).Key;
+
+            target.attachEnergy(en);
+            source.energies.Remove(en);
+            utils.Logger.Report(caller.ToString() + " uses " + caller.power.name + ".");
+            Console.WriteLine(caller.ToString() + " uses " + caller.power.name + ".");
+            utils.Logger.Report(en.name + " de-attached from " + source.ToString());
+            Console.WriteLine(en.name + " de-attached from " + source.ToString());
+            utils.Logger.Report(en.name + " attached to " + target.ToString());
+            Console.WriteLine(en.name + " attached to " + target.ToString());
+            return true;
+
+        }
+
+        private bool DamageSwap(battler caller)
+        {
+            if (host.benched.Count < 2) return false; // Not enough battlers
+            if (host.benched.All(x => x.damage == 0)) return false; // All undamaged
+
+            battler source;
+            battler target;
+            if (host.benched[0].damage > 0) // Front damaged
+            {
+                source = host.benched[0]; // Source of damage is front
+                int mindam = int.MaxValue;
+                foreach (battler btl in host.benched) // Get min
+                    if (btl.damage < mindam)
+                        mindam = btl.damage;
+                target = host.benched.FirstOrDefault(x => x.damage <= mindam); // Find min
+                if (target.damage + 10 == target.HP) return false; // Min on the edge of its life
+            }
+            else
+            {
+                source = host.benched.FirstOrDefault(x => x.damage == x.HP - 10);
+                if (source == null) return false; // No one is in the edge of death
+
+                target = host.benched.FirstOrDefault(x => x.damage < x.HP - 10);
+                if (target == null) return false; // Every one else is in the edge of death
+            }
+
+            source.damage -= 10;
+            target.damage += 10;
+            utils.Logger.Report(caller.ToString() + " uses " + caller.power.name + ".");
+            Console.WriteLine(caller.ToString() + " uses " + caller.power.name + ".");
+            Console.WriteLine(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter.");
+            utils.Logger.Report(source.ToString() + " losses a damage counter. " + target.ToString() + " obtains a damage counter.");
+            return true;
+        }
+
+        private bool Buzzap(battler source, Player opp)
+        {
+            if (host.benched.Count < 2) return false; // Not enough battlers to work
+
+            int score = (source.HP - source.damage) / 10 - 1;
+            score += source.energies.Count >= 3 ? 3 : source.energies.Count;
+
+            if (score > 3) return false; // Not enough crippled to activate
+
+            host.ToDiscard(source);
+            host.discarded.Remove(source);
+            opp.PriceProcedure();
+
+            battler target = null;
+            int minsco = int.MaxValue;
+            foreach (battler btl in host.benched)
+                if ( btl != null && EvaluateAttachedEnergy(btl) < minsco)
+                    target = btl;
+
+            energy attEnergy = new energy(1, target.element, source.power.parameters[0], source.name, source);
+
+            target.attachEnergy(attEnergy);
+            
+            host.KnockoutProcedure(opp);
+            utils.Logger.Report(source.ToString() + " uses " + source.power.name + ".");
+            Console.WriteLine(source.ToString() + " uses " + source.power.name + ".");
+            Console.WriteLine(attEnergy.name + " attached to " + target.ToString());
+            utils.Logger.Report(attEnergy.name + " attached to " + target.ToString());
+            return true;
         }
 
         private bool CanAttack(Player opp)
