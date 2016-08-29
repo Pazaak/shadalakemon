@@ -933,7 +933,7 @@ namespace shandakemon.core
                 return false;
             }
 
-            battler proxy = new battler(0, Constants.TNone, HP, Constants.TNone, 1, Constants.TNone, 0, 0, source.name, -2, -1, new movement[0], null, new int[1] { Legacies.clefairyDoll }, source);
+            battler proxy = new battler(0, Constants.TNone, HP, Constants.TNone, 1, Constants.TNone, 0, 0, source.name, -2, -1, new movement[0], null, new int[1] { Legacy }, source);
             source_player.benched.Add(proxy);
             return true;
         }

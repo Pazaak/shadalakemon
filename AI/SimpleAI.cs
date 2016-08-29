@@ -49,13 +49,14 @@ namespace shandakemon.AI
             if (modified) CheckModifications();
 
             Dictionary<battler, int> scores = new Dictionary<battler, int>();
-
+            int threshold;
             do
             {
                 if (basics.Count() == 0) return; // No more basics
                 scores = EvaluateBasic(basics);
 
-                battler selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max() && x.Value > 0).Key;
+                threshold = host.benched.Count == 1 ? -2 : 0;
+                battler selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max() && x.Value > threshold).Key;
                 if (selected == null) return; // The best battler isn't good enough
 
                 basics.Remove(selected);
@@ -335,6 +336,17 @@ namespace shandakemon.AI
             return output;
         }
 
+        private Dictionary<card, int> EvaluateCards(List<card> target)
+        {
+            Dictionary<card, int> output = new Dictionary<card, int>();
+
+            // TODO: Do this seriously
+            foreach (card ca in target)
+                output.Add(ca, CRandom.RandomInt());
+
+            return output;
+        }
+
         private int EvaluateEvolutions(battler btl)
         {
             int score = 0;
@@ -526,7 +538,105 @@ namespace shandakemon.AI
             }
 
         }
-        
+
+        private void TrainerPhase(Player opp)
+        {
+            
+            bool end;
+
+            do
+            {
+                // TODO
+                CheckModifications();
+                end = true;
+
+                foreach( trainer tra in trainers)
+                {
+                    switch(tra.effect)
+                    {
+                        case 0:
+                            end &= !ClefairyDoll(tra);
+                            break;
+                        case 1:
+                            end &= !ComputerSearch(tra);
+                            break;
+                        case 2:
+                            end &= !DevolutionSpray();
+                            break;
+                        case 3:
+                            end &= !ImposterOak(tra, opp);
+                            break;
+                        case 4:
+                            end &= !ItemFinder(tra);
+                            break;
+                        case 5:
+                            end &= !Lass(opp);
+                            break;
+                        // Case 6: Pokemon Breeder, implemented as a part of the evolution procedures
+                        case 7:
+                            end &= !PokemonTrader();
+                            break;
+                        case 8:
+                            end &= !ScoopUp();
+                            break;
+                        case 9:
+                            end &= !SuperEnergyRemoval();
+                            break;
+                        case 10:
+                            end &= !Defender();
+                            break;
+                        case 11:
+                            end &= !EnergyRetrieval();
+                            break;
+                        case 12:
+                            end &= !FullHeal();
+                            break;
+                        case 13:
+                            end &= !Maintenance();
+                            break;
+                        case 14:
+                            end &= !PlusPower();
+                            break;
+                        case 15:
+                            end &= !PokemonCenter();
+                            break;
+                        case 16:
+                            end &= !PokemonFlute();
+                            break;
+                        case 17:
+                            end &= !Pokedex();
+                            break;
+                        case 18:
+                            end &= !ProfesorOak();
+                            break;
+                        case 19:
+                            end &= !Revive();
+                            break;
+                        case 20:
+                            end &= !SuperPotion();
+                            break;
+                        case 21:
+                            end &= !Bill();
+                            break;
+                        case 22:
+                            end &= !EnergyRemoval();
+                            break;
+                        case 23:
+                            end &= !GustOfWind();
+                            break;
+                        case 24:
+                            end &= !Potion();
+                            break;
+                        case 25:
+                            end &= !Switch();
+                            break;
+                    }
+                }
+
+            } while (!end);
+        }
+
+        #region Powers
         private bool RainDance(battler caller)
         {
             CheckModifications();
@@ -683,6 +793,107 @@ namespace shandakemon.AI
             utils.Logger.Report(attEnergy.name + " attached to " + target.ToString());
             return true;
         }
+        #endregion
+
+        #region Trainers
+        private bool ClefairyDoll(trainer source)
+        {
+            if (host.benched.Count >= 5) // Cannot be used
+                return false;
+
+            if (host.benched.Count > 1 && !host.benched.All(x=> x.damage + 10 == x.HP)) // Not worth to use
+                return false;
+
+            effects.CreateProxyBattler(host, source, source.parameters[0], source.parameters[1]);
+            return true;
+        }
+
+        private bool ComputerSearch(trainer source)
+        {
+            if (host.hand.Count < 3) return false; // Cannot be executed
+
+            Dictionary<card, int> scores = EvaluateCards(host.hand);
+
+            List<card> discard = new List<card>();
+            card temp;
+            while( discard.Count != 2)
+            {
+                temp = scores.FirstOrDefault(x => x.Value <= scores.Values.Min()).Key;
+                scores.Remove(temp);
+                if (temp != source)
+                    discard.Add(temp);
+            }
+
+            foreach (card ca in discard)
+                host.CardToDiscard(ca);
+
+            List<card> deckListed = host.deck.ToList();
+            scores = EvaluateCards(deckListed);
+
+            temp = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+
+            host.deck.Remove(temp);
+            host.hand.Add(temp);
+            host.hand.Remove(source);
+
+            return true;
+        }
+
+        private bool DevolutionSpray()
+        {
+            //TODO: This card is terrible and I don't want to do it
+            return false;
+        }
+
+        private bool ImposterOak(trainer source, Player opp)
+        {
+            if (opp.hand.Count < 8) return false; // Not worth to do it
+
+            opp.DiscardHand();
+            opp.draw(7);
+            host.hand.Remove(source);
+            return true;
+        }
+
+        private bool ItemFinder(trainer source)
+        {
+            if (host.hand.Count < 3) return false; // Not enough cards
+            if (!host.discarded.Any(x => x.getSuperType() == 2)) return false; // There isn't a trainer in the discard pile
+
+            Dictionary<card, int> scores = EvaluateCards(host.hand);
+
+            List<card> discard = new List<card>();
+            card temp;
+            while (discard.Count != 2)
+            {
+                temp = scores.FirstOrDefault(x => x.Value <= scores.Values.Min()).Key;
+                scores.Remove(temp);
+                if (temp != source)
+                    discard.Add(temp);
+            }
+
+            foreach (card ca in discard)
+                host.CardToDiscard(ca);
+
+            scores = EvaluateCards(host.discarded.Where(x=> x.getSuperType() == 2).ToList());
+            temp = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            discard.Remove(temp);
+            host.hand.Add(temp);
+            host.hand.Remove(source);
+            return true;
+        }
+
+        private bool Lass(Player opp)
+        {
+            // TODO
+            CheckModifications();
+            if (opp.hand.Count / 3 - trainers.Count < 0) return false; // Not worth it
+
+            effects.ShuffleCardsType(host, 2);
+            effects.ShuffleCardsType(opp, 2);
+            return true;
+        }
+        #endregion
 
         private bool CanAttack(Player opp)
         {
