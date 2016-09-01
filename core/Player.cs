@@ -75,8 +75,8 @@ namespace shandakemon.core
                 return false;
             for (int i = 0; i < times; i++)
             {
-                hand.Add(deck.First());
-                deck.Remove(deck.First());
+                hand.Add(deck.First.Value);
+                deck.RemoveFirst();
             }
 
             utils.Logger.Report(ToString() + " draws " + times + (times == 1 ? " card." : " cards."));

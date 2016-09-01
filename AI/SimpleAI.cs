@@ -636,16 +636,16 @@ namespace shandakemon.AI
                             end &= !PokemonFlute(tra, opp);
                             break;
                         case 17:
-                            end &= !Pokedex();
+                            end &= !Pokedex(tra);
                             break;
                         case 18:
-                            end &= !ProfesorOak();
+                            end &= !ProfesorOak(tra);
                             break;
                         case 19:
-                            end &= !Revive();
+                            end &= !Revive(tra);
                             break;
                         case 20:
-                            end &= !SuperPotion();
+                            end &= !SuperPotion(tra);
                             break;
                         case 21:
                             end &= !Bill();
@@ -1176,6 +1176,117 @@ namespace shandakemon.AI
 
             return true;
         }
+
+        private bool Pokedex(trainer source)
+        {
+            // Always execute
+            List<card> scry = new List<card>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                scry.Add(host.deck.First.Value);
+                host.deck.RemoveFirst();
+            }
+
+            Dictionary<card, int> scores = EvaluateCards(scry);
+
+            for (int i = 0; i < 5; i++)
+            {
+                host.deck.AddFirst(scores.First(x => x.Value <= scores.Values.Min()).Key);
+                scores.Remove(host.deck.First.Value);
+            }
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool ProfesorOak(trainer source)
+        {
+            if (host.hand.Count() > 3) return false; // Not even think about it
+            Dictionary<card, int> deckEvaluation = EvaluateCards(host.deck.ToList());
+            int deckAverage = deckEvaluation.Values.Sum() / deckEvaluation.Count() * 7;
+
+            Dictionary<card, int> handEvaluation = EvaluateCards(host.hand.Where(x => x != source).ToList());
+            int handAverage = handEvaluation.Values.Sum();
+
+            if (deckAverage < handAverage) return false; // Not worth it, but not very probable
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.DiscardHand();
+            host.draw(7);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool Revive(trainer source)
+        {
+            if (host.benched.Count() == 6) return false; // Bench full
+
+            // This huge line selects all the basic battlers from the discard pile
+            List<battler> targets = host.discarded.Where(x => x is battler).Cast<battler>().Where(x => x.type == 0).ToList();
+
+            if (!targets.Any()) return false; // No possible target
+
+            Dictionary<battler, int> scores = EvaluateBasic(targets);
+
+            int threshold = host.benched.Count == 1 ? -2 : 0;
+            battler selected = scores.FirstOrDefault(x => x.Value == scores.Values.Max() && x.Value > threshold).Key;
+
+            if (selected == null) return false; // No good enough
+
+            host.discarded.Remove(selected);
+            host.benched.Add(selected);
+            selected.damage = selected.HP % 2 == 5 ? selected.HP / 2 - 5 : selected.HP / 2;
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool SuperPotion(trainer source)
+        {
+            List<battler> targets = host.benched.Where(x => x.damage >= 50 && x.energies.Count >= 1).ToList();
+            if (!targets.Any()) return false; // No good targets
+
+            battler target = null;
+            int best = int.MinValue;
+            int actual;
+            foreach (battler btl in targets)
+            {
+                actual = EvaluateAttachedEnergy(btl) + btl.damage / 10;
+                if (btl == host.benched[0])
+                    actual += 1; // Little bump for being front
+
+                if ( actual > best )
+                {
+                    best = actual;
+                    target = btl;
+                }
+            }
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.discardEnergy(target, WorstEnergy(target));
+            effects.heal(target, 50);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+
         #endregion
 
         private bool CanAttack(Player opp)
