@@ -1111,20 +1111,13 @@ namespace shandakemon.core
         }
 
         // Select a battler in play, discard everything and return the basic to hand
-        public static void ScoopUp(Player target_controller, Player opponent)
+        public static void ScoopUp(Player target_controller, Player opponent, battler target = null)
         {
-            battler target = null;
-            if ( target_controller.isAI )
-            {
-                target = target_controller.controller.ChooseBattler(false, false);
-            }
-            else
-            {
-                int digit;
-
+            if ( target == null )
+            { 
                 Console.WriteLine("Select an active pokemon:");
                 Console.WriteLine(target_controller.ShowBattlers());
-                digit = utils.ConsoleParser.ReadOrExit(target_controller.benched.Count - 1);
+                int digit = utils.ConsoleParser.ReadOrExit(target_controller.benched.Count - 1);
 
                 if (digit == -1) return;
 

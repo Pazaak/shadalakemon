@@ -396,6 +396,38 @@ namespace shandakemon.AI
 
         }
 
+        private energy BestEnergy(battler btl)
+        {
+            List<energy> attached = btl.energies;
+
+            // Try to find the energies of the same type as the battler
+            energy selected = attached.FirstOrDefault(x => x.elem == btl.element);
+
+            if (selected == null) // No match was found
+                selected = attached.FirstOrDefault(x => x.quan > 1); // Return that produces more than one
+
+            if (selected == null) // No one produces more than one
+                selected = attached.First(); // Return any
+
+            return selected; 
+        }
+
+        private energy WorstEnergy(battler btl)
+        {
+            List<energy> attached = btl.energies;
+
+            // Find a not matching element energy with a production of one
+            energy selected = attached.FirstOrDefault(x => x.elem != btl.element && x.quan <= 1);
+
+            if (selected == null)
+                selected = attached.FirstOrDefault(x => x.elem != btl.element); // Search for one which produces more than one
+
+            if (selected == null) // No match was found
+                selected = attached.First(); // Return anyone
+
+            return selected;
+        }
+
         private void EvolutionPhase()
         {
             // TODO: Do this only when necessary
@@ -574,34 +606,34 @@ namespace shandakemon.AI
                             break;
                         // Case 6: Pokemon Breeder, implemented as a part of the evolution procedures
                         case 7:
-                            end &= !PokemonTrader();
+                            end &= !PokemonTrader(tra);
                             break;
                         case 8:
-                            end &= !ScoopUp();
+                            end &= !ScoopUp(tra, opp);
                             break;
                         case 9:
-                            end &= !SuperEnergyRemoval();
+                            end &= !SuperEnergyRemoval(tra, opp);
                             break;
                         case 10:
-                            end &= !Defender();
+                            end &= !Defender(tra);
                             break;
                         case 11:
-                            end &= !EnergyRetrieval();
+                            end &= !EnergyRetrieval(tra);
                             break;
                         case 12:
-                            end &= !FullHeal();
+                            end &= !FullHeal(tra);
                             break;
                         case 13:
-                            end &= !Maintenance();
+                            end &= !Maintenance(tra);
                             break;
                         case 14:
-                            end &= !PlusPower();
+                            end &= !PlusPower(tra);
                             break;
                         case 15:
-                            end &= !PokemonCenter();
+                            end &= !PokemonCenter(tra);
                             break;
                         case 16:
-                            end &= !PokemonFlute();
+                            end &= !PokemonFlute(tra, opp);
                             break;
                         case 17:
                             end &= !Pokedex();
@@ -891,6 +923,257 @@ namespace shandakemon.AI
 
             effects.ShuffleCardsType(host, 2);
             effects.ShuffleCardsType(opp, 2);
+            return true;
+        }
+
+        private bool PokemonTrader(trainer source)
+        {
+            if (!host.hand.Any(x => x.getSuperType() == 0)) return false; // No battler card in hand
+
+            Dictionary<card, int> scoresDeck = EvaluateCards(host.deck.Where(x => x.getSuperType() == 0).ToList());
+            if (!scoresDeck.Any()) return false; // No battler cards in the deck
+
+            Dictionary<card, int> scoresHand = EvaluateCards(host.hand.Where(x => x.getSuperType() == 0).ToList());
+            if (scoresDeck.Values.Min() >= scoresHand.Values.Max()) return false; // Not worth it
+
+            card toDeck = scoresHand.FirstOrDefault(x => x.Value <= scoresHand.Values.Min()).Key;
+            card toHand = scoresDeck.FirstOrDefault(x => x.Value >= scoresDeck.Values.Max()).Key;
+
+            Console.WriteLine(host.ToString() + " uses " + source.name);
+            Console.WriteLine(toHand.ToString() + " is put into " + host.ToString() + "'s hand.");
+            Console.WriteLine(toDeck.ToString() + " is put into " + host.ToString() + "'s deck.");
+            utils.Logger.Report(host.ToString() + " uses " + source.name);
+            utils.Logger.Report(toHand.ToString() + " is put into " + host.ToString() + "'s hand.");
+            utils.Logger.Report(toDeck.ToString() + " is put into " + host.ToString() + "'s deck.");
+
+            host.deck.Remove(toHand);
+            host.deck.AddFirst(toDeck);
+            host.shuffle();
+
+            host.hand.Remove(toDeck);
+            host.hand.Add(toHand);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool ScoopUp(trainer source, Player opp)
+        {
+            if (host.benched.Count == 1) return false; // Cannot execute
+            battler selected = host.benched.FirstOrDefault(x => (x.HP - x.damage) < 30);
+            if (selected == null) return false; // Not worth it
+
+            Console.WriteLine(host.ToString() + " uses " + source.name);
+            utils.Logger.Report(host.ToString() + " uses " + source.name);
+            effects.ScoopUp(host, opp, selected);
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool SuperEnergyRemoval(trainer source, Player opp)
+        {
+            if (!opp.benched.Any(x => x.energies.Count >= 2)) return false; // No meeting condition
+            if (!host.benched.Any(x => x.energies.Count >= 1)) return false; // No meeting condition
+
+            battler own = null;
+            int actual;
+            int best = int.MinValue;
+            foreach (battler btl in host.benched)
+            {
+                actual = EvaluateAttachedEnergy(btl);
+                if (actual > best)
+                {
+                    best = actual;
+                    own = btl;
+                }
+            }
+
+            battler other = null;
+            best = int.MaxValue;
+            foreach (battler btl in opp.benched)
+            {
+                actual = EvaluateAttachedEnergy(btl);
+                if (actual < best && btl.energies.Count() >= 2)
+                {
+                    best = actual;
+                    other = btl;
+                }
+            }
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.discardEnergy(own, WorstEnergy(own));
+            opp.discardEnergy(other, BestEnergy(other));
+            opp.discardEnergy(other, BestEnergy(other));
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool Defender(trainer source)
+        {
+            // TODO: Do some heuristic
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            effects.addCondition(host.benched[0], Legacies.damageReduction, source.parameters);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool EnergyRetrieval(trainer source)
+        {
+            if (host.hand.Count() < 2) return false; // Not enough cards in the hand to execute
+
+            List<energy> disEnergy = host.discarded.Where(x => x is energy).Cast<energy>().ToList();
+            if (disEnergy.Count(x=> x.type == 0) < 2 ) return false; // Not enough BASIC energy cards in the graveyard
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            Dictionary<card, int> scoresHand = EvaluateCards(host.hand.Where(x => x != source).ToList());
+            host.CardToDiscard(scoresHand.FirstOrDefault(x => x.Value <= scoresHand.Values.Min()).Key);
+
+            Dictionary<card, int> scores = EvaluateCards(disEnergy.Cast<card>().ToList());
+            card rescued = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            scores.Remove(rescued);
+            host.discarded.Remove(rescued);
+            host.hand.Add(rescued);
+            Console.WriteLine(rescued.ToString() + " moves from the discard pile to the hand.");
+            utils.Logger.Report(rescued.ToString() + " moves from the discard pile to the hand.");
+
+            rescued = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+            scores.Remove(rescued);
+            host.discarded.Remove(rescued);
+            host.hand.Add(rescued);
+            Console.WriteLine(rescued.ToString() + " moves from the discard pile to the hand.");
+            utils.Logger.Report(rescued.ToString() + " moves from the discard pile to the hand.");
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool FullHeal(trainer source)
+        {
+            if (host.benched[0].status == 0) return false; // Already at full heal
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.benched[0].status = 0; // Annulate all status
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool Maintenance(trainer source)
+        {
+            if (host.hand.Count() < 3) return false; // Not enough cards to perform
+
+            Dictionary<card, int> deckEvaluation = EvaluateCards(host.deck.ToList());
+            int deckAverage = deckEvaluation.Values.Sum() / deckEvaluation.Count();
+
+            Dictionary<card, int> handEvaluation = EvaluateCards(host.hand.Where(x => x != source).ToList());
+            card t1 = handEvaluation.FirstOrDefault(x => x.Value <= handEvaluation.Values.Min()).Key;
+            int evaluation = handEvaluation[t1];
+            handEvaluation.Remove(t1);
+            card t2 = handEvaluation.FirstOrDefault(x => x.Value <= handEvaluation.Values.Min()).Key;
+            evaluation += handEvaluation[t2];
+
+            if (evaluation >= deckAverage) return false; // Not worth to use it
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.deck.AddFirst(t1);
+            host.deck.AddFirst(t2);
+
+            Console.WriteLine(host.ToString() + " shuffles " + t1.ToString() + " and " + t2.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " shuffles " + t1.ToString() + " and " + t2.ToString() + ".");
+
+            host.shuffle();
+
+            host.draw(1);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool PlusPower(trainer source)
+        {
+            // TODO: Include an heuristic for this effect
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            effects.addCondition(host.benched[0], Legacies.damageAmplification, source.parameters);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool PokemonCenter(trainer source)
+        {
+            if (energies.Count() < 2) return false; // Usually not worth it
+
+            int damageSum = 0;
+            int energySum = 0;
+            foreach (battler btl in host.benched)
+                if (btl.damage != 0)
+                {
+                    damageSum += btl.damage;
+                    energySum += btl.energies.Count();
+                }
+
+            energySum *= 20;
+
+            if (energySum > damageSum) return false; // Not a tradeoff
+
+            effects.HealAndDiscardEnergy(host);
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.CardToDiscard(source);
+
+            return true;
+
+        }
+
+        private bool PokemonFlute(trainer source, Player opp)
+        {
+            if (opp.benched.Count() == 1) return false; // No favours
+
+            List<battler> targets = opp.discarded.Where(x => x is battler).Cast<battler>().ToList();
+            if (!targets.Any()) return false; // No legal targets (generally discarded battlers means discarded basics)
+
+            targets = targets.Where(x => x.type == 0).ToList(); // Look for basics
+            if (!targets.Any()) return false; // Still no legal targets
+
+            // TODO: Include more heuristics
+            battler target = targets.FirstOrDefault(x => x.HP <= 30 || (x.HP <= 40 && x.weak_elem == host.benched[0].element));
+            if (target == null) return false; // No good target
+
+            opp.discarded.Remove(target);
+            opp.benched.Add(target);
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            Console.WriteLine(target.ToString() + " is put in play from the discard pile.");
+            utils.Logger.Report(target.ToString() + " is put in play from the discard pile.");
+
+            host.CardToDiscard(source);
+
             return true;
         }
         #endregion
