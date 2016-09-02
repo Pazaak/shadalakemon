@@ -312,7 +312,7 @@ namespace shandakemon.core
         public bool canRetreat()
         {
             movement retreatProxy = new movement(new int[7]{retreat, 0, 0, 0, 0, 0, 0}, 0, "", null); // Create a proxy movement with the cost of retreating
-            return isUsable(retreatProxy); // Return its usability
+            return isUsable(retreatProxy) && status != 1 && status != 2; // Return its usability
         }
 
         // Shows only the selected energy type

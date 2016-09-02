@@ -170,7 +170,7 @@ namespace shandakemon.AI
             else
                 selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Min()).Key;
 
-            target.ExchangePosition(target.benched.LastIndexOf(selected));
+            target.ExchangePosition(selected);
         }
 
         public void ChangeResistance(Player opp, battler target)
@@ -212,6 +212,8 @@ namespace shandakemon.AI
             this.EnergyPhase();
             if (host.winCondition || opp.winCondition) return false;
             this.PowerPhase(opp);
+            if (host.winCondition || opp.winCondition) return false;
+            this.RetreatPhase(opp);
             return this.CanAttack(opp);
         }
 
@@ -571,6 +573,24 @@ namespace shandakemon.AI
 
         }
 
+        private void RetreatPhase(Player opp)
+        {
+            if (host.benched.Count < 2) return; // Not usable
+            battler front = host.benched[0];
+            if (!front.canRetreat()) return; // Not usable
+
+            Dictionary<battler, int> scores = EvaluateActive(host.benched);
+
+            int frontScore = scores[front]; // Remove front
+            scores.Remove(front);
+
+            if (!scores.Any(x => x.Value > frontScore + front.retreat*10)) return; // Not worth it
+
+            battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+
+            host.ExchangePosition(selected);
+        }
+
         private void TrainerPhase(Player opp)
         {
             
@@ -648,19 +668,19 @@ namespace shandakemon.AI
                             end &= !SuperPotion(tra);
                             break;
                         case 21:
-                            end &= !Bill();
+                            end &= !Bill(tra);
                             break;
                         case 22:
-                            end &= !EnergyRemoval();
+                            end &= !EnergyRemoval(tra, opp);
                             break;
                         case 23:
-                            end &= !GustOfWind();
+                            end &= !GustOfWind(tra, opp);
                             break;
                         case 24:
-                            end &= !Potion();
+                            end &= !Potion(tra);
                             break;
                         case 25:
-                            end &= !Switch();
+                            end &= !Switch(tra);
                             break;
                     }
                 }
@@ -977,6 +997,8 @@ namespace shandakemon.AI
             if (!opp.benched.Any(x => x.energies.Count >= 2)) return false; // No meeting condition
             if (!host.benched.Any(x => x.energies.Count >= 1)) return false; // No meeting condition
 
+
+            // TODO: Reconsider this
             battler own = null;
             int actual;
             int best = int.MinValue;
@@ -1077,6 +1099,7 @@ namespace shandakemon.AI
         private bool Maintenance(trainer source)
         {
             if (host.hand.Count() < 3) return false; // Not enough cards to perform
+            if (host.deck.Count() == 0) return false; // Not killing ourselves
 
             Dictionary<card, int> deckEvaluation = EvaluateCards(host.deck.ToList());
             int deckAverage = deckEvaluation.Values.Sum() / deckEvaluation.Count();
@@ -1286,7 +1309,117 @@ namespace shandakemon.AI
             return true;
         }
 
+        private bool Bill(trainer source)
+        {
+            if (host.deck.Count < 2) return false; // The only restrictive execution condition
 
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.draw(2);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool EnergyRemoval(trainer source, Player opp)
+        {
+            if (!opp.benched.Any(x => x.energies.Count >= 1)) return false; // No meeting condition
+
+            // TODO: Reconsider it
+            battler other = null;
+            int best = int.MaxValue;
+            int actual;
+            foreach (battler btl in opp.benched)
+            {
+                actual = EvaluateAttachedEnergy(btl);
+                if (actual < best && btl.energies.Count() >= 1)
+                {
+                    best = actual;
+                    other = btl;
+                }
+            }
+
+            if (other == null) return false; // No one meets conditions
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            opp.discardEnergy(other, BestEnergy(other));
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool GustOfWind(trainer source, Player opp)
+        {
+            if (opp.benched.Count < 2) return false; // Cannot be used
+
+            Dictionary<battler, int> scores = EvaluateActive(opp.benched);
+
+            int frontScore = scores[opp.benched[0]]; // Remove front
+            scores.Remove(opp.benched[0]);
+
+            if (!scores.Any(x => x.Value < frontScore)) return false; // Not worth it
+
+            battler selected = scores.FirstOrDefault(x => x.Value <= scores.Values.Min()).Key;
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            opp.ExchangePosition(selected);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool Potion(trainer source)
+        {
+            List<battler> targets = host.benched.Where(x => x.damage >= 20).ToList();
+            if (!targets.Any()) return false; // No targets
+
+            battler target = null;
+            if (targets.Contains(host.benched[0])) // Priority to front
+                target = host.benched[0];
+            else
+                target = targets.First();
+
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            effects.heal(target, 20);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
+
+        private bool Switch(trainer source)
+        {
+            if (host.benched.Count < 2) return false; // Not usable
+
+            Dictionary<battler, int> scores = EvaluateActive(host.benched);
+
+            int frontScore = scores[host.benched[0]]; // Remove front
+            scores.Remove(host.benched[0]);
+
+            if (!scores.Any(x => x.Value > frontScore)) return false; // Not worth it
+
+            battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
+
+            Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
+            utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
+
+            host.ExchangePosition(selected);
+
+            host.CardToDiscard(source);
+
+            return true;
+        }
         #endregion
 
         private bool CanAttack(Player opp)

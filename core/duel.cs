@@ -513,7 +513,7 @@ namespace shandakemon.core
             while (digit == 0);
             
 
-            p1.ExchangePosition(digit);
+            p1.ExchangePosition(p1.benched[digit]);
         }
 
         // Power menu to select power

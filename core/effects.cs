@@ -698,7 +698,7 @@ namespace shandakemon.core
                     Console.WriteLine("Not valid input. Try again.");
             }
             while (digit == 0);
-            target.ExchangePosition(digit);
+            target.ExchangePosition(target.benched[digit]);
             Console.WriteLine("Pokemon exchanged.");
         }
 

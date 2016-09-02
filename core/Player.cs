@@ -297,12 +297,12 @@ namespace shandakemon.core
         }
 
         // Exchanges the position of the front battler with a benched battler
-        public void ExchangePosition(int index)
+        public void ExchangePosition(battler btl)
         {
             battler temp = benched[0];
             temp.ToBench();
-            benched[0] = benched[index];
-            benched.RemoveAt(index);
+            benched[0] = btl;
+            benched.Remove(btl);
             benched.Add(temp);
 
             utils.Logger.Report(temp.ToString() + " placed in the bench." + Environment.NewLine + benched[0].ToString() + " placed in the active area.");
