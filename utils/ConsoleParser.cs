@@ -90,5 +90,26 @@ namespace shandakemon.utils
             Console.WriteLine("Not valid input. Try again.");
             return ReadOrExit(threshold);
         }
+
+        public static bool ReadYesNo()
+        {
+            char input;
+            string line = Console.ReadLine();
+            if (char.TryParse(line, out input)) // Y or N
+                if (char.ToLower(input) == 'y')
+                    return true;
+                else if (char.ToLower(input) == 'n')
+                    return false;
+                else
+                {
+                    Console.WriteLine("Invalid input.");
+                    return ReadYesNo();
+                }
+            else
+            {
+                Console.WriteLine("Invalid input.");
+                return ReadYesNo();
+            }
+        }
     }
 }

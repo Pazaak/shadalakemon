@@ -8,22 +8,24 @@ namespace shandakemon.AI
 {
     public class SimpleAI: DuelAI
     {
-        bool modified;
+        bool modified, peek;
         List<battler> basics;
         List<battler> evolutions;
         List<energy> energies;
         List<trainer> trainers;
         Player host;
 
-        public SimpleAI(Player _host)
+        public SimpleAI(Player _host, bool _peek = false)
         {
             modified = true;
+            peek = _peek;
             host = _host;
         }
         
         public void SelectActive()
         {
             if (modified) CheckModifications();
+            if (peek) Console.WriteLine(host.ShowHand());
 
             card selected;
             if (basics.Count == 1) // Only one option
@@ -204,6 +206,7 @@ namespace shandakemon.AI
         {
             Console.WriteLine(host.ToString() + " advances to main phase.");
             utils.Logger.Report(host.ToString() + " advances to main phase.");
+            if (peek) Console.WriteLine(host.ShowHand());
             if (host.winCondition || opp.winCondition) return false;
             this.EvolutionPhase();
             if (host.winCondition || opp.winCondition) return false;

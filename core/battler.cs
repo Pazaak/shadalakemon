@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using shandakemon.utils;
 
 namespace shandakemon.core
 {
@@ -52,6 +53,7 @@ namespace shandakemon.core
     public class battler : card
     {
         public int type, element, HP, weak_elem, weak_mod, res_elem, res_mod, retreat, damage, status, id, evolvesFrom;
+        private int internalValue;
         public int originalWeakElem, originalResElem;
         public string name;
         public movement[] movements;
@@ -88,6 +90,7 @@ namespace shandakemon.core
             energyTotal = new int[7];
             this.prevolution = null;
             this.conditions = new Dictionary<int, int[]>();
+            this.internalValue = CRandom.RandomInt();
 
             if (legacy != null)
             {

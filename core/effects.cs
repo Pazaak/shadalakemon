@@ -24,11 +24,15 @@ namespace shandakemon.core
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     if (CRandom.RandomInt() < 0)
                     {
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         inflictStatus(target, parameters[1]);
                     }
                     else
+                    {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
+                    }
                     break;
                 case 3: // Add condition by coin
                     int[] temp;
@@ -36,11 +40,15 @@ namespace shandakemon.core
                     {
                         temp = new int[parameters.Length - 1];
                         Array.Copy(parameters, 1, temp, 0, temp.Length);
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         addCondition(source, parameters[0], temp);
                     }
                     else
+                    {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
+                    }
                     break;
                 case 4: // Damage empowered by excess of energy
                     int exEner = ExcessEnergy(mov, source, parameters[2], costless);
@@ -87,11 +95,15 @@ namespace shandakemon.core
                 case 16: // Status by coin
                     if (CRandom.RandomInt() < 0)
                     {
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         inflictStatus(target, parameters[0]);
                     }
                     else
+                    {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
+                    }
                     break;
                 case 17: // Damage at both sides
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
@@ -113,12 +125,14 @@ namespace shandakemon.core
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     if (CRandom.RandomInt() < 0)
                     {
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         inflictStatus(target, parameters[1]);
                     }
                     else
                     {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
                         inflictStatus(target, parameters[2]);
                     }
                     break;
@@ -130,12 +144,14 @@ namespace shandakemon.core
                     bool extraDamage;
                     if (CRandom.RandomInt() < 0)
                     {
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         extraDamage = true;
                     }
                     else
                     {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
                         extraDamage = false;
                     }
                     damage(source.element, extraDamage ? parameters[0] + parameters[1] : parameters[0], target, source, target_controller, source_controller);
@@ -194,11 +210,15 @@ namespace shandakemon.core
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     if (CRandom.RandomInt() < 0)
                     {
+                        Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
                         utils.Logger.Report(source_controller.ToString() + " wins the coin flip.");
                         addCondition(source, parameters[1], new int[1] { parameters[2] });
                     }
                     else
+                    {
                         utils.Logger.Report(source_controller.ToString() + " loses the coin flip.");
+                        Console.WriteLine(source_controller.ToString() + " loses the coin flip.");
+                    }
                     break;
 
             }

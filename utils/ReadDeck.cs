@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using shandakemon.core;
 
 namespace shandakemon.utils
 {
@@ -21,6 +22,35 @@ namespace shandakemon.utils
             }
 
             return output;
+        }
+
+        public static LinkedList<card> DeckAssembler(string name, battler[] battlers, trainer[] trainers, energy[] energies)
+        {
+            LinkedList<card> output = new LinkedList<card>();
+            List<int> deckIndexes = ReadIndexes(name);
+            foreach (int index in deckIndexes)
+            {
+                if (index < 70) // Battler card
+                    output.AddFirst(battlers[index - 1].DeepCopy());
+                else if (index < 96) // Trainer card
+                    output.AddFirst(trainers[index - 70].DeepCopy());
+                else
+                    output.AddFirst(energies[index - 96].DeepCopy());
+            }
+            return output;
+        }
+
+        public static string RandomDeck()
+        {
+            switch( Math.Abs(CRandom.RandomInt() % 5) )
+            {
+                case 0: return "2player.txt";
+                case 1: return "blackout.txt";
+                case 2: return "brushfire.txt";
+                case 3: return "overgrowth.txt";
+                case 4: return "zap!.txt";
+                default: return "";
+            }
         }
     }
 }
