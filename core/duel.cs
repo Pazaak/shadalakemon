@@ -443,7 +443,6 @@ namespace shandakemon.core
                     battler target = p1.SelectBattler();
                     if (target == null) return;
 
-
                     target.attachEnergy(attEnergy);
                     p1.hand.Remove(selected);
                     energyLimit = true;

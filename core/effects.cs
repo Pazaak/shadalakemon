@@ -22,6 +22,7 @@ namespace shandakemon.core
                     break;
                 case 2: // Damage and coin for status
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     if (CRandom.RandomInt() < 0)
                     {
                         Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
@@ -62,6 +63,7 @@ namespace shandakemon.core
                     break;
                 case 7: // Damage and discard
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     discardEnergy(source_controller, target_controller, target, -1, 1);
                     break;
                 case 8: // Damage equal the number of damage counters
@@ -69,6 +71,7 @@ namespace shandakemon.core
                     break;
                 case 9: // Damage and wheel
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     Wheel(source_controller, target_controller);
                     break;
                 case 10: // Damage = Half of the remaining HP
@@ -119,10 +122,12 @@ namespace shandakemon.core
                     break;
                 case 20: // Damage and status
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     inflictStatus(target, parameters[1]);
                     break;
                 case 21: // Damage and one of two status by coin
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     if (CRandom.RandomInt() < 0)
                     {
                         Console.WriteLine(source_controller.ToString() + " wins the coin flip.");
@@ -138,7 +143,10 @@ namespace shandakemon.core
                     break;
                 case 22: // Damage and leech
                     if (damage(source.element, parameters[0], target, source, target_controller, source_controller) > 0)
+                    {
+                        if (target_controller.winCondition || source_controller.winCondition) break;
                         heal(source, parameters[1]);
+                    }
                     break;
                 case 23: // Extra damage or recoil
                     bool extraDamage;
@@ -155,6 +163,7 @@ namespace shandakemon.core
                         extraDamage = false;
                     }
                     damage(source.element, extraDamage ? parameters[0] + parameters[1] : parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     if (!extraDamage) damage(Constants.TNone, parameters[2], source, source, target_controller, source_controller);
                     break;
                 case 24: // Discard type and legacy [element, quantity, legacy, duration]
@@ -181,6 +190,7 @@ namespace shandakemon.core
                     break;
                 case 29: // Damage and legacy to the opponent
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     temp = new int[parameters.Length - 2];
                     Array.Copy(parameters, 2, temp, 0, temp.Length);
                     addCondition(target, parameters[1], temp);
@@ -196,18 +206,29 @@ namespace shandakemon.core
                 case 32: // Damage and splash to own benched
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     for (int i = 1; i < source_controller.benched.Count; i++)
+                    {
+                        if (target_controller.winCondition || source_controller.winCondition) break;
                         damage(Constants.TNone, parameters[1], source_controller.benched[i], null, target_controller, source_controller);
+                    }
                     break;
                 case 33: // Damage, splash to all benches and recoil
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
                     for (int i = 1; i < source_controller.benched.Count; i++)
+                    {
+                        if (target_controller.winCondition || source_controller.winCondition) break;
                         damage(Constants.TNone, parameters[1], source_controller.benched[i], null, target_controller, source_controller);
+                    }
                     for (int i = 1; i < target_controller.benched.Count; i++)
+                    {
+                        if (target_controller.winCondition || source_controller.winCondition) break;
                         damage(Constants.TNone, parameters[1], target_controller.benched[i], null, target_controller, source_controller);
+                    }
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     damage(source.element, parameters[2], source, source, source_controller, target_controller);
                     break;
                 case 34: // Damage and legacy on self by coin
                     damage(source.element, parameters[0], target, source, target_controller, source_controller);
+                    if (target_controller.winCondition || source_controller.winCondition) break;
                     if (CRandom.RandomInt() < 0)
                     {
                         Console.WriteLine(source_controller.ToString() + " wins the coin flip.");

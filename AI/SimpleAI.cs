@@ -216,6 +216,8 @@ namespace shandakemon.AI
             if (host.winCondition || opp.winCondition) return false;
             this.PowerPhase(opp);
             if (host.winCondition || opp.winCondition) return false;
+            this.TrainerPhase(opp);
+            if (host.winCondition || opp.winCondition) return false;
             this.RetreatPhase(opp);
             return this.CanAttack(opp);
         }
@@ -347,7 +349,7 @@ namespace shandakemon.AI
 
             // TODO: Do this seriously
             foreach (card ca in target)
-                output.Add(ca, CRandom.RandomInt());
+                output.Add(ca, CRandom.RandomInt() >> 10);
 
             return output;
         }
@@ -472,6 +474,7 @@ namespace shandakemon.AI
                             host.CardToDiscard(bree);
                         }
 
+                        host.hand.Remove(evo);
                         evo.evolve(target);
                     }
                 }
@@ -487,6 +490,8 @@ namespace shandakemon.AI
                 return;
 
             bool[] types = new bool[Constants.NTypes];
+            foreach (energy ene in energies)
+                types[ene.elem] = true;
 
             Dictionary<battler, int> negScores = new Dictionary<battler, int>();
             Dictionary<battler, int> posScores = new Dictionary<battler, int>();
@@ -497,28 +502,31 @@ namespace shandakemon.AI
                 if (score < 0 && !negScores.ContainsKey(btl)) negScores.Add(btl, score);
                 else if ( !posScores.ContainsKey(btl)) posScores.Add(btl, score);
             }
-            
-            if ( negScores.Count == 0 ) // All battlers have excess of energy
+
+            // Priority to front
+            battler selected;
+            energy en;
+            if (negScores.ContainsKey(host.benched[0]))
+            {
+                selected = host.benched[0];
+                if (types[selected.element])
+                    en = energies.FirstOrDefault(x => x.elem == selected.element);
+                else
+                    en = energies.First();
+            }
+            else if ( negScores.Count == 0 ) // All battlers have excess of energy
             {
                 Dictionary<battler, int> typeMatch = posScores.Where(x => types[x.Key.element]).ToDictionary(x => x.Key, x => x.Value);
 
                 if ( typeMatch.Count > 0) // There is type match among
                 {
-                    battler selected = typeMatch.FirstOrDefault(x => x.Value <= typeMatch.Values.Min()).Key;
-                    energy en = energies.FirstOrDefault(x => x.elem == selected.element);
-                    selected.attachEnergy(en);
-                    host.hand.Remove(en);
-                    Console.WriteLine(en.name + " attached to " + selected.ToString());
-                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                    selected = typeMatch.FirstOrDefault(x => x.Value <= typeMatch.Values.Min()).Key;
+                    en = energies.FirstOrDefault(x => x.elem == selected.element);
                 }
                 else // There are no type matches
                 {
-                    battler selected = posScores.FirstOrDefault(x => x.Value <= posScores.Values.Min()).Key;
-                    energy en = energies.First();
-                    selected.attachEnergy(en);
-                    host.hand.Remove(en);
-                    Console.WriteLine(en.name + " attached to " + selected.ToString());
-                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                    selected = posScores.FirstOrDefault(x => x.Value <= posScores.Values.Min()).Key;
+                    en = energies.First();
                 }
             }
             else // Battlers need more energy
@@ -527,23 +535,19 @@ namespace shandakemon.AI
 
                 if (typeMatch.Count > 0) // There is type match among
                 {
-                    battler selected = typeMatch.FirstOrDefault(x => x.Value >= typeMatch.Values.Max()).Key;
-                    energy en = energies.FirstOrDefault(x => x.elem == selected.element);
-                    selected.attachEnergy(en);
-                    host.hand.Remove(en);
-                    Console.WriteLine(en.name + " attached to " + selected.ToString());
-                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                    selected = typeMatch.FirstOrDefault(x => x.Value >= typeMatch.Values.Max()).Key;
+                    en = energies.FirstOrDefault(x => x.elem == selected.element);
                 }
                 else // There are no type matches
                 {
-                    battler selected = negScores.FirstOrDefault(x => x.Value >= negScores.Values.Max()).Key;
-                    energy en = energies.First();
-                    selected.attachEnergy(en);
-                    host.hand.Remove(en);
-                    Console.WriteLine(en.name + " attached to " + selected.ToString());
-                    utils.Logger.Report(en.name + " attached to " + selected.ToString());
+                    selected = negScores.FirstOrDefault(x => x.Value >= negScores.Values.Max()).Key;
+                    en = energies.First();
                 }
             }
+            selected.attachEnergy(en);
+            host.hand.Remove(en);
+            Console.WriteLine(en.name + " attached to " + selected.ToString());
+            utils.Logger.Report(en.name + " attached to " + selected.ToString());
         }
 
         private void PowerPhase(Player opp)
@@ -591,6 +595,8 @@ namespace shandakemon.AI
 
             battler selected = scores.FirstOrDefault(x => x.Value >= scores.Values.Max()).Key;
 
+            Console.WriteLine(host.ToString() + " retreats " + front.ToString() + " and selects " + selected.ToString() + " as front.");
+            utils.Logger.Report(host.ToString() + " retreats " + front.ToString() + " and selects " + selected.ToString() + " as front.");
             host.ExchangePosition(selected);
         }
 
@@ -944,8 +950,8 @@ namespace shandakemon.AI
             CheckModifications();
             if (opp.hand.Count / 3 - trainers.Count < 0) return false; // Not worth it
 
-            effects.ShuffleCardsType(host, 2);
-            effects.ShuffleCardsType(opp, 2);
+            effects.ShuffleCardsType(host, 1);
+            effects.ShuffleCardsType(opp, 1);
             return true;
         }
 
@@ -1045,7 +1051,11 @@ namespace shandakemon.AI
             Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
             utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
 
-            effects.addCondition(host.benched[0], Legacies.damageReduction, source.parameters);
+            int[] arguments = new int[source.parameters.Length];
+            for (int i = 1; i < arguments.Length; i++)
+                arguments[i] = source.parameters[i];
+            arguments[0] = 2;
+            effects.addCondition(host.benched[0], source.parameters[0], arguments);
 
             host.CardToDiscard(source);
 
@@ -1140,7 +1150,11 @@ namespace shandakemon.AI
             Console.WriteLine(host.ToString() + " uses " + source.ToString() + ".");
             utils.Logger.Report(host.ToString() + " uses " + source.ToString() + ".");
 
-            effects.addCondition(host.benched[0], Legacies.damageAmplification, source.parameters);
+            int[] arguments = new int[source.parameters.Length];
+            for (int i = 1; i < arguments.Length; i++)
+                arguments[i] = source.parameters[i];
+            arguments[0] = 2;
+            effects.addCondition(host.benched[0], source.parameters[0], arguments);
 
             host.CardToDiscard(source);
 

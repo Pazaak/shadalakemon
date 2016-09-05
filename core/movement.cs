@@ -53,8 +53,8 @@ namespace shandakemon.core
                 Console.WriteLine(source_controller.ToString() + " wins the coin flip. " + source.ToString() + " proceeds to attack.");
                 utils.Logger.Report(source_controller.ToString() + " wins the coin flip. " + source.ToString() + " proceeds to attack.");
             }
-            else
-                effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
+
+            effects.move_selector(source_controller, target_controller, source, target, this, effect, parameters, costless);
                 
         }
 

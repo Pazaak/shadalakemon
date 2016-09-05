@@ -471,7 +471,8 @@ namespace shandakemon.core
             {
                 Console.WriteLine("Select an active pokémon:");
                 Console.WriteLine(this.ShowBattlers());
-                digit = utils.ConsoleParser.ReadNumber(benched.Count-1);
+                digit = utils.ConsoleParser.ReadOrExit(benched.Count-1);
+                if (digit == -1) return null;
             }
             
             return benched[digit];
