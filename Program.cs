@@ -43,7 +43,7 @@ namespace shandakemon
 
                 Console.WriteLine("Do you want to exit? (y/n):");
             }
-            while (utils.ConsoleParser.ReadYesNo());
+            while (!utils.ConsoleParser.ReadYesNo());
         }
     }
 }
